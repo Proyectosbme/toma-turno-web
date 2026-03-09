@@ -1,0 +1,14 @@
+<nav class="quick-nav-list" role="navigation" *ngIf="!collapsed">
+  <button
+    *ngFor="let item of items"
+    type="button"
+    class="quick-nav-item"
+    [class.active]="item.id === activeId"
+    (click)="navigate(item)"
+  >
+    <span class="quick-nav-dot"></span>
+    <span class="quick-nav-label">{{ item.label }}</span>
+    <span *ngIf="item.badge" class="quick-nav-badge">{{ item.badge }}</span>
+  </button>
+</nav>
+

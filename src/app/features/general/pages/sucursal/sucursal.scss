@@ -1,0 +1,128 @@
+// Layout manejado por page-layout component
+
+// ══════════════════════════════════════════
+// Diálogo: Replicar Colas
+// ══════════════════════════════════════════
+.replicar-container {
+    padding: 0.5rem 0;
+}
+
+.replicar-descripcion {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.replicar-campos {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.replicar-campo {
+    flex: 1;
+
+    label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }
+}
+
+.replicar-flecha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.25rem;
+
+    i {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+    }
+}
+
+// Resultado
+.replicar-resultado {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.resultado-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.resultado-icono {
+    font-size: 1.5rem;
+    color: var(--green-500);
+}
+
+.resultado-estadisticas {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.estadistica {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 8px;
+    background: var(--surface-ground);
+
+    &.copiadas {
+        border-left: 4px solid var(--green-500);
+        .estadistica-numero { color: var(--green-600); }
+    }
+
+    &.saltadas {
+        border-left: 4px solid var(--orange-400);
+        .estadistica-numero { color: var(--orange-600); }
+    }
+}
+
+.estadistica-numero {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.estadistica-label {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+    margin-top: 0.25rem;
+}
+
+.resultado-detalle {
+    p.detalle-titulo {
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--green-700);
+
+        i { font-size: 0.875rem; }
+    }
+
+    ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+
+        li { margin-bottom: 0.2rem; }
+    }
+
+    &.saltadas-detalle p.detalle-titulo {
+        color: var(--orange-700);
+    }
+}

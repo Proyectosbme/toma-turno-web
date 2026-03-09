@@ -1,0 +1,32 @@
+<div class="page-layout-wrapper">
+    <div class="page-header" #headerRef>
+        <div class="page-header-title">
+            <ng-content select="[page-header-title]"></ng-content>
+        </div>
+        <div class="page-header-actions">
+            <ng-content select="[page-header-actions]"></ng-content>
+        </div>
+    </div>
+    <div class="page-content-row">
+        <div class="page-main-content" #mainContentRef
+            [ngClass]="{'quicknav-active': showQuickNav && !quickNavCollapsed, 'quicknav-inactive': !showQuickNav || quickNavCollapsed}"
+            style="overflow-y: auto;">
+            <ng-content select="[page-content]"></ng-content>
+        </div>
+        <aside *ngIf="showQuickNav && !quickNavCollapsed" class="quick-nav-aside">
+            <div class="page-quick-nav" #quickNavRef>
+                <div class="quick-nav-header-row">
+                    <span class="quick-nav-title">Navegación</span>
+                    <button class="quick-nav-toggle-btn" (click)="toggleQuickNav()" title="Colapsar">
+                        <i class="pi pi-chevron-right"></i>
+                    </button>
+                </div>
+                <ng-content select="[page-quick-nav]"></ng-content>
+            </div>
+        </aside>
+        <button *ngIf="showQuickNav && quickNavCollapsed" class="quick-nav-float-btn" (click)="toggleQuickNav()"
+            title="Expandir navegación">
+            <i class="pi pi-chevron-left"></i>
+        </button>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color, #10b981);
+}

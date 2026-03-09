@@ -1,0 +1,160 @@
+:host {
+  display: block;
+}
+
+.table-wrapper {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--surface-border);
+  background: var(--surface-card);
+}
+
+.item-name {
+  font-weight: 600;
+}
+
+.item-meta {
+  font-size: 0.75rem;
+  color: var(--text-color-secondary);
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+
+  &.status-active {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+  }
+
+  &.status-inactive {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text-color-secondary);
+  }
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: currentColor;
+}
+
+/* PrimeNG overrides */
+:host ::ng-deep {
+
+  .p-datatable {
+    width: 100%;
+    font-size: 0.875rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .p-datatable-thead > tr > th {
+      background: var(--primary-color, #10b981) !important;
+      color: #fff !important;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 0.9rem 1.1rem;
+      border-bottom: 2px solid var(--primary-color, #10b981) !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px 0 rgba(16,185,129,0.04);
+
+      .pi, .p-sortable-column-icon {
+        color: #fff !important;
+        font-weight: bold;
+        opacity: 1 !important;
+      }
+  }
+
+  .p-datatable-thead > tr > th.p-sortable-column:hover {
+    background: rgba(var(--primary-color-rgb, 16,185,129), 0.85) !important;
+    color: #fff !important;
+
+    .pi, .p-sortable-column-icon {
+      color: #fff !important;
+    }
+  }
+
+  .p-datatable-thead > tr > th.p-sortable-column.p-highlight {
+    background: rgba(var(--primary-color-rgb, 16,185,129), 0.92) !important;
+    color: #fff !important;
+
+    .pi, .p-sortable-column-icon {
+      color: #fff !important;
+    }
+  }
+
+  .p-datatable-tbody > tr {
+    cursor: pointer;
+    transition: background 0.12s;
+
+    > td {
+      padding: 0.7rem 1rem;
+      color: var(--text-color);
+      border-bottom: 1px solid var(--surface-border) !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      vertical-align: middle;
+    }
+
+    &:last-child > td {
+      border-bottom: none !important;
+    }
+
+    &:hover > td {
+      background: rgba(var(--primary-color-rgb, 16,185,129), 0.13) !important;
+      transition: background 0.2s;
+    }
+
+    &.row-selected > td {
+      background: rgba(var(--primary-color-rgb, 16,185,129), 0.18) !important;
+      color: var(--text-color, #222);
+      font-weight: 600;
+      box-shadow: none;
+      transition: background 0.2s;
+    }
+
+    &.row-selected > td:first-child {
+      box-shadow: inset 3px 0 0 #059669, 0 2px 12px 0 rgba(16,185,129,0.10);
+    }
+  }
+
+  .p-paginator {
+    background: var(--surface-card) !important;
+    border-top: 1px solid var(--surface-border) !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding: 0.4rem 0.75rem;
+    margin: 0;
+    font-size: 0.8rem;
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+
+  .p-datatable-wrapper {
+    width: 100%;
+  }
+}
+
+:host-context(.app-dark) {
+  ::ng-deep .p-datatable-tbody > tr {
+    &.row-selected > td {
+      background: rgba(var(--primary-color-rgb, 16,185,129), 0.25) !important;
+    }
+  }
+}

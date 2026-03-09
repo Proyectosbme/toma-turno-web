@@ -1,0 +1,418 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+/* ── Header info (dentro del page-header-actions) ── */
+.header-puesto-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .puesto-label {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-right: 0.25rem;
+    }
+
+    .colas-titulo {
+        font-weight: 600;
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+    }
+
+    .sin-colas {
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+        font-style: italic;
+    }
+
+    ::ng-deep .cola-tag {
+        font-size: 0.8rem;
+    }
+}
+
+/* ── Body (grid: stats full-width + 2 columnas) ── */
+.operador-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 1rem;
+    height: 100%;
+    min-height: 0;
+    position: relative;
+}
+
+/* ── Stats bar ── */
+.stats-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    flex: 1;
+    min-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+
+    .stat-icon {
+        font-size: 1rem;
+        opacity: 0.5;
+        margin-bottom: 0.1rem;
+    }
+
+    .stat-valor {
+        font-size: 1.4rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--text-color);
+
+        &.mono { font-family: monospace; font-size: 1.2rem; }
+    }
+
+    .stat-label {
+        font-size: 0.68rem;
+        color: var(--text-color-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.04rem;
+        text-align: center;
+    }
+
+    &.stat-verde  .stat-valor { color: var(--green-500); }
+    &.stat-azul   .stat-valor { color: var(--blue-500); }
+    &.stat-primario .stat-valor { color: var(--primary-color); }
+    &.stat-apagado { opacity: 0.45; }
+}
+
+/* ── Panel Actual ── */
+.panel-actual {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+
+    ::ng-deep .card-actual {
+        flex: 1;
+
+        .p-card-body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .p-card-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}
+
+.card-header-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    border-bottom: 1px solid var(--surface-border);
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.turno-actual-contenido {
+    text-align: center;
+    padding: 1rem;
+
+    .codigo-actual {
+        font-size: 5rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        letter-spacing: 0.2rem;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .cola-actual {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .timer-atencion {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 1.6rem;
+        font-weight: 700;
+        font-family: monospace;
+        color: var(--primary-color);
+        background: var(--primary-50, #eff6ff);
+        border: 1px solid var(--primary-200, #bfdbfe);
+        border-radius: 8px;
+        padding: 0.2rem 0.75rem;
+        margin: 0.35rem 0;
+
+        i { font-size: 1rem; opacity: 0.7; }
+    }
+
+    .meta-turno {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        margin-top: 0.35rem;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: var(--text-color-secondary);
+        }
+    }
+}
+
+.sin-turno-actual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-color-secondary);
+
+    i {
+        font-size: 3rem;
+        opacity: 0.4;
+    }
+
+    span {
+        font-size: 1rem;
+        opacity: 0.7;
+    }
+}
+
+.footer-acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.acciones-turno {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    ::ng-deep .p-button {
+        flex: 1;
+        min-width: 130px;
+        justify-content: center;
+    }
+}
+
+.btn-llamar-principal {
+    ::ng-deep .p-button {
+        width: 100%;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.04rem;
+        padding: 0.85rem 1rem;
+    }
+}
+
+/* ── Panel Espera ── */
+.panel-espera {
+    min-height: 0;
+
+    ::ng-deep .card-espera {
+        height: 100%;
+
+        .p-card-body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .p-card-content {
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+        }
+    }
+}
+
+.lista-espera {
+    overflow-y: auto;
+    height: 100%;
+
+    .sin-espera {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 3rem 1rem;
+        color: var(--text-color-secondary);
+
+        i {
+            font-size: 2.5rem;
+            color: var(--green-400);
+        }
+
+        span {
+            font-size: 0.95rem;
+        }
+    }
+}
+
+.turno-espera-item {
+    display: grid;
+    grid-template-columns: 2rem 5rem 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--surface-border);
+    transition: background 0.15s;
+
+    &:hover { background: var(--surface-hover); }
+
+    &.primero {
+        background: var(--primary-50, #eff6ff);
+        font-weight: 600;
+        .espera-codigo { color: var(--primary-color); }
+    }
+
+    &.aviso {
+        border-left: 3px solid var(--orange-400);
+        background: var(--orange-50, #fff7ed);
+    }
+
+    &.urgente {
+        border-left: 3px solid var(--red-500);
+        background: var(--red-50, #fef2f2);
+    }
+
+    .espera-numero {
+        font-size: 0.8rem;
+        color: var(--text-color-secondary);
+        text-align: center;
+    }
+
+    .espera-codigo {
+        font-weight: 700;
+        font-size: 1rem;
+        font-family: monospace;
+    }
+
+    .espera-cola {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .espera-tiempo {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+    }
+
+    .espera-hora {
+        font-size: 0.78rem;
+        color: var(--text-color-secondary);
+
+        &::after {
+            content: '·';
+            margin-left: 0.3rem;
+            opacity: 0.4;
+        }
+    }
+
+    .espera-espera {
+        font-size: 0.78rem;
+        color: var(--text-color-secondary);
+
+        &.texto-aviso  { color: var(--orange-500); font-weight: 600; }
+        &.texto-urgente { color: var(--red-500);    font-weight: 700; }
+    }
+}
+
+/* ── Loading ── */
+.cargando-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    z-index: 10;
+}
+
+.loading-inicial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 1rem;
+    color: var(--text-color-secondary);
+}
+
+/* ── Reasignar dialog ── */
+.reasignar-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.reasignar-titulo {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04rem;
+}
+
+.reasignar-colas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    ::ng-deep .reasignar-cola-btn {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+    }
+}
+
+.reasignar-aviso {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--orange-600);
+    background: var(--orange-50, #fff7ed);
+    border: 1px solid var(--orange-200, #fed7aa);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+
+    i { font-size: 0.9rem; }
+}

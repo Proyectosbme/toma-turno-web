@@ -1,0 +1,56 @@
+<p-toast position="top-right"></p-toast>
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Configuraciones del Sistema" page-header-title></app-page-title>
+    <ng-container page-header-actions>
+        <button pButton icon="pi pi-plus" label="Agregar" (click)="abrirNuevo()"
+            pTooltip="Crear nueva configuración"></button>
+        <button pButton icon="pi pi-pencil" label="Editar" class="p-button-secondary p-button-outlined"
+            [disabled]="!configSeleccionada" (click)="abrirEditar()"
+            pTooltip="Editar configuración seleccionada"></button>
+    </ng-container>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div page-content>
+        <!-- Sección: Búsqueda -->
+        <app-section id="sec-busqueda" title="Búsqueda por sucursal">
+            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda" [columns]="2"
+                (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
+            </app-search-panel>
+            @if (advertenciaBusqueda) {
+                <p class="advertencia-busqueda">
+                    <i class="pi pi-exclamation-triangle"></i> {{ advertenciaBusqueda }}
+                </p>
+            }
+        </app-section>
+
+        <!-- Sección: Tabla -->
+        <app-section id="sec-tabla" title="Listado de Configuraciones">
+            <app-table [items]="configuraciones" [columns]="columnas" [isLoading]="cargando"
+                [selectedItem]="configSeleccionada"
+                emptyTitle="Sin configuraciones registradas"
+                emptySubtitle="Selecciona una sucursal y consulta, o presiona Agregar para crear una configuración."
+                (rowSelect)="seleccionarConfig($event)">
+            </app-table>
+        </app-section>
+    </div>
+
+</app-page-layout>
+
+<!-- ═══ DIALOG: Crear / Editar ═══ -->
+<p-dialog [header]="dialogoTitulo" [(visible)]="dialogoVisible" [modal]="true" [closable]="true" [draggable]="false"
+    [style]="{ width: '42rem' }">
+
+    <app-form-panel [form]="formularioConfig" [fields]="camposFormulario" [columns]="2"></app-form-panel>
+
+    <ng-template #footer>
+        <div class="dialog-footer">
+            <button pButton icon="pi pi-times" label="Cancelar" class="p-button-sm p-button-text"
+                (click)="cerrarDialogo()"></button>
+            <button pButton icon="pi pi-check" label="Guardar" class="p-button-sm" (click)="guardar()"
+                [loading]="cargando"></button>
+        </div>
+    </ng-template>
+
+</p-dialog>

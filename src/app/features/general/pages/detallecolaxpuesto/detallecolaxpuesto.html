@@ -1,0 +1,119 @@
+<p-toast position="top-right"></p-toast>
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Asignación Puesto ↔ Cola" page-header-title></app-page-title>
+    <ng-container page-header-actions>
+        <button pButton icon="pi pi-link" label="Asignar" (click)="abrirAsignar()"
+            [disabled]="!puestoSeleccionado"
+            pTooltip="Asignar detalle de cola al puesto seleccionado"></button>
+        <button pButton icon="pi pi-trash" label="Desasignar" class="p-button-danger p-button-outlined"
+            [disabled]="!detalleSeleccionado" (click)="desasignar()"
+            pTooltip="Quitar la asignación seleccionada"></button>
+    </ng-container>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div page-content>
+
+        <!-- Sección: Filtro de puesto -->
+        <app-section id="sec-filtro" title="Selección de Puesto">
+            <app-search-panel
+                [form]="formularioFiltro"
+                [fields]="camposFiltro"
+                [columns]="3"
+                searchLabel="Consultar"
+                (searchAction)="listar()"
+                (clearAction)="limpiar()">
+            </app-search-panel>
+            @if (advertencia) {
+                <p class="advertencia-busqueda">
+                    <i class="pi pi-exclamation-triangle"></i> {{ advertencia }}
+                </p>
+            }
+        </app-section>
+
+        <!-- Sección: Tabla -->
+        <app-section id="sec-tabla" title="Detalles asignados al puesto">
+            <app-table [items]="detalles" [columns]="columnas" [isLoading]="cargando"
+                [selectedItem]="detalleSeleccionado"
+                emptyTitle="Sin detalles asignados"
+                emptySubtitle="Selecciona un puesto y consulta, o usa el botón Asignar para agregar un detalle de cola."
+                (rowSelect)="seleccionarDetalle($event)">
+            </app-table>
+        </app-section>
+
+    </div>
+
+</app-page-layout>
+
+<!-- ═══ DIALOG: Asignar ═══ -->
+<p-dialog header="Asignar detalle de cola" [(visible)]="dialogoVisible" [modal]="true"
+    [closable]="true" [draggable]="false" [style]="{ width: '32rem' }">
+
+    <div class="dialog-form">
+
+        <!-- Cola (requerida) -->
+        <div class="campo-form">
+            <label for="selCola">Cola <span class="requerido">*</span></label>
+            <p-select
+                inputId="selCola"
+                [options]="opcionesColas"
+                [formControl]="formularioAsignar.controls.idCola"
+                (onChange)="onColaChange($event.value)"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Seleccionar cola"
+                appendTo="body"
+                [style]="{ width: '100%' }">
+            </p-select>
+            @if (formularioAsignar.controls.idCola.invalid && formularioAsignar.controls.idCola.touched) {
+                <small class="error-campo">La cola es requerida</small>
+            }
+        </div>
+
+        <!-- Aviso: cola sin detalles disponibles (ya asignados) -->
+        @if (todosAsignados) {
+            <div class="aviso-todos-asignados">
+                <i class="pi pi-info-circle"></i>
+                Todos los detalles de esta cola ya están asignados a este puesto.
+            </div>
+        }
+
+        <!-- Detalle (opcional) — visible cuando la cola tiene detalles disponibles -->
+        @if (colaSeleccionada && !todosAsignados) {
+            <div class="campo-form">
+                <label for="selDetalle">Detalle
+                    <span class="label-hint">(opcional — sin selección se asignan todos)</span>
+                </label>
+                <p-select
+                    inputId="selDetalle"
+                    [options]="opcionesDetalles"
+                    [formControl]="formularioAsignar.controls.idDetalle"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Dejar vacío para asignar todos"
+                    appendTo="body"
+                    [showClear]="true"
+                    [style]="{ width: '100%' }">
+                </p-select>
+                <small class="hint-campo">
+                    <i class="pi pi-info-circle"></i>
+                    {{ opcionesDetalles.length }} detalle(s) disponible(s) sin asignar
+                </small>
+            </div>
+        }
+
+    </div>
+
+    <ng-template #footer>
+        <div class="dialog-footer">
+            <button pButton icon="pi pi-times" label="Cancelar" class="p-button-sm p-button-text"
+                (click)="cerrarDialogo()"></button>
+            <button pButton icon="pi pi-check" label="Asignar" class="p-button-sm" (click)="asignar()"
+                [loading]="cargandoDialog"
+                [disabled]="todosAsignados || !formularioAsignar.controls.idCola.value">
+            </button>
+        </div>
+    </ng-template>
+
+</p-dialog>

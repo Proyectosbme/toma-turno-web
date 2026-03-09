@@ -1,0 +1,324 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
+import { SectionComponent } from '@shared/components/section/section.component';
+import { PageTitleComponent } from '@shared/components/page-title/page-title';
+import { FormPanelComponent } from '@shared/components/form-panel/form-panel';
+import { TableComponent, TableItem } from '@shared/components/table/table';
+import { SearchPanelComponent } from '@shared/components/search-panel/search-panel';
+import { ColaRequestDTO } from '@general/dto/cola.dto';
+import { ColaServicio } from '@general/services/cola.servicio';
+import { SucursalServicio } from '@general/services/sucursal.servicio';
+import {
+    CAMPOS_FORMULARIO, CAMPOS_BUSQUEDA, COLUMNAS_TABLA, COLUMNAS_TABLA_DETALLE, CAMPOS_FORMULARIO_DETALLE,
+    crearFormularioCola, crearFormularioBusqueda, crearFormularioDetalle
+} from './cola.config';
+import { DetalleRequestDTO } from '@general/dto/detalle.dto';
+import { NotificacionServicio } from '@shared/services/notificacion.servicio';
+import { extraerMensajeError } from '@shared/utils/error.util';
+
+@Component({
+    selector: 'app-cola',
+    standalone: true,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        InputTextModule,
+        TooltipModule,
+        DialogModule,
+        ToastModule,
+        PageLayoutComponent,
+        SectionComponent,
+        PageTitleComponent,
+        FormPanelComponent,
+        TableComponent,
+        SearchPanelComponent
+    ],
+    templateUrl: './cola.html',
+    styleUrl: './cola.scss'
+})
+export class ColaPage implements OnInit {
+
+    /* ── Formulario detalle ── */
+    formularioDetalle = crearFormularioDetalle();
+    camposFormularioDetalle = CAMPOS_FORMULARIO_DETALLE;
+    dialogoDetalleVisible = false;
+    cargandoDetalle = false;
+
+    /* ── Formulario de creación / edición ── */
+    formularioCola = crearFormularioCola();
+    camposFormulario = CAMPOS_FORMULARIO;
+
+    /* ── Búsqueda ── */
+    formularioBusqueda = crearFormularioBusqueda();
+    camposBusqueda = CAMPOS_BUSQUEDA;
+
+    /* ── Tabla colas ── */
+    colas: TableItem[] = [];
+    colaSeleccionada: TableItem | null = null;
+    cargando = false;
+    columnas = COLUMNAS_TABLA;
+
+    /* ── Tabla detalles ── */
+    columnasDetalle = COLUMNAS_TABLA_DETALLE;
+    detalles: TableItem[] = [];
+    cargandoDetalles = false;
+
+    /* ── Dialog ── */
+    dialogoVisible = false;
+    dialogoTitulo = 'Nueva Cola';
+    advertenciaBusqueda = '';
+
+    constructor(
+        private readonly colaServicio: ColaServicio,
+        private readonly sucursalServicio: SucursalServicio,
+        private readonly notificacion: NotificacionServicio
+    ) { }
+
+    ngOnInit(): void {
+        this.cargarSucursales();
+    }
+
+    /** Nombre de la cola padre que se muestra en el diálogo de nuevo detalle */
+    get nombreColaPadre(): string {
+        if (!this.colaSeleccionada) return '';
+        const nombre = this.colaSeleccionada['nombre'] as string;
+        const sucursal = this.colaSeleccionada['nombreSucursal'] as string;
+        return sucursal ? `${nombre}  —  ${sucursal}` : nombre;
+    }
+
+    /* ══════════════════════════════════════════
+       Carga de sucursales
+    ══════════════════════════════════════════ */
+    private async cargarSucursales(): Promise<void> {
+        try {
+            const opciones = await this.sucursalServicio.obtenerOpciones();
+
+            const campoFormulario = this.camposFormulario.find(f => f.name === 'idSucursal');
+            if (campoFormulario) campoFormulario.options = opciones;
+
+            const campoBusqueda = this.camposBusqueda.find(f => f.name === 'idSucursal');
+            if (campoBusqueda) campoBusqueda.options = opciones;
+        } catch (err) {
+            this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
+        }
+    }
+
+    /* ══════════════════════════════════════════
+       Dialog cola
+    ══════════════════════════════════════════ */
+    abrirNuevo(): void {
+        this.colaSeleccionada = null;
+        this.formularioCola.reset({ estado: 1 });
+        this.formularioCola.get('idSucursal')?.enable();
+        this.dialogoTitulo = 'Nueva Cola';
+        this.dialogoVisible = true;
+    }
+
+    abrirEditar(): void {
+        if (!this.colaSeleccionada) return;
+        this.dialogoTitulo = 'Editar Cola';
+        this.formularioCola.patchValue({
+            idSucursal: this.colaSeleccionada['idSucursal'] as number,
+            nombre: this.colaSeleccionada['nombre'] as string,
+            codigo: this.colaSeleccionada['codigo'] as string,
+            prioridad: this.colaSeleccionada['prioridad'] as number,
+            estado: this.colaSeleccionada['estado'] as number
+        });
+        this.formularioCola.get('idSucursal')?.disable();
+        this.dialogoVisible = true;
+    }
+
+    cerrarDialogo(): void {
+        this.dialogoVisible = false;
+        this.formularioCola.reset({ estado: 1 });
+    }
+
+    /* ══════════════════════════════════════════
+       Dialog detalle
+    ══════════════════════════════════════════ */
+    abrirNuevoDetalle(): void {
+        if (!this.colaSeleccionada) return;
+        this.formularioDetalle.reset({ estado: 1 });
+        this.dialogoDetalleVisible = true;
+    }
+
+    cerrarDialogoDetalle(): void {
+        this.dialogoDetalleVisible = false;
+        this.formularioDetalle.reset({ estado: 1 });
+    }
+
+    /* ══════════════════════════════════════════
+       CRUD — Cola
+    ══════════════════════════════════════════ */
+    async guardar(): Promise<void> {
+        if (this.formularioCola.invalid) {
+            this.formularioCola.markAllAsTouched();
+            this.notificacion.advertencia('Formulario incompleto', 'Revisa los campos obligatorios');
+            return;
+        }
+
+        const datos = this.formularioCola.getRawValue();
+        const dto: ColaRequestDTO = {
+            idSucursal: Number(datos.idSucursal),
+            nombre: datos.nombre ?? '',
+            codigo: datos.codigo ?? '',
+            prioridad: Number(datos.prioridad),
+            estado: Number(datos.estado)
+        };
+
+        try {
+            this.cargando = true;
+            const idExistente = this.colaSeleccionada
+                ? this.colaSeleccionada['id'] as number
+                : undefined;
+
+            await this.colaServicio.guardar(dto, idExistente);
+
+            this.notificacion.exito(
+                idExistente ? 'Cola modificada' : 'Cola creada',
+                idExistente
+                    ? `La cola "${dto.nombre}" fue actualizada correctamente`
+                    : `La cola "${dto.nombre}" fue creada correctamente`
+            );
+
+            this.cerrarDialogo();
+            await this.buscar();
+        } catch (err) {
+            this.notificacion.error('Error al guardar cola', extraerMensajeError(err));
+        } finally {
+            this.cargando = false;
+        }
+    }
+
+    /* ══════════════════════════════════════════
+       CRUD — Detalle
+    ══════════════════════════════════════════ */
+    async guardarDetalle(): Promise<void> {
+        if (this.formularioDetalle.invalid) {
+            this.formularioDetalle.markAllAsTouched();
+            this.notificacion.advertencia('Formulario incompleto', 'Revisa los campos obligatorios del detalle');
+            return;
+        }
+
+        const datos = this.formularioDetalle.getRawValue();
+        const dto: DetalleRequestDTO = {
+            nombre: datos.nombre ?? '',
+            codigo: datos.codigo ?? '',
+            estado: Number(datos.estado)
+        };
+
+        try {
+            this.cargandoDetalle = true;
+            const colaActualizada = await this.colaServicio.guardarDetalle(
+                this.colaSeleccionada!['id'] as number,
+                this.colaSeleccionada!['idSucursal'] as number,
+                dto
+            );
+
+            this.notificacion.exito('Detalle creado', `El detalle "${dto.nombre}" fue creado correctamente`);
+            this.cerrarDialogoDetalle();
+
+            // Refresca la tabla de detalles con la respuesta del backend
+            this.detalles = (colaActualizada.detalles ?? []).map(d => ({
+                idDetalle: d.idDetalle,
+                nombre: d.nombre,
+                codigo: d.codigo,
+                estado: d.estado
+            }));
+        } catch (err) {
+            this.notificacion.error('Error al guardar detalle', extraerMensajeError(err));
+        } finally {
+            this.cargandoDetalle = false;
+        }
+    }
+
+    /* ══════════════════════════════════════════
+       Búsqueda
+    ══════════════════════════════════════════ */
+    async buscar(): Promise<void> {
+        const filtro = this.formularioBusqueda.getRawValue();
+        const tieneNombre = !!filtro.nombre?.trim();
+        const tieneSucursal = filtro.idSucursal != null && filtro.idSucursal !== '';
+
+        if (!tieneNombre && !tieneSucursal) {
+            this.advertenciaBusqueda = 'Debe ingresar un nombre o seleccionar una sucursal';
+            return;
+        }
+
+        this.advertenciaBusqueda = '';
+        this.colaSeleccionada = null;
+        this.detalles = [];
+
+        try {
+            this.cargando = true;
+            const resultado = await this.colaServicio.buscar({
+                nombre: tieneNombre ? filtro.nombre!.trim() : undefined,
+                idSucursal: tieneSucursal ? Number(filtro.idSucursal) : undefined
+            });
+
+            this.colas = resultado.map(cola => ({
+                _uid: `${cola.id}_${cola.idSucursal}`,
+                id: cola.id,
+                codigo: cola.codigo,
+                nombre: cola.nombre,
+                prioridad: cola.prioridad,
+                estado: cola.estado,
+                idSucursal: cola.idSucursal,
+                nombreSucursal: cola.nombreSucursal
+            }));
+
+            if (this.colas.length === 0) {
+                this.notificacion.advertencia('Sin resultados', 'No se encontraron colas con los filtros ingresados');
+            }
+
+        } catch (err) {
+            this.notificacion.error('Error al buscar', extraerMensajeError(err));
+            this.colas = [];
+        } finally {
+            this.cargando = false;
+        }
+    }
+
+    limpiarBusqueda(): void {
+        this.formularioBusqueda.reset();
+        this.advertenciaBusqueda = '';
+        this.colas = [];
+        this.colaSeleccionada = null;
+        this.detalles = [];
+    }
+
+    /* ══════════════════════════════════════════
+       Selección — llama al back para traer detalles
+    ══════════════════════════════════════════ */
+    async seleccionarCola(item: TableItem): Promise<void> {
+        this.colaSeleccionada = item;
+        this.detalles = [];
+        this.cargandoDetalles = true;
+
+        try {
+            const colaConDetalles = await this.colaServicio.obtenerConDetalles(
+                item['id'] as number,
+                item['idSucursal'] as number
+            );
+
+            this.detalles = (colaConDetalles.detalles ?? []).map(d => ({
+                idDetalle: d.idDetalle,
+                nombre: d.nombre,
+                codigo: d.codigo,
+                estado: d.estado
+            }));
+        } catch (err) {
+            this.notificacion.error('Error', 'No se pudieron cargar los detalles de la cola');
+        } finally {
+            this.cargandoDetalles = false;
+        }
+    }
+}

@@ -1,0 +1,53 @@
+<p-toast position="top-right"></p-toast>
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Mantenimiento de Usuarios" page-header-title></app-page-title>
+    <ng-container page-header-actions>
+        <button pButton icon="pi pi-plus" label="Agregar" (click)="abrirNuevo()"
+            pTooltip="Crear nuevo usuario"></button>
+        <button pButton icon="pi pi-pencil" label="Editar" class="p-button-secondary p-button-outlined"
+            [disabled]="!usuarioSeleccionado" (click)="abrirEditar()"
+            pTooltip="Editar usuario seleccionado"></button>
+    </ng-container>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div page-content>
+        <!-- Sección: Búsqueda -->
+        <app-section id="sec-busqueda" title="Búsqueda">
+            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda" [columns]="3"
+                (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
+            </app-search-panel>
+            <p class="advertencia-busqueda" *ngIf="advertenciaBusqueda">
+                <i class="pi pi-exclamation-triangle"></i> {{ advertenciaBusqueda }}
+            </p>
+        </app-section>
+
+        <!-- Sección: Tabla -->
+        <app-section id="sec-tabla" title="Listado de Usuarios">
+            <app-table [items]="usuarios" [columns]="columnas" [isLoading]="cargando"
+                [selectedItem]="usuarioSeleccionado" emptyTitle="Sin usuarios registrados"
+                emptySubtitle="Usa la búsqueda para encontrar usuarios o presiona Agregar para crear uno."
+                (rowSelect)="seleccionarUsuario($event)">
+            </app-table>
+        </app-section>
+    </div>
+
+</app-page-layout>
+
+<!-- ═══ DIALOG: Crear / Editar ═══ -->
+<p-dialog [header]="dialogoTitulo" [(visible)]="dialogoVisible" [modal]="true" [closable]="true" [draggable]="false"
+    [style]="{ width: '42rem' }">
+
+    <app-form-panel [form]="formularioUsuario" [fields]="camposFormulario" [columns]="3"></app-form-panel>
+
+    <ng-template #footer>
+        <div class="dialog-footer">
+            <button pButton icon="pi pi-times" label="Cancelar" class="p-button-sm p-button-text"
+                (click)="cerrarDialogo()"></button>
+            <button pButton icon="pi pi-check" label="Guardar" class="p-button-sm" (click)="guardar()"
+                [loading]="cargando"></button>
+        </div>
+    </ng-template>
+
+</p-dialog>

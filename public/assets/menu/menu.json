@@ -1,0 +1,100 @@
+[
+  {
+    "codigo": 1,
+    "icon": "pi pi-fw pi-building",
+    "label": "General",
+    "orden": 1,
+    "perfiles": ["ADMIN"],
+    "items": [
+      {
+        "codigo": 2,
+        "icon": "pi pi-fw pi-map-marker",
+        "label": "Sucursal",
+        "orden": 1,
+        "perfiles": ["ADMIN"],
+        "routerLink": ["general/sucursal"]
+      },
+      {
+        "codigo": 3,
+        "icon": "pi pi-fw pi-sort-amount-down",
+        "label": "Cola",
+        "orden": 2,
+        "perfiles": ["ADMIN"],
+        "routerLink": ["general/cola"]
+      },
+      {
+        "codigo": 4,
+        "icon": "pi pi-fw pi-desktop",
+        "label": "Puesto",
+        "orden": 3,
+        "perfiles": ["ADMIN"],
+        "routerLink": ["general/puesto"]
+      },
+      {
+        "codigo": 5,
+        "icon": "pi pi-fw pi-link",
+        "label": "Asignación Puesto-Cola",
+        "orden": 4,
+        "perfiles": ["ADMIN"],
+        "routerLink": ["general/detallecolaxpuesto"]
+      },
+      {
+        "codigo": 6,
+        "icon": "pi pi-fw pi-users",
+        "label": "Usuarios",
+        "orden": 5,
+        "perfiles": ["ADMIN"],
+        "routerLink": ["general/usuario"]
+      },
+      {
+        "codigo": 7,
+        "icon": "pi pi-fw pi-sliders-h",
+        "label": "Configuraciones",
+        "orden": 6,
+        "perfiles": ["ADMIN"],
+        "routerLink": ["general/configuracion"]
+      }
+    ]
+  },
+  {
+    "codigo": 10,
+    "icon": "pi pi-fw pi-clock",
+    "label": "Turnos",
+    "orden": 2,
+    "perfiles": ["ADMIN", "MONITOR", "PUBLICO", "OPERADOR"],
+    "items": [
+      {
+        "codigo": 100,
+        "icon": "pi pi-fw pi-ticket",
+        "label": "Toma de Turno",
+        "orden": 1,
+        "perfiles": ["ADMIN", "MONITOR"],
+        "routerLink": ["turnos/toma-turno"]
+      },
+      {
+        "codigo": 101,
+        "icon": "pi pi-fw pi-plus-circle",
+        "label": "Sacar Turno",
+        "orden": 2,
+        "perfiles": ["ADMIN", "PUBLICO"],
+        "routerLink": ["turnos/seleccion-turno"]
+      },
+      {
+        "codigo": 102,
+        "icon": "pi pi-fw pi-user",
+        "label": "Operador",
+        "orden": 3,
+        "perfiles": ["ADMIN", "OPERADOR"],
+        "routerLink": ["turnos/operador"]
+      },
+      {
+        "codigo": 103,
+        "icon": "pi pi-fw pi-history",
+        "label": "Turnos Pasados",
+        "orden": 4,
+        "perfiles": ["ADMIN", "OPERADOR"],
+        "routerLink": ["turnos/turnos-pasados"]
+      }
+    ]
+  }
+]

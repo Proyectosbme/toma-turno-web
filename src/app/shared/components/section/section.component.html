@@ -1,0 +1,9 @@
+<div class="section-wrapper">
+  <div class="section-header" *ngIf="title">
+    <div class="section-title">{{ title }}</div>
+    <div class="section-actions">
+      <ng-content select="[section-actions]"></ng-content>
+    </div>
+  </div>
+  <ng-content></ng-content>
+</div>

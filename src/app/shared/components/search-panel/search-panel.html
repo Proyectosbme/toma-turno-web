@@ -1,0 +1,57 @@
+<div class="search-panel-wrapper">
+  <div class="search-actions">
+    <button
+      pButton
+      type="submit"
+      icon="pi pi-search"
+      class="p-button-text p-button-rounded"
+      pTooltip="Buscar"
+      tooltipPosition="top"
+      [disabled]="isLoading"
+      [loading]="isLoading"
+      aria-label="Buscar"
+      (click)="searchAction.emit()"
+    ></button>
+    <button
+      *ngIf="showClear"
+      pButton
+      type="button"
+      icon="pi pi-times"
+      class="p-button-text p-button-rounded"
+      severity="secondary"
+      pTooltip="Limpiar"
+      tooltipPosition="top"
+      [disabled]="isLoading"
+      (click)="clearAction.emit()"
+      aria-label="Limpiar"
+    ></button>
+  </div>
+  <form [formGroup]="form" class="search-grid" [ngStyle]="{'grid-template-columns': 'repeat(' + columns + ', 1fr)'}" (ngSubmit)="searchAction.emit()">
+    <ng-container *ngFor="let field of fields">
+      <div class="field">
+        <label [for]="field.name">{{ field.label }}</label>
+        <ng-container *ngIf="field.type === 'select' || field.options">
+          <select
+            [id]="field.name"
+            class="search-select"
+            [formControlName]="field.name"
+          >
+            <option value="">{{ field.placeholder || 'Selecciona una opción' }}</option>
+            <option *ngFor="let option of field.options" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </ng-container>
+        <ng-container *ngIf="(!field.type || field.type !== 'select') && !field.options">
+          <input
+            [id]="field.name"
+            [type]="field.type || 'text'"
+            pInputText
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder || ''"
+          />
+        </ng-container>
+      </div>
+    </ng-container>
+  </form>
+</div>

@@ -1,0 +1,10 @@
+<div class="flex align-items-center gap-2 ml-2">
+    <p-avatar [label]="iniciales" class="user-avatar" size="large" shape="circle"></p-avatar>
+    <div class="user-info hidden lg:flex flex-column">
+        <span class="user-nombre"><span class="user-label">Usuario: </span>{{ nombreCompleto }}</span>
+        <span class="user-sucursal"><span class="user-label">Sucursal: </span>{{ nombreSucursal }}</span>
+    </div>
+    <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
+    <button pButton icon="pi pi-angle-down" class="p-button-rounded p-button-text p-button-sm"
+        (click)="menu.toggle($event)"></button>
+</div>

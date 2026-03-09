@@ -1,0 +1,19 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.advertencia-busqueda {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #e67e22;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}

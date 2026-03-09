@@ -1,0 +1,241 @@
+<p-toast position="top-right"></p-toast>
+
+<div class="seleccion-turno">
+
+    <!-- ═══════════════════════════════════
+         SPINNER: cargando configuración
+    ════════════════════════════════════════ -->
+    <div *ngIf="cargandoConfig" class="spinner-container">
+        <p-progressSpinner strokeWidth="4" />
+    </div>
+
+    <ng-container *ngIf="!cargandoConfig">
+
+        <!-- ═══════════════════════════════════
+             PASO A: Escaneo de DUI (lector de barcode)
+        ════════════════════════════════════════ -->
+        <ng-container *ngIf="pasoActual === 'escaneo'">
+
+            <div class="titulo-seccion">
+                <h1>Identifícate</h1>
+                <p>Pasa el lector por el código de barras de tu DUI</p>
+            </div>
+
+            <div class="scan-lector-wrapper">
+                <i class="pi pi-credit-card scan-dui-icon"></i>
+                <p class="scan-instruccion">Pasa el lector por el código de barras de tu DUI</p>
+                <input
+                    type="text"
+                    [(ngModel)]="inputScanner"
+                    (keydown)="onScannerKeydown($event)"
+                    class="scanner-input-hidden"
+                    placeholder="Esperando lectura..."
+                    autofocus
+                />
+                <p class="scan-info">
+                    <i class="pi pi-spin pi-spinner"></i> Listo para escanear...
+                </p>
+            </div>
+
+            <div class="scan-actions">
+                <p-button
+                    label="Omitir"
+                    severity="secondary"
+                    [outlined]="true"
+                    icon="pi pi-arrow-right"
+                    iconPos="right"
+                    (onClick)="omitirEscaneo()"
+                />
+            </div>
+
+        </ng-container>
+
+        <!-- ═══════════════════════════════════
+             PASO B: Caso especial
+        ════════════════════════════════════════ -->
+        <ng-container *ngIf="pasoActual === 'especial'">
+            <div class="titulo-seccion">
+                <h1>Atención prioritaria</h1>
+                <p>¿Aplica alguna condición especial?</p>
+                <div *ngIf="duiData" class="dui-badge">
+                    <i class="pi pi-id-card"></i>
+                    <span><strong>DUI:</strong> {{ duiData.numero }}</span>
+                    <span *ngIf="duiData.apellidos"> &nbsp;|&nbsp; <strong>{{ duiData.apellidos }}</strong>, {{ duiData.nombres }}</span>
+                </div>
+            </div>
+
+            <div class="casos-especiales-grid">
+                <button class="caso-btn" [class.caso-btn--activo]="tipoCasoEspecial === 1"
+                    (click)="seleccionarCasoEspecial(tipoCasoEspecial === 1 ? null : 1)">
+                    <i class="pi pi-users caso-btn__icono"></i>
+                    <span class="caso-btn__label">Tercera Edad</span>
+                    <span *ngIf="duiData?.fechaNacimiento && calcularEdad(duiData!.fechaNacimiento) >= 60"
+                          class="caso-btn__tag">Auto-detectado</span>
+                </button>
+                <button class="caso-btn" [class.caso-btn--activo]="tipoCasoEspecial === 2"
+                    (click)="seleccionarCasoEspecial(tipoCasoEspecial === 2 ? null : 2)">
+                    <i class="pi pi-heart caso-btn__icono"></i>
+                    <span class="caso-btn__label">Embarazada</span>
+                </button>
+                <button class="caso-btn" [class.caso-btn--activo]="tipoCasoEspecial === 3"
+                    (click)="seleccionarCasoEspecial(tipoCasoEspecial === 3 ? null : 3)">
+                    <i class="pi pi-accessibility caso-btn__icono"></i>
+                    <span class="caso-btn__label">Incapacidad</span>
+                </button>
+                <button class="caso-btn" [class.caso-btn--activo]="tipoCasoEspecial === 4"
+                    (click)="seleccionarCasoEspecial(tipoCasoEspecial === 4 ? null : 4)">
+                    <i class="pi pi-star caso-btn__icono"></i>
+                    <span class="caso-btn__label">Otros</span>
+                </button>
+                <button class="caso-btn caso-btn--ninguno"
+                    [class.caso-btn--activo]="tipoCasoEspecial == null || tipoCasoEspecial === 0"
+                    (click)="seleccionarCasoEspecial(null)">
+                    <i class="pi pi-minus-circle caso-btn__icono"></i>
+                    <span class="caso-btn__label">Ninguno</span>
+                </button>
+            </div>
+
+            <div class="scan-actions">
+                <p-button
+                    label="Continuar"
+                    icon="pi pi-arrow-right"
+                    iconPos="right"
+                    (onClick)="confirmarCasoEspecial()"
+                />
+            </div>
+        </ng-container>
+
+        <!-- ═══════════════════════════════════
+             PASO C: Selección de cola / detalle
+        ════════════════════════════════════════ -->
+        <ng-container *ngIf="pasoActual === 'colas' && !turnoGenerado">
+
+            <div *ngIf="cargandoColas" class="spinner-container">
+                <p-progressSpinner strokeWidth="4" />
+            </div>
+
+            <ng-container *ngIf="!cargandoColas">
+                <div class="titulo-seccion">
+                    <h1>Toma tu turno</h1>
+                    <p>Selecciona el tipo de atención</p>
+                    <div *ngIf="duiData" class="dui-badge">
+                        <i class="pi pi-id-card"></i>
+                        <span><strong>DUI:</strong> {{ duiData.numero }}</span>
+                        <span *ngIf="duiData.apellidos"> &nbsp;|&nbsp; <strong>{{ duiData.apellidos }}</strong>, {{ duiData.nombres }}</span>
+                        <span *ngIf="duiData.fechaNacimiento"> &nbsp;|&nbsp; Nac: {{ duiData.fechaNacimiento }}</span>
+                    </div>
+                </div>
+
+                <div class="colas-grid">
+                    <p-button
+                        *ngFor="let cola of colas"
+                        [label]="cola.nombre"
+                        [severity]="colaSeleccionada?.id === cola.id && colaSeleccionada?.idSucursal === cola.idSucursal ? 'primary' : 'secondary'"
+                        size="large"
+                        (onClick)="seleccionarCola(cola)"
+                        [disabled]="cargandoDetalles || cargandoTurno"
+                        styleClass="cola-btn"
+                    />
+                </div>
+
+                <div *ngIf="cargandoDetalles" class="spinner-container">
+                    <p-progressSpinner strokeWidth="4" />
+                    <span class="spinner-label">Cargando opciones...</span>
+                </div>
+
+                <div *ngIf="cargandoTurno" class="spinner-container">
+                    <p-progressSpinner strokeWidth="4" />
+                    <span class="spinner-label">Generando turno...</span>
+                </div>
+
+                <ng-container *ngIf="detalles.length > 0 && !cargandoDetalles">
+                    <div class="titulo-seccion subtitulo">
+                        <p>Selecciona la sub-categoría</p>
+                    </div>
+                    <div class="detalles-grid">
+                        <p-button
+                            *ngFor="let detalle of detalles"
+                            [label]="detalle.nombre"
+                            [severity]="detalleSeleccionado?.idDetalle === detalle.idDetalle ? 'primary' : 'secondary'"
+                            (onClick)="seleccionarDetalle(detalle)"
+                            [disabled]="cargandoTurno"
+                            styleClass="detalle-btn"
+                        />
+                    </div>
+                </ng-container>
+            </ng-container>
+
+        </ng-container>
+
+        <!-- ═══════════════════════════════════
+             PASO C: Ticket generado
+        ════════════════════════════════════════ -->
+        <ng-container *ngIf="turnoGenerado">
+            <div class="ticket-container">
+                <div class="ticket-icono">
+                    <i class="pi pi-check-circle"></i>
+                </div>
+                <h2 class="ticket-label">Tu turno es</h2>
+                <div class="ticket-card">
+                    <span class="codigo-turno">{{ turnoGenerado.codigoTurno }}</span>
+                </div>
+
+                <div class="ticket-info">
+                    <div class="ticket-info-row">
+                        <span class="ticket-info-label">Servicio</span>
+                        <span class="ticket-info-valor">{{ colaSeleccionada?.nombre }}</span>
+                    </div>
+                    <div *ngIf="detalleSeleccionado" class="ticket-info-row">
+                        <span class="ticket-info-label">Tipo</span>
+                        <span class="ticket-info-valor">{{ detalleSeleccionado.nombre }}</span>
+                    </div>
+                    <ng-container *ngIf="duiData">
+                        <div class="ticket-info-row">
+                            <span class="ticket-info-label">DUI</span>
+                            <span class="ticket-info-valor">{{ duiData.numero }}</span>
+                        </div>
+                        <div *ngIf="duiData.apellidos" class="ticket-info-row">
+                            <span class="ticket-info-label">Apellidos</span>
+                            <span class="ticket-info-valor">{{ duiData.apellidos }}</span>
+                        </div>
+                        <div *ngIf="duiData.nombres" class="ticket-info-row">
+                            <span class="ticket-info-label">Nombres</span>
+                            <span class="ticket-info-valor">{{ duiData.nombres }}</span>
+                        </div>
+                        <div *ngIf="duiData.fechaNacimiento" class="ticket-info-row">
+                            <span class="ticket-info-label">Nacimiento</span>
+                            <span class="ticket-info-valor">{{ duiData.fechaNacimiento }}</span>
+                        </div>
+                    </ng-container>
+                    <div class="ticket-info-row">
+                        <span class="ticket-info-label">Fecha</span>
+                        <span class="ticket-info-valor">{{ turnoGenerado.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                </div>
+
+                <p class="ticket-espere">Por favor espere a ser llamado</p>
+
+                <div class="ticket-acciones">
+                    <p-button
+                        label="Reimprimir"
+                        severity="secondary"
+                        [outlined]="true"
+                        icon="pi pi-print"
+                        (onClick)="generarPdfTicket()"
+                    />
+                    <p-button
+                        label="Tomar otro turno"
+                        severity="secondary"
+                        [outlined]="true"
+                        size="large"
+                        icon="pi pi-refresh"
+                        (onClick)="nuevoTurno()"
+                        styleClass="btn-nuevo"
+                    />
+                </div>
+            </div>
+        </ng-container>
+
+    </ng-container>
+
+</div>

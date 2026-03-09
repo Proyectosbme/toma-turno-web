@@ -1,0 +1,9 @@
+<p-tree
+    [value]="treeNodes"
+    selectionMode="single"
+    [(selection)]="selectedNode"
+    (onNodeSelect)="onNodeSelect($event)"
+    [metaKeySelection]="false"
+    styleClass="layout-menu-tree w-full border-0"
+>
+</p-tree>

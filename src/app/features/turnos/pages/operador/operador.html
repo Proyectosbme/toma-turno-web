@@ -1,0 +1,275 @@
+<p-toast />
+<p-confirmDialog />
+
+<ng-container *ngIf="!cargandoInicial; else loadingInicial">
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Operador" page-header-title></app-page-title>
+    <ng-container page-header-actions>
+        <div class="header-puesto-info">
+            <span class="puesto-label">{{ nombrePuesto || 'Puesto ' + idPuesto }}</span>
+            <span class="colas-titulo">Colas asignadas:</span>
+            <p-tag
+                *ngFor="let cola of colasAsignadas"
+                [value]="cola.nombreDetalle || cola.nombreCola"
+                severity="info"
+                styleClass="cola-tag"
+            />
+            <span *ngIf="colasAsignadas.length === 0" class="sin-colas">Sin colas asignadas</span>
+        </div>
+        <p-button
+            icon="pi pi-refresh"
+            [rounded]="true"
+            severity="secondary"
+            [text]="true"
+            pTooltip="Refrescar turnos"
+            (onClick)="refrescarTurnos()"
+            [disabled]="cargando"
+        />
+    </ng-container>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div page-content class="operador-body">
+
+        <!-- Barra de estadísticas del día -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <i class="pi pi-clock stat-icon"></i>
+                <span class="stat-valor">{{ turnosEnEspera.length }}</span>
+                <span class="stat-label">En espera</span>
+            </div>
+            <div class="stat-item stat-verde">
+                <i class="pi pi-check-circle stat-icon"></i>
+                <span class="stat-valor">{{ turnosFinalizados.length }}</span>
+                <span class="stat-label">Atendidos hoy</span>
+            </div>
+            <div class="stat-item stat-azul">
+                <i class="pi pi-chart-bar stat-icon"></i>
+                <span class="stat-valor">{{ promedioAtencionTexto() }}</span>
+                <span class="stat-label">Promedio atención</span>
+            </div>
+            @if (turnoActual) {
+                <div class="stat-item stat-primario">
+                    <i class="pi pi-stopwatch stat-icon"></i>
+                    <span class="stat-valor mono">{{ tiempoAtencion(turnoActual.fechaLlamada ?? turnoActual.fechaCreacion) }}</span>
+                    <span class="stat-label">Tiempo en atención</span>
+                </div>
+            } @else {
+                <div class="stat-item stat-apagado">
+                    <i class="pi pi-stopwatch stat-icon"></i>
+                    <span class="stat-valor mono">—:—</span>
+                    <span class="stat-label">Tiempo en atención</span>
+                </div>
+            }
+        </div>
+
+        <!-- Panel turno actual -->
+        <div class="panel-actual">
+            <p-card styleClass="card-actual">
+                <ng-template pTemplate="header">
+                    <div class="card-header-label">ATENDIENDO</div>
+                </ng-template>
+
+                <div class="turno-actual-contenido">
+                    <ng-container *ngIf="turnoActual; else sinTurno">
+                        <div class="codigo-actual">{{ turnoActual.codigoTurno }}</div>
+                        <div class="cola-actual">{{ nombreColaPorId(turnoActual.idCola) }}</div>
+                        <div class="timer-atencion">
+                            <i class="pi pi-stopwatch"></i>
+                            {{ tiempoAtencion(turnoActual.fechaLlamada ?? turnoActual.fechaCreacion) }}
+                        </div>
+                        <div class="meta-turno">
+                            <span pTooltip="Hora en que el cliente sacó el turno">
+                                <i class="pi pi-ticket"></i> Turno desde {{ horaDesde(turnoActual.fechaCreacion) }}
+                            </span>
+                            <span *ngIf="turnoActual.fechaLlamada" pTooltip="Tiempo que esperó antes de ser llamado">
+                                <i class="pi pi-hourglass"></i> Esperó {{ tiempoEsperantesTexto(turnoActual) }}
+                            </span>
+                        </div>
+                    </ng-container>
+                    <ng-template #sinTurno>
+                        <div class="sin-turno-actual">
+                            <i class="pi pi-inbox"></i>
+                            <span>Sin turno activo</span>
+                        </div>
+                    </ng-template>
+                </div>
+
+                <ng-template pTemplate="footer">
+                    <div class="footer-acciones">
+
+                        <!-- Botones de acción sobre el turno actual (solo si hay turno) -->
+                        <div class="acciones-turno" *ngIf="turnoActual">
+                            <p-button
+                                label="Volver a llamar"
+                                icon="pi pi-volume-up"
+                                severity="secondary"
+                                [outlined]="true"
+                                (onClick)="volverALlamar()"
+                                [disabled]="cargando"
+                            />
+                            <p-button
+                                label="Reasignar"
+                                icon="pi pi-arrow-right-arrow-left"
+                                severity="warn"
+                                [outlined]="true"
+                                (onClick)="abrirReasignar()"
+                                [disabled]="cargando || cargandoReasignar"
+                            />
+                            <p-button
+                                label="Finalizar"
+                                icon="pi pi-check"
+                                severity="success"
+                                (onClick)="finalizar()"
+                                [disabled]="cargando"
+                            />
+                            <p-button
+                                label="No llegó / Saltar"
+                                icon="pi pi-times"
+                                severity="danger"
+                                [outlined]="true"
+                                (onClick)="saltarTurno()"
+                                [disabled]="cargando"
+                            />
+                        </div>
+
+                        <!-- Botón principal siempre visible -->
+                        <p-button
+                            label="LLAMAR SIGUIENTE TURNO"
+                            icon="pi pi-bell"
+                            severity="success"
+                            size="large"
+                            [disabled]="cargando || turnosEnEspera.length === 0"
+                            (onClick)="llamarSiguiente()"
+                            styleClass="btn-llamar-principal"
+                        />
+
+                    </div>
+                </ng-template>
+            </p-card>
+        </div>
+
+        <!-- Panel en espera -->
+        <div class="panel-espera">
+            <p-card styleClass="card-espera">
+                <ng-template pTemplate="header">
+                    <div class="card-header-label">
+                        EN ESPERA
+                        <p-badge
+                            [value]="turnosEnEspera.length.toString()"
+                            severity="danger"
+                            *ngIf="turnosEnEspera.length > 0"
+                        />
+                    </div>
+                </ng-template>
+
+                <div class="lista-espera">
+                    <div *ngIf="turnosEnEspera.length === 0" class="sin-espera">
+                        <i class="pi pi-check-circle"></i>
+                        <span>Sin turnos en espera</span>
+                    </div>
+                    <div
+                        *ngFor="let turno of turnosEnEspera; let i = index"
+                        class="turno-espera-item"
+                        [class.primero]="i === 0"
+                        [class.aviso]="tiempoEsperaMin(turno.fechaCreacion) >= 10 && tiempoEsperaMin(turno.fechaCreacion) < 20"
+                        [class.urgente]="tiempoEsperaMin(turno.fechaCreacion) >= 20"
+                        [pTooltip]="'Esperando desde las ' + horaDesde(turno.fechaCreacion)"
+                    >
+                        <span class="espera-numero">{{ i + 1 }}</span>
+                        <span class="espera-codigo">{{ turno.codigoTurno }}</span>
+                        <span class="espera-cola">{{ nombreColaPorId(turno.idCola) }}</span>
+                        <div class="espera-tiempo">
+                            <span class="espera-hora">{{ horaDesde(turno.fechaCreacion) }}</span>
+                            <span class="espera-espera"
+                                [class.texto-aviso]="tiempoEsperaMin(turno.fechaCreacion) >= 10 && tiempoEsperaMin(turno.fechaCreacion) < 20"
+                                [class.texto-urgente]="tiempoEsperaMin(turno.fechaCreacion) >= 20">
+                                {{ tiempoEsperaTexto(turno.fechaCreacion) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+
+        <!-- Spinner overlay -->
+        <div class="cargando-overlay" *ngIf="cargando">
+            <p-progressSpinner strokeWidth="4" />
+        </div>
+
+    </div>
+
+</app-page-layout>
+
+<!-- ═══ DIÁLOGO REASIGNAR ═══ -->
+<p-dialog
+    [(visible)]="mostrarDialogoReasignar"
+    [header]="'Reasignar turno ' + (turnoActual?.codigoTurno ?? '')"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [style]="{ width: '420px' }"
+>
+    <div class="reasignar-dialog-content">
+        <!-- Step 1: select queue -->
+        <p class="reasignar-titulo">Seleccione la cola destino:</p>
+        <div class="reasignar-colas">
+            <p-button
+                *ngFor="let cola of colasReasignar"
+                [label]="cola.nombre"
+                [outlined]="colaReasignarSeleccionada?.id !== cola.id"
+                severity="primary"
+                styleClass="reasignar-cola-btn"
+                (onClick)="seleccionarColaReasignar(cola)"
+            />
+        </div>
+
+        <!-- Step 2: select detail if needed -->
+        <ng-container *ngIf="colaReasignarSeleccionada && detallesReasignar.length > 0">
+            <p class="reasignar-titulo" style="margin-top: 1rem;">Seleccione el tipo:</p>
+            <div class="reasignar-colas">
+                <p-button
+                    *ngFor="let det of detallesReasignar"
+                    [label]="det.nombre"
+                    [outlined]="detalleReasignarSeleccionado?.idDetalle !== det.idDetalle"
+                    severity="secondary"
+                    styleClass="reasignar-cola-btn"
+                    (onClick)="detalleReasignarSeleccionado = det"
+                />
+            </div>
+        </ng-container>
+
+        <!-- Info: priority notice -->
+        <div class="reasignar-aviso" *ngIf="colaReasignarSeleccionada">
+            <i class="pi pi-info-circle"></i>
+            El turno se insertará con prioridad al inicio de la cola destino.
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            label="Cancelar"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="mostrarDialogoReasignar = false"
+        />
+        <p-button
+            label="Confirmar reasignación"
+            icon="pi pi-check"
+            severity="warn"
+            [loading]="cargandoReasignar"
+            [disabled]="!colaReasignarSeleccionada || (detallesReasignar.length > 0 && !detalleReasignarSeleccionado)"
+            (onClick)="confirmarReasignar()"
+        />
+    </ng-template>
+</p-dialog>
+
+</ng-container>
+
+<ng-template #loadingInicial>
+    <div class="loading-inicial">
+        <p-progressSpinner strokeWidth="4" />
+        <span>Cargando puesto...</span>
+    </div>
+</ng-template>

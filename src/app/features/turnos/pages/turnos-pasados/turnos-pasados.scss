@@ -1,0 +1,99 @@
+.header-info {
+    .subtitulo-header {
+        font-size: 0.85rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+.turnos-pasados-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.acciones-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .total-label {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+/* ── Empty state ── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 3rem 1rem;
+    color: var(--text-color-secondary);
+
+    i {
+        font-size: 2.5rem;
+        opacity: 0.4;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+}
+
+/* ── Tabla ── */
+.turnos-tabla {
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-header {
+    display: grid;
+    grid-template-columns: 110px 1fr 120px 130px 120px;
+    padding: 0.6rem 1rem;
+    background: var(--surface-100);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    gap: 0.5rem;
+}
+
+.tabla-fila {
+    display: grid;
+    grid-template-columns: 110px 1fr 120px 130px 120px;
+    padding: 0.75rem 1rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-top: 1px solid var(--surface-border);
+    transition: background 0.15s;
+
+    &:hover {
+        background: var(--surface-50);
+    }
+
+    &.fila-traslado {
+        background: color-mix(in srgb, var(--yellow-50) 40%, transparent);
+    }
+}
+
+.codigo-turno {
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: var(--primary-color);
+}
+
+.nombre-cola {
+    font-size: 0.875rem;
+    color: var(--text-color);
+}
+
+.hora-llamada {
+    font-size: 0.875rem;
+    font-family: monospace;
+    color: var(--text-color-secondary);
+}

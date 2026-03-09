@@ -1,0 +1,101 @@
+<p-toast position="top-right"></p-toast>
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Mantenimiento de Cola" page-header-title></app-page-title>
+    <ng-container page-header-actions>
+        <button pButton icon="pi pi-plus" label="Agregar" (click)="abrirNuevo()" pTooltip="Crear nueva cola"></button>
+        <button pButton icon="pi pi-pencil" label="Editar" class="p-button-secondary p-button-outlined"
+            [disabled]="!colaSeleccionada" (click)="abrirEditar()" pTooltip="Editar cola seleccionada"></button>
+    </ng-container>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div page-content>
+
+        <!-- Sección: Búsqueda -->
+        <app-section id="sec-busqueda" title="Búsqueda">
+            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda" [columns]="2"
+                (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
+            </app-search-panel>
+            <small *ngIf="advertenciaBusqueda" class="search-warning">
+                <i class="pi pi-exclamation-triangle"></i> {{ advertenciaBusqueda }}
+            </small>
+        </app-section>
+
+        <!-- Sección: Tabla -->
+        <app-section id="sec-tabla" title="Listado de Colas">
+            <app-table [items]="colas" [columns]="columnas" [isLoading]="cargando" [selectedItem]="colaSeleccionada"
+                dataKey="_uid"
+                emptyTitle="Sin colas registradas" emptySubtitle="Presiona Agregar para crear la primera cola."
+                (rowSelect)="seleccionarCola($event)">
+            </app-table>
+        </app-section>
+
+
+        <!-- Sección: Detalle de Cola -->
+        <app-section id="sec-detalle" title="Detalle de Cola">
+
+            <div class="detalle-header">
+                <span *ngIf="colaSeleccionada" class="detalle-subtitulo">
+                    <i class="pi pi-list"></i>
+                    Cola: <strong>{{ colaSeleccionada['nombre'] }}</strong>
+                </span>
+                <button pButton icon="pi pi-plus" label="Agregar Detalle" class="p-button-sm"
+                    [disabled]="!colaSeleccionada" pTooltip="Seleccione una cola primero" (click)="abrirNuevoDetalle()">
+                </button>
+            </div>
+
+            <app-table [items]="detalles" [columns]="columnasDetalle" [isLoading]="cargandoDetalles"
+                emptyTitle="Sin detalles" emptySubtitle="Seleccione una cola para ver sus detalles.">
+            </app-table>
+
+        </app-section>
+
+    </div>
+
+</app-page-layout>
+
+<!-- ═══ DIALOG: Crear / Editar ═══ -->
+<p-dialog [header]="dialogoTitulo" [(visible)]="dialogoVisible" [modal]="true" [closable]="true" [draggable]="false"
+    [style]="{ width: '36rem' }">
+
+    <app-form-panel [form]="formularioCola" [fields]="camposFormulario" [columns]="2"></app-form-panel>
+
+    <ng-template #footer>
+        <div class="dialog-footer">
+            <button pButton icon="pi pi-times" label="Cancelar" class="p-button-sm p-button-text"
+                (click)="cerrarDialogo()"></button>
+            <button pButton icon="pi pi-check" label="Guardar" class="p-button-sm" (click)="guardar()"
+                [loading]="cargando"></button>
+        </div>
+    </ng-template>
+
+</p-dialog>
+
+
+<!-- ═══ DIALOG: Crear Detalle ═══ -->
+<p-dialog header="Nuevo Detalle" [(visible)]="dialogoDetalleVisible" [modal]="true" [closable]="true"
+    [draggable]="false" [style]="{ width: '32rem' }">
+
+    <!-- ── Cola padre — solo lectura ── -->
+    <div class="cola-padre-info">
+        <span class="cola-padre-label">
+            <i class="pi pi-sitemap"></i> Cola
+        </span>
+        <span class="cola-padre-valor">
+            {{ nombreColaPadre }}
+        </span>
+    </div>
+    <app-form-panel [form]="formularioDetalle" [fields]="camposFormularioDetalle" [columns]="1">
+    </app-form-panel>
+
+    <ng-template #footer>
+        <div class="dialog-footer">
+            <button pButton icon="pi pi-times" label="Cancelar" class="p-button-sm p-button-text"
+                (click)="cerrarDialogoDetalle()"></button>
+            <button pButton icon="pi pi-check" label="Guardar" class="p-button-sm" (click)="guardarDetalle()"
+                [loading]="cargandoDetalle"></button>
+        </div>
+    </ng-template>
+
+</p-dialog>

@@ -1,0 +1,94 @@
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Monitor de Turnos" page-header-title></app-page-title>
+    <ng-container page-header-actions>
+
+        <!-- Botón activar sonido: requerido en móviles (iOS/Android bloquean audio sin gesto) -->
+        <ng-container *ngIf="audioSoportado">
+            <button *ngIf="!audioActivado" class="btn-activar-audio" (click)="activarAudio()">
+                <i class="pi pi-volume-off"></i>
+                Activar sonido
+            </button>
+            <span *ngIf="audioActivado" class="audio-activo-badge">
+                <i class="pi pi-volume-up"></i>
+                Sonido activo
+            </span>
+        </ng-container>
+
+        <span class="monitor-badge">
+            <i class="pi pi-circle-fill" style="color: #22c55e; font-size: 0.6rem;"></i>
+            En vivo
+        </span>
+    </ng-container>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div page-content class="monitor-content">
+
+        <div class="monitor-layout">
+
+            <!-- ══ LADO IZQUIERDO: lista ══ -->
+            <div class="panel-lista">
+
+                <div class="lista-header">
+                    <span class="lista-titulo">Atención en ventanilla</span>
+                </div>
+
+                <div class="lista-subheader">
+                    <span class="col-turno">Turno</span>
+                    <span class="col-puesto">Llamada</span>
+                    <span class="col-hora">Hora</span>
+                    <span class="col-estado">Estado</span>
+                </div>
+
+                <div class="lista-body">
+                    <div
+                        *ngFor="let fila of filas"
+                        class="fila-turno"
+                        [class.fila-llamado]="fila.estado === 2"
+                        [class.fila-finalizado]="fila.estado === 4"
+                    >
+                        <span class="col-turno fila-codigo">{{ fila.codigoTurno }}</span>
+                        <span class="col-puesto">{{ fila.nombreLlamada ?? '—' }}</span>
+                        <span class="col-hora">{{ fila.hora }}</span>
+                        <span class="col-estado">
+                            <span class="estado-badge"
+                                [class.badge-llamado]="fila.estado === 2"
+                                [class.badge-finalizado]="fila.estado === 4">
+                                {{ fila.estado === 2 ? 'En atención' : 'Finalizado' }}
+                            </span>
+                        </span>
+                    </div>
+
+                    <div *ngIf="filas.length === 0" class="sin-filas">
+                        <i class="pi pi-inbox"></i>
+                        <span>Sin turnos hoy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ LADO DERECHO: turno destacado ══ -->
+            <div class="panel-destacado">
+
+                <div class="destacado-card" [class.destacado-activo]="turnoDestacado">
+                    <ng-container *ngIf="turnoDestacado; else sinDestacado">
+                        <div class="destacado-accion">PASAR</div>
+                        <div class="destacado-turno-etiqueta">Turno</div>
+                        <div class="destacado-codigo">{{ turnoDestacado.codigoTurno }}</div>
+                        <div class="destacado-puesto" *ngIf="turnoDestacado.nombreLlamada">
+                            Pasa a <strong>{{ turnoDestacado.nombreLlamada }}</strong>
+                        </div>
+                        <div class="destacado-hora">{{ hora(turnoDestacado.fechaLlamada ?? turnoDestacado.fechaCreacion) }}</div>
+                    </ng-container>
+                    <ng-template #sinDestacado>
+                        <i class="pi pi-clock sin-llamado-icon"></i>
+                        <span class="sin-llamado-texto">En espera</span>
+                    </ng-template>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</app-page-layout>

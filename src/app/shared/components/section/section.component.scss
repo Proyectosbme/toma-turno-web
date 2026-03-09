@@ -1,0 +1,39 @@
+.section-wrapper {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04);
+    padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+    margin-bottom: 1.25rem;
+    transition: background 0.2s;
+    color: var(--text-color);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.section-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.section-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+:host-context(.app-dark) .section-wrapper {
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.28);
+}

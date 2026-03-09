@@ -1,0 +1,20 @@
+{
+    "/api": {
+        "target": "http://192.168.1.132:8085",
+        "secure": false,
+        "changeOrigin": true,
+        "pathRewrite": { "^/api": "" }
+    },
+    "/notifications": {
+        "target": "http://192.168.1.132:8085",
+        "ws": true,
+        "secure": false,
+        "changeOrigin": true
+    },
+    "/ws-turnos": {
+        "target": "http://192.168.1.132:8085",
+        "ws": true,
+        "secure": false,
+        "pathRewrite": { "^/ws-turnos": "/turnos" }
+    }
+}

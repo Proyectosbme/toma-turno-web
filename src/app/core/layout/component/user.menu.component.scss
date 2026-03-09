@@ -1,0 +1,27 @@
+.user-avatar {
+    cursor: pointer;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    .user-nombre {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-color);
+        white-space: nowrap;
+
+        .user-label {
+            font-weight: 400;
+            color: var(--text-color-secondary);
+        }
+    }
+
+    .user-sucursal {
+        font-size: 0.75rem;
+        color: var(--text-color-secondary);
+        white-space: nowrap;
+    }
+}

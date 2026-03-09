@@ -1,0 +1,86 @@
+<p-toast></p-toast>
+
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Turnos Pasados" page-header-title></app-page-title>
+
+    <ng-container page-header-actions>
+        <div class="header-info">
+            <span class="subtitulo-header">Turnos del día · tus colas asignadas</span>
+        </div>
+    </ng-container>
+
+    <!-- ═══ CONTENIDO ═══ -->
+    <div page-content class="turnos-pasados-container">
+
+        <!-- Barra de acciones -->
+        <div class="acciones-bar">
+            <button pButton icon="pi pi-refresh" label="Actualizar"
+                class="p-button-outlined p-button-sm"
+                [loading]="cargando"
+                (click)="cargar()">
+            </button>
+            <span class="total-label">{{ turnos.length }} turno{{ turnos.length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        <!-- Sin puesto -->
+        <div *ngIf="!idPuesto" class="empty-state">
+            <i class="pi pi-exclamation-circle"></i>
+            <p>No tienes un puesto asignado.</p>
+        </div>
+
+        <!-- Sin colas -->
+        <div *ngIf="idPuesto && colasAsignadas.length === 0 && !cargando" class="empty-state">
+            <i class="pi pi-inbox"></i>
+            <p>No tienes colas asignadas.</p>
+        </div>
+
+        <!-- Lista vacía -->
+        <div *ngIf="idPuesto && colasAsignadas.length > 0 && turnos.length === 0 && !cargando" class="empty-state">
+            <i class="pi pi-clock"></i>
+            <p>No hay turnos procesados hoy en tus colas.</p>
+        </div>
+
+        <!-- Tabla de turnos -->
+        <div *ngIf="turnos.length > 0" class="turnos-tabla">
+            <div class="tabla-header">
+                <span>Turno</span>
+                <span>Cola</span>
+                <span>Hora llamada</span>
+                <span>Estado</span>
+                <span>Acción</span>
+            </div>
+
+            <div *ngFor="let t of turnos" class="tabla-fila" [class.fila-traslado]="t.estado === 3">
+                <span class="codigo-turno">{{ t.codigoTurno }}</span>
+
+                <span class="nombre-cola">{{ nombreCola(t.idCola) }}</span>
+
+                <span class="hora-llamada">
+                    {{ t.fechaLlamada | date:'HH:mm:ss' }}
+                </span>
+
+                <span>
+                    <p-tag
+                        [value]="etiquetaEstado(t.estado)"
+                        [severity]="severidadEstado(t.estado)">
+                    </p-tag>
+                </span>
+
+                <span>
+                    <button pButton
+                        icon="pi pi-volume-up"
+                        label="Llamar"
+                        class="p-button-sm p-button-outlined"
+                        [pTooltip]="'Volver a llamar este turno'"
+                        [loading]="llamandoId === t.id"
+                        [disabled]="llamandoId !== null"
+                        (click)="rellamar(t)">
+                    </button>
+                </span>
+            </div>
+        </div>
+
+    </div>
+</app-page-layout>

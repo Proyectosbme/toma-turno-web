@@ -1,0 +1,42 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.search-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #e67e22;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+
+.detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.detalle-subtitulo {
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+
+    strong {
+        color: var(--text-color);
+    }
+}

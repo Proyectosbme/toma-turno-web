@@ -1,0 +1,78 @@
+<div class="table-wrapper">
+  <p-table
+    [value]="items"
+    [loading]="isLoading"
+    [sortField]="'id'"
+    [sortOrder]="1"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [paginatorDropdownAppendTo]="'body'"
+    [tableStyle]="{ 'min-width': '40rem' }"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <ng-container *ngIf="hasCustomColumns">
+          <th *ngFor="let col of columns" scope="col" [style.width]="col.width || 'auto'"
+              [pSortableColumn]="col.sortable !== false ? col.field : undefined">
+            {{ col.header }}
+            <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
+          </th>
+        </ng-container>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-item>
+      <tr
+        tabindex="0"
+        (click)="rowSelect.emit(item)"
+        (keydown.enter)="rowSelect.emit(item)"
+        (keydown.space)="rowSelect.emit(item); $event.preventDefault()"
+        [ngClass]="{ 'row-selected': isSelected(item) }"
+      >
+        <ng-container *ngIf="!hasCustomColumns">
+          <td>
+            <div class="item-name">{{ item.nombre }}</div>
+            <div class="item-meta" *ngIf="item.meta || metaText">{{ item.meta || metaText }}</div>
+          </td>
+        </ng-container>
+
+        <ng-container *ngIf="hasCustomColumns">
+          <td *ngFor="let col of columns">
+            <ng-container [ngSwitch]="col.type">
+
+              <ng-container *ngSwitchCase="'date'">
+                {{ item[col.field] ? (item[col.field] | date:'dd/MM/yyyy') : '-' }}
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'number'">
+                {{ item[col.field] !== undefined && item[col.field] !== null ? (item[col.field] | number) : '-' }}
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'status'">
+                <span class="status-badge" [ngClass]="item[col.field] == 1 ? 'status-active' : 'status-inactive'">
+                  <span class="status-dot"></span>
+                  {{ item[col.field] == 1 ? 'Activo' : 'Inactivo' }}
+                </span>
+              </ng-container>
+
+              <ng-container *ngSwitchDefault>
+                {{ item[col.field] ?? '-' }}
+              </ng-container>
+
+            </ng-container>
+          </td>
+        </ng-container>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="totalColspan">
+          <app-empty-state [title]="emptyTitle" [subtitle]="emptySubtitle"></app-empty-state>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

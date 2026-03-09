@@ -1,0 +1,522 @@
+/* ═══════════════════════════════════════════════
+   VARIABLES
+═══════════════════════════════════════════════ */
+:host {
+    --st-radius:    16px;
+    --st-shadow:    0 8px 32px rgba(0,0,0,.12);
+    --st-shadow-lg: 0 16px 48px rgba(0,0,0,.18);
+}
+
+/* ═══════════════════════════════════════════════
+   CONTENEDOR PRINCIPAL
+═══════════════════════════════════════════════ */
+.seleccion-turno {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 2rem;
+    padding: 2.5rem 1.5rem;
+    background: linear-gradient(160deg, var(--primary-50, #eff6ff) 0%, var(--surface-ground) 60%);
+}
+
+/* ═══════════════════════════════════════════════
+   LOADING INICIAL
+═══════════════════════════════════════════════ */
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    .spinner-label {
+        color: var(--text-color-secondary);
+        font-size: 1rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   TÍTULOS
+═══════════════════════════════════════════════ */
+.titulo-seccion {
+    text-align: center;
+
+    h1 {
+        font-size: 2.6rem;
+        font-weight: 800;
+        margin: 0 0 0.5rem;
+        color: var(--text-color);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+
+    p {
+        font-size: 1.15rem;
+        color: var(--text-color-secondary);
+        margin: 0;
+    }
+
+    &.subtitulo {
+        margin-top: 1.5rem;
+
+        p {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   DUI BADGE
+═══════════════════════════════════════════════ */
+.dui-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: white;
+    border: 1.5px solid var(--primary-200, #bfdbfe);
+    border-radius: 50px;
+    padding: 0.55rem 1.25rem;
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+
+    i {
+        color: var(--primary-color);
+        font-size: 1rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   GRID DE COLAS
+═══════════════════════════════════════════════ */
+.colas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    justify-content: center;
+    max-width: 960px;
+
+    ::ng-deep .cola-btn.p-button {
+        min-width: 200px;
+        min-height: 100px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-radius: var(--st-radius) !important;
+        box-shadow: var(--st-shadow);
+        transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+        letter-spacing: 0.01em;
+
+        &:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: var(--st-shadow-lg) !important;
+        }
+
+        &:not(:disabled):active {
+            transform: translateY(0);
+        }
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   GRID DE DETALLES
+═══════════════════════════════════════════════ */
+.detalles-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    max-width: 840px;
+
+    ::ng-deep .detalle-btn.p-button {
+        min-width: 150px;
+        min-height: 70px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: var(--st-radius) !important;
+        box-shadow: var(--st-shadow);
+        transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+
+        &:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: var(--st-shadow-lg) !important;
+        }
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   TICKET GENERADO
+═══════════════════════════════════════════════ */
+.ticket-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    animation: ticketIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ticket-icono {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--green-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(34,197,94,.35);
+    animation: iconPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+
+    i {
+        font-size: 2.2rem;
+        color: white;
+    }
+}
+
+.ticket-label {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    margin: 0;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.ticket-card {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem 5rem;
+    text-align: center;
+    box-shadow: var(--st-shadow-lg);
+    border-top: 6px solid var(--primary-color);
+
+    /* Perforación izquierda */
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--surface-ground);
+        box-shadow: inset 0 0 0 2px var(--surface-border);
+    }
+
+    &::before { left: -11px; }
+    &::after  { right: -11px; }
+
+    .codigo-turno {
+        font-size: 6rem;
+        font-weight: 900;
+        letter-spacing: 0.25rem;
+        color: var(--primary-color);
+        line-height: 1;
+        text-shadow: 0 2px 12px rgba(var(--primary-color-rgb, 99,102,241),.18);
+    }
+}
+
+.ticket-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 280px;
+    max-width: 420px;
+    width: 100%;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--st-shadow);
+
+    .ticket-info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: 1rem;
+        padding: 0.65rem 1.25rem;
+        border-bottom: 1px solid var(--surface-100, #f1f5f9);
+
+        &:last-child { border-bottom: none; }
+
+        .ticket-info-label {
+            font-weight: 600;
+            color: var(--text-color-secondary);
+            white-space: nowrap;
+        }
+
+        .ticket-info-valor {
+            color: var(--text-color);
+            text-align: right;
+        }
+    }
+}
+
+.ticket-espere {
+    font-size: 1rem;
+    color: var(--text-color-secondary);
+    margin: 0;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface-50, #f8fafc);
+    border-radius: 50px;
+    border: 1px dashed var(--surface-border);
+}
+
+.ticket-acciones {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════
+   PASO ESCANEO
+═══════════════════════════════════════════════ */
+.scan-camara-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.scan-video-container {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: var(--st-shadow-lg);
+}
+
+.scan-video {
+    width: 100%;
+    display: block;
+    border-radius: 16px;
+}
+
+.scan-frame-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scan-frame {
+    width: 60%;
+    aspect-ratio: 3/2;
+    border: 3px solid var(--primary-color);
+    border-radius: 10px;
+    box-shadow: 0 0 0 2000px rgba(0,0,0,.38);
+    animation: scanPulse 2s ease-in-out infinite;
+
+    &--wide {
+        width: 85%;
+        aspect-ratio: 4/1;
+    }
+}
+
+.scan-info {
+    color: var(--text-color-secondary);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    margin: 0;
+}
+
+.scan-error {
+    color: var(--red-500);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    margin: 0;
+}
+
+.scan-lector-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    text-align: center;
+    padding: 3rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--st-shadow);
+    min-width: 300px;
+}
+
+.scan-dui-icon {
+    font-size: 5rem;
+    color: var(--primary-color);
+    animation: scanPulse 2s ease-in-out infinite;
+}
+
+.scan-instruccion {
+    font-size: 1.15rem;
+    color: var(--text-color);
+    margin: 0;
+    font-weight: 500;
+}
+
+.scanner-input-hidden {
+    opacity: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.scan-actions {
+    display: flex;
+    justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════
+   PERMISOS DE CÁMARA
+═══════════════════════════════════════════════ */
+.permiso-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    text-align: center;
+    max-width: 360px;
+    padding: 2.5rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--st-shadow);
+
+    .permiso-icono {
+        font-size: 4rem;
+        color: var(--primary-color);
+
+        &--error { color: var(--red-500); }
+    }
+
+    .permiso-titulo {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text-color);
+    }
+
+    .permiso-desc {
+        font-size: 0.95rem;
+        color: var(--text-color-secondary);
+        margin: 0;
+        line-height: 1.6;
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   CASOS ESPECIALES
+═══════════════════════════════════════════════ */
+.casos-especiales-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.25rem;
+    padding: 0.5rem 0;
+    width: 100%;
+    max-width: 760px;
+}
+
+.caso-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.75rem 1rem;
+    background: white;
+    border: 2.5px solid var(--surface-200, #e2e8f0);
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+
+    &:hover {
+        border-color: var(--primary-color);
+        background: var(--primary-50, #eff6ff);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    }
+
+    &--activo {
+        border-color: var(--primary-color) !important;
+        background: var(--primary-100, #dbeafe) !important;
+        box-shadow: 0 4px 20px rgba(var(--primary-color-rgb, 99,102,241),.2) !important;
+        transform: translateY(-2px);
+
+        .caso-btn__icono {
+            transform: scale(1.15);
+        }
+    }
+
+    &--ninguno {
+        border-style: dashed;
+        opacity: 0.75;
+        background: var(--surface-50, #f8fafc);
+
+        &.caso-btn--activo {
+            opacity: 1;
+            border-style: solid;
+            background: var(--surface-100, #f1f5f9) !important;
+            border-color: var(--text-color-secondary) !important;
+        }
+    }
+
+    &__icono {
+        font-size: 2.25rem;
+        color: var(--primary-color);
+        transition: transform 0.2s ease;
+    }
+
+    &__label {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-color);
+        text-align: center;
+    }
+
+    &__tag {
+        font-size: 0.62rem;
+        background: var(--green-500);
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.06rem;
+        font-weight: 700;
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   ANIMACIONES
+═══════════════════════════════════════════════ */
+@keyframes ticketIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes iconPop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes scanPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.55; }
+}

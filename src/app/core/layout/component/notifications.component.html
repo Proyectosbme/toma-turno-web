@@ -1,0 +1,22 @@
+<div class="flex flex-col">
+    <div class="flex justify-content-between align-items-center p-3">
+        <span class="text-lg font-semibold">Notifications</span>
+        <button pButton type="button" label="Mark all as read" class="p-button-text" (click)="markAllAsRead()"></button>
+    </div>
+    <div class="flex flex-col max-h-96 overflow-y-auto">
+        <a *ngFor="let notification of notifications$ | async" class="flex align-items-start p-3 border-bottom-1 border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors transition-duration-150 cursor-pointer" (click)="markAsRead(notification)">
+            <div class="relative">
+                <i [class]="notification.read ? 'pi pi-envelope-open' : 'pi pi-envelope'" class="text-xl text-primary mr-3"></i>
+                <span *ngIf="!notification.read" class="absolute top-0 right-0 h-2 w-2 bg-primary rounded-full"></span>
+            </div>
+            <div class="flex flex-col">
+                <span class="font-bold mb-1">{{ notification.title }}</span>
+                <span class="text-sm text-secondary">{{ notification.message }}</span>
+                <span class="text-xs text-color-secondary mt-1">{{ notification.date | date: 'short' }}</span>
+            </div>
+        </a>
+    </div>
+    <div *ngIf="notificationService.hasMoreNotifications$ | async" class="flex justify-content-center p-3">
+        <button pButton type="button" label="Load More" class="p-button-text" (click)="loadMoreNotifications()"></button>
+    </div>
+</div>

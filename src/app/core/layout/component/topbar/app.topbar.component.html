@@ -1,0 +1,34 @@
+<div class="layout-topbar">
+    <div class="layout-topbar-start">
+        <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+            <i class="pi pi-bars"></i>
+        </button>
+        <a class="layout-topbar-logo" routerLink="/">
+            <img src="images/logo.png" alt="TOMA-TURNO" class="layout-topbar-logo-img" />
+            <span>Toma turno</span>
+        </a>
+    </div>
+
+    <app-breadcrumb class="layout-topbar-breadcrumb"></app-breadcrumb>
+
+    <div class="layout-topbar-actions">
+        <div class="layout-config-menu">
+            <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
+                <i
+                    [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
+            </button>
+        </div>
+
+        <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden"
+            enterActiveClass="animate-scalein" leave ToClass="hidden" leaveActiveClass="animate-fadeout"
+            [hideOnOutsideClick]="true">
+            <i class="pi pi-ellipsis-v"></i>
+        </button>
+
+        <div class="layout-topbar-menu hidden lg:block">
+            <div class="layout-topbar-menu-content">
+                <app-user-menu></app-user-menu>
+            </div>
+        </div>
+    </div>
+</div>
