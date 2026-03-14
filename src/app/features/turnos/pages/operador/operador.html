@@ -112,7 +112,7 @@
                             <p-button
                                 label="Reasignar"
                                 icon="pi pi-arrow-right-arrow-left"
-                                severity="warn"
+                                severity="secondary"
                                 [outlined]="true"
                                 (onClick)="abrirReasignar()"
                                 [disabled]="cargando || cargandoReasignar"
@@ -120,14 +120,14 @@
                             <p-button
                                 label="Finalizar"
                                 icon="pi pi-check"
-                                severity="success"
+                                severity="primary"
                                 (onClick)="finalizar()"
                                 [disabled]="cargando"
                             />
                             <p-button
                                 label="No llegó / Saltar"
                                 icon="pi pi-times"
-                                severity="danger"
+                                severity="secondary"
                                 [outlined]="true"
                                 (onClick)="saltarTurno()"
                                 [disabled]="cargando"
@@ -138,7 +138,7 @@
                         <p-button
                             label="LLAMAR SIGUIENTE TURNO"
                             icon="pi pi-bell"
-                            severity="success"
+                            severity="primary"
                             size="large"
                             [disabled]="cargando || turnosEnEspera.length === 0"
                             (onClick)="llamarSiguiente()"

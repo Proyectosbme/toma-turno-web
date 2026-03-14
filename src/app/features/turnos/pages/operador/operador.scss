@@ -373,6 +373,37 @@
     color: var(--text-color-secondary);
 }
 
+/* ── Modo oscuro ── */
+:host-context(.app-dark) {
+    .timer-atencion {
+        background: rgba(96, 165, 250, 0.12);
+        border-color: rgba(96, 165, 250, 0.3);
+        color: var(--primary-color);
+    }
+
+    .turno-espera-item {
+        &.primero {
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        &.aviso {
+            background: rgba(251, 146, 60, 0.1);
+            border-left-color: var(--orange-400);
+        }
+
+        &.urgente {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--red-500);
+        }
+    }
+
+    .reasignar-aviso {
+        background: rgba(251, 146, 60, 0.1);
+        border-color: rgba(251, 146, 60, 0.3);
+        color: var(--orange-400);
+    }
+}
+
 /* ── Reasignar dialog ── */
 .reasignar-dialog-content {
     display: flex;
