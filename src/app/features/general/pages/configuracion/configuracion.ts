@@ -75,6 +75,23 @@ export class ConfiguracionPage implements OnInit {
         this.notificacion.exito('Logo restaurado', 'Se volvió al logo por defecto');
     }
 
+    onBannerSeleccionado(event: Event): void {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.branding.setBanner(reader.result as string);
+            this.notificacion.exito('Banner actualizado', 'El nuevo banner reemplazó al anterior');
+        };
+        reader.readAsDataURL(file);
+        (event.target as HTMLInputElement).value = '';
+    }
+
+    restaurarBanner(): void {
+        this.branding.clearBanner();
+        this.notificacion.exito('Banner restaurado', 'Se volvió al banner por defecto');
+    }
+
     /* ── Formulario crear / editar ── */
     formularioConfig = crearFormularioConfiguracion();
     camposFormulario = CAMPOS_FORMULARIO.map(c => ({ ...c }));

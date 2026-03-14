@@ -60,6 +60,28 @@
                     <small class="branding-hint">La imagen se guarda localmente en el navegador.</small>
                 </div>
 
+                <!-- Banner -->
+                <div class="branding-field">
+                    <label>Banner del inicio</label>
+                    <div class="branding-banner-preview">
+                        <img [src]="branding.bannerUrl() ?? '/images/banner.png'" alt="Banner actual" />
+                    </div>
+                    <div class="branding-logo-actions" style="margin-top: 0.5rem;">
+                        <label class="branding-upload-btn" pTooltip="Seleccionar imagen (PNG, JPG, WEBP)">
+                            <i class="pi pi-upload"></i> Subir banner
+                            <input type="file" accept="image/png,image/jpeg,image/webp"
+                                (change)="onBannerSeleccionado($event)" hidden />
+                        </label>
+                        <button pButton icon="pi pi-trash" label="Restaurar"
+                            severity="secondary" [outlined]="true"
+                            pTooltip="Volver al banner por defecto"
+                            (click)="restaurarBanner()"
+                            [disabled]="!branding.bannerUrl()">
+                        </button>
+                    </div>
+                    <small class="branding-hint">Se muestra en la pantalla de inicio. La imagen se guarda localmente.</small>
+                </div>
+
             </div>
         </app-section>
 

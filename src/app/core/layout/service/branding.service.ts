@@ -3,22 +3,18 @@ import { Title } from '@angular/platform-browser';
 
 const NOMBRE_KEY = 'brand_nombre';
 const LOGO_KEY   = 'brand_logo';
+const BANNER_KEY = 'brand_banner';
 
 @Injectable({ providedIn: 'root' })
 export class BrandingService {
 
     private readonly titleService = inject(Title);
 
-    nombreEmpresa = signal<string>(
-        localStorage.getItem(NOMBRE_KEY) ?? 'Mi empresa'
-    );
-
-    logoUrl = signal<string | null>(
-        localStorage.getItem(LOGO_KEY)
-    );
+    nombreEmpresa = signal<string>(localStorage.getItem(NOMBRE_KEY) ?? 'Mi empresa');
+    logoUrl       = signal<string | null>(localStorage.getItem(LOGO_KEY));
+    bannerUrl     = signal<string | null>(localStorage.getItem(BANNER_KEY));
 
     constructor() {
-        // Aplicar título al cargar
         this.titleService.setTitle(this.nombreEmpresa());
     }
 
@@ -30,7 +26,6 @@ export class BrandingService {
     }
 
     setLogo(dataUrl: string): void {
-        // Siempre sobreescribe la clave brand_logo — no acumula archivos
         localStorage.setItem(LOGO_KEY, dataUrl);
         this.logoUrl.set(dataUrl);
     }
@@ -38,5 +33,15 @@ export class BrandingService {
     clearLogo(): void {
         localStorage.removeItem(LOGO_KEY);
         this.logoUrl.set(null);
+    }
+
+    setBanner(dataUrl: string): void {
+        localStorage.setItem(BANNER_KEY, dataUrl);
+        this.bannerUrl.set(dataUrl);
+    }
+
+    clearBanner(): void {
+        localStorage.removeItem(BANNER_KEY);
+        this.bannerUrl.set(null);
     }
 }

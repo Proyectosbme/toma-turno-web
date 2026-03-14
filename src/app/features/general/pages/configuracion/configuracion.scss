@@ -76,6 +76,23 @@
     flex-wrap: wrap;
 }
 
+.branding-banner-preview {
+    width: 100%;
+    max-width: 480px;
+    height: 120px;
+    border-radius: 10px;
+    border: 1px solid var(--surface-border);
+    background: var(--surface-card);
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+}
+
 .branding-upload-btn {
     display: inline-flex;
     align-items: center;
