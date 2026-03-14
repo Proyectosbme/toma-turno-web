@@ -61,12 +61,18 @@ export class ConfiguracionPage implements OnInit {
         const file = (event.target as HTMLInputElement).files?.[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = () => this.branding.setLogo(reader.result as string);
+        reader.onload = () => {
+            this.branding.setLogo(reader.result as string);
+            this.notificacion.exito('Logo actualizado', 'El nuevo logo reemplazó al anterior');
+        };
         reader.readAsDataURL(file);
+        // Limpiar el input para permitir subir el mismo archivo de nuevo
+        (event.target as HTMLInputElement).value = '';
     }
 
     restaurarLogo(): void {
         this.branding.clearLogo();
+        this.notificacion.exito('Logo restaurado', 'Se volvió al logo por defecto');
     }
 
     /* ── Formulario crear / editar ── */
