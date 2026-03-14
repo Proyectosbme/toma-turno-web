@@ -12,15 +12,14 @@
     <app-breadcrumb class="layout-topbar-breadcrumb"></app-breadcrumb>
 
     <div class="layout-topbar-actions">
-        <div class="layout-config-menu">
-            <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
-                <i
-                    [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
-            </button>
-        </div>
+        <button class="layout-topbar-action" (click)="toggleDarkMode()"
+            [pTooltip]="layoutService.isDarkTheme() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+            tooltipPosition="bottom">
+            <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
+        </button>
 
         <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden"
-            enterActiveClass="animate-scalein" leave ToClass="hidden" leaveActiveClass="animate-fadeout"
+            enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout"
             [hideOnOutsideClick]="true">
             <i class="pi pi-ellipsis-v"></i>
         </button>

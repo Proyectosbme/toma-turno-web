@@ -23,9 +23,9 @@ interface LayoutState {
 export class LayoutService {
     _config: layoutConfig = {
         preset: 'Aura',
-        primary: 'emerald',
+        primary: 'sky',
         surface: null,
-        darkTheme: false,
+        darkTheme: localStorage.getItem('theme') !== 'light',
         menuMode: 'static'
     };
 
@@ -63,9 +63,36 @@ export class LayoutService {
 
     transitionComplete = signal<boolean>(false);
 
+    isFullscreen = signal<boolean>(false);
+
     private initialized = false;
 
+    toggleFullscreen(): void {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().then(() => {
+                document.body.classList.add('layout-fullscreen');
+                this.isFullscreen.set(true);
+            });
+        } else {
+            document.exitFullscreen().then(() => {
+                document.body.classList.remove('layout-fullscreen');
+                this.isFullscreen.set(false);
+            });
+        }
+    }
+
     constructor() {
+        // Aplicar tema guardado al iniciar
+        this.toggleDarkMode(this._config);
+
+        // Sincronizar si el usuario sale con Escape
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                document.body.classList.remove('layout-fullscreen');
+                this.isFullscreen.set(false);
+            }
+        });
+
         effect(() => {
             const config = this.layoutConfig();
             if (config) {
@@ -107,11 +134,13 @@ export class LayoutService {
     }
 
     toggleDarkMode(config?: layoutConfig): void {
-        const _config = config || this.layoutConfig();
-        if (_config.darkTheme) {
+        const isDark = config ? config.darkTheme : this.layoutConfig().darkTheme;
+        if (isDark) {
             document.documentElement.classList.add('app-dark');
+            localStorage.setItem('theme', 'dark');
         } else {
             document.documentElement.classList.remove('app-dark');
+            localStorage.setItem('theme', 'light');
         }
     }
 

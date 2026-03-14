@@ -1,350 +1,267 @@
 @use 'mixins' as *;
 
 /* =========================================================
-   SIDEBAR PRINCIPAL
+   SIDEBAR PRINCIPAL (siempre oscuro, estilo monitor)
    ========================================================= */
 .layout-sidebar {
-    position: fixed;                     // Sidebar fijo en pantalla
-    top: 6rem;                           // Separación desde el header
-    left: 2rem;                          // Separación lateral izquierda
+    /* ── CSS vars: siempre contexto oscuro ── */
+    --text-color:           var(--shell-text);
+    --text-color-secondary: var(--shell-text-muted);
+    --surface-card:         var(--shell-bg-card);
+    --surface-0:            var(--shell-bg);
+    --surface-border:       rgba(96, 165, 250, 0.1);
+    --surface-hover:        var(--shell-hover);
+    --primary-color:        var(--shell-accent);
 
-    width: 20rem;                        // Ancho fijo del menú
-    height: calc(100vh - 8rem);          // Alto dinámico según pantalla
+    position: fixed;
+    top: 6rem;
+    left: 2rem;
+    width: 20rem;
+    height: calc(100vh - 8rem);
+    z-index: 999;
+    overflow-y: auto;
+    user-select: none;
 
-    z-index: 999;                        // Siempre encima del contenido
-    overflow-y: auto;                    // Scroll vertical automático
-    user-select: none;                   // Evita selección de texto
-
-    background-color: var(--surface-0, #ffffff); // Fondo limpio
-    border-radius: 1.25rem;              // Bordes suaves premium
-    border: 1px solid var(--surface-border); // Borde sutil
-    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08); // Sombra refinada
-    padding: 0.5rem;                     // Padding cómodo
-    letter-spacing: 0.15px;              // Tipografía más fina
+    background: linear-gradient(175deg, var(--shell-bg-2) 0%, var(--shell-bg) 100%);
+    border-radius: 1.25rem;
+    border: 1px solid rgba(96, 165, 250, 0.15);
+    box-shadow:
+        4px 0 32px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(96, 165, 250, 0.1),
+        inset 1px 0 0 rgba(96, 165, 250, 0.05);
+    padding: 0.5rem 0.5rem 1rem;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 
-    transition:                          // Animación suave
+    transition:
         transform var(--layout-section-transition-duration),
         left var(--layout-section-transition-duration);
-}
 
-:root[class*='app-dark'] .layout-sidebar {
-    background-color: var(--surface-card, #1f2937);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
-}
+    /* =========================================================
+       P-TREE OVERRIDES (estructura real del menú)
+       ========================================================= */
 
-/* =========================================================
-   CONTENEDOR DE CADA MÓDULO (ROOT)
-   ========================================================= */
-li.layout-root-menuitem {
-    margin: 0 0 0.5rem;                  // Separación entre módulos
-
-    border: 1px solid var(--surface-border); // Borde general del bloque
-    border-radius: 16px;                 // Redondeo consistente
-
-    background-color: var(--surface-card); // Fondo neutro
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06); // Sombra suave
-
-    overflow: hidden;                    // 🔑 evita cortes con textos largos
-}
-
-:root[class*='app-dark'] li.layout-root-menuitem {
-    background-color: var(--surface-card, #1f2937);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
-}
-
-/* =========================================================
-   HEADER DEL MÓDULO (LINK ROOT)
-   ========================================================= */
-.layout-menuitem-root-link {
-    display: flex;                       // Layout flexible
-    align-items: center;                 // Alineación vertical
-    gap: 0.75rem;                        // Espacio icono ↔ texto
-
-    padding: 0.7rem 1rem;                // Espaciado interno cómodo
-
-    font-size: 0.95rem;                  // Tamaño de texto legible
-    font-weight: 700;                    // Peso medio
-    letter-spacing: 0.2px;               // Mejor lectura
-    line-height: 1.3;                    // 🔑 evita montajes en textos largos
-
-    background-color: transparent;        // Fondo neutro
-    cursor: pointer;                     // Indicador de acción
-
-    border: 1px solid transparent;       // Borde invisible para alinear
-    border-radius: 14px;                 // Leve redondeo interno
-
-    box-shadow: none;                    // Sin sombras duplicadas
-
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease;
-}
-
-/* Bordes visibles para raíz cuando está cerrado */
-.layout-menu > li:not(.active-menuitem) > .layout-menuitem-root-link {
-    border-color: transparent;
-    box-shadow: none;
-}
-
-.layout-menuitem-root-link:hover {
-    background-color: color-mix(in srgb, var(--primary-color), transparent 92%);
-    border-color: transparent;
-    color: var(--text-color);
-}
-
-:root[class*='app-dark'] .layout-menuitem-root-link {
-    color: var(--text-color, #e5e7eb);
-}
-
-:root[class*='app-dark'] .layout-menuitem-root-link:hover {
-    background-color: color-mix(in srgb, var(--primary-color), transparent 85%);
-}
-
-/* =========================================================
-   ROOT ACTIVO (MÓDULO ABIERTO)
-   ========================================================= */
-.layout-menu > li.active-menuitem > .layout-menuitem-root-link {
-    font-weight: 800;                    // Más énfasis visual
-    background-color: color-mix(in srgb, var(--primary-color), transparent 94%);
-
-    border: 1px solid var(--surface-border);
-    border-radius: 14px 14px 0 0;        // Solo esquinas superiores
-}
-
-:root[class*='app-dark'] .layout-menu > li.active-menuitem > .layout-menuitem-root-link {
-    background-color: color-mix(in srgb, var(--primary-color), transparent 82%);
-    border-color: rgba(255, 255, 255, 0.08);
-}
-
-/* Raíces dentro de submenús sin borde y con esquinas redondeadas */
-.layout-menu ul .layout-menuitem-root-link {
-    border: none;
-    border-radius: 12px;
-    background-color: transparent;
-}
-
-.layout-menu ul li.active-menuitem > .layout-menuitem-root-link {
-    border: none;
-    border-radius: 12px;
-    background-color: var(--surface-hover);
-}
-
-.layout-menu ul .layout-menuitem-root-link:hover {
-    border-radius: 12px;                // 4 esquinas al pasar el mouse
-}
-
-/* Forzar 4 esquinas en raíces internas (activo/hover) */
-.layout-menu ul li.active-menuitem > .layout-menuitem-root-link,
-.layout-menu ul li.active-menuitem > .layout-menuitem-root-link:hover {
-    border-radius: 12px;
-}
-
-/* =========================================================
-   ICONO DEL MÓDULO
-   ========================================================= */
-.layout-menuitem-root-link .layout-menuitem-icon {
-    font-size: 1.1rem;                   // Tamaño de icono
-    flex-shrink: 0;                      // Nunca se achica
-}
-
-/* =========================================================
-   FLECHA DESPLEGABLE
-   ========================================================= */
-.layout-menuitem-root-link .layout-submenu-toggler {
-    margin-left: auto;                   // Empuja la flecha a la derecha
-    font-size: 0.75rem;                  // Tamaño discreto
-    flex-shrink: 0;                      // No se reduce
-    transition: transform var(--element-transition-duration);
-}
-
-/* =========================================================
-   LISTA PRINCIPAL DEL MENÚ
-   ========================================================= */
-.layout-menu {
-    margin: 0;
-    padding: 0;
-    list-style: none;                    // Quita bullets
-
-    a {
-        user-select: none;               // Evita selección de texto
+    /* ── Contenedor principal ── */
+    .p-tree {
+        background: transparent !important;
+        border: none !important;
+        padding: 0.25rem 0;
+        color: var(--shell-text);
     }
 
-    li.active-menuitem > a .layout-submenu-toggler {
-        transform: rotate(-180deg);      // Rota flecha al abrir
+    /* ── Listas ── */
+    .p-tree-container,
+    .p-treenode-children {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    /* ── Cada nodo ── */
+    .p-treenode {
+        padding: 0;
+    }
+
+    /* ── Contenido del nodo (fila clickeable) ── */
+    .p-treenode-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.85rem;
+        border-radius: 10px;
+        cursor: pointer;
+        color: var(--shell-text);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        background: transparent;
+        outline: none;
+        border: none;
+        box-shadow: none;
+
+        &:hover {
+            background: rgba(96, 165, 250, 0.08);
+            color: var(--shell-text);
+            box-shadow: inset 3px 0 0 rgba(96, 165, 250, 0.35);
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.3);
+        }
+
+        /* Nodo seleccionado */
+        &.p-highlight {
+            background: var(--shell-accent-dim) !important;
+            color: var(--shell-accent) !important;
+            font-weight: 600;
+            box-shadow: inset 3px 0 0 var(--shell-accent);
+
+            .p-treenode-icon {
+                color: var(--shell-accent) !important;
+            }
+        }
+    }
+
+    /* ── Nodos raíz (General, Turnos) — estilo label de sección ── */
+    .p-tree-container > .p-treenode > .p-treenode-content {
+        color: var(--shell-text-muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        padding: 0.65rem 0.85rem 0.4rem;
+        margin-top: 0.5rem;
+        border-radius: 6px;
+
+        &:hover {
+            background: transparent;
+            color: var(--shell-accent);
+            box-shadow: none;
+        }
+
+        &.p-highlight {
+            background: transparent !important;
+            color: var(--shell-accent) !important;
+            font-weight: 700;
+            box-shadow: none;
+
+            .p-treenode-icon {
+                color: var(--shell-accent) !important;
+            }
+        }
+    }
+
+    /* Primera sección sin margen superior */
+    .p-tree-container > .p-treenode:first-child > .p-treenode-content {
+        margin-top: 0;
+    }
+
+    /* Separador entre secciones */
+    .p-tree-container > .p-treenode + .p-treenode {
+        border-top: 1px solid rgba(96, 165, 250, 0.08);
+        padding-top: 0.25rem;
+        margin-top: 0.25rem;
+    }
+
+    /* ── Icono ── */
+    .p-treenode-icon {
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        color: var(--shell-text-muted);
+    }
+
+    /* ── Label ── */
+    .p-treenode-label {
+        flex: 1;
+        line-height: 1.35;
+    }
+
+    /* ── Toggle (flecha expandir/colapsar) ── */
+    .p-treenode-toggler {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+        color: var(--shell-text-muted);
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: color 0.15s ease, transform 0.2s ease;
+
+        &:hover {
+            color: var(--shell-accent);
+        }
+
+        .p-icon {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+    }
+
+    /* ── Hijos: indentación ── */
+    .p-treenode-children {
+        padding-left: 0.5rem;
+    }
+
+    /* ── Nodos hoja (sin toggle, más sangría visual) ── */
+    .p-treenode-leaf > .p-treenode-content {
+        padding-left: 1.1rem;
     }
 }
 
 /* =========================================================
-   CONTENEDOR DEL SUBMENÚ
+   MODO CLARO: sidebar blanco
    ========================================================= */
-.layout-menu ul {
-    margin: 0;
-    padding: 0;                         // 🔑 sin padding cuando está cerrado
-    list-style: none;                    // Sin bullets
-}
+:root:not(.app-dark) .layout-sidebar {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06);
 
-.layout-menu > li.active-menuitem > ul {
-    padding: 0.4rem 0.35rem 0.6rem;     // Espacio interno cuando está abierto
-    background-color: color-mix(in srgb, var(--surface-0, #ffffff), transparent 6%);
-    border-left: 1px solid color-mix(in srgb, var(--surface-border), transparent 35%);
-    border-right: 1px solid color-mix(in srgb, var(--surface-border), transparent 35%);
-    border-bottom: 1px solid color-mix(in srgb, var(--surface-border), transparent 35%);
-    border-radius: 0 0 14px 14px;       // Esquinas inferiores redondeadas
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
+    .p-tree { color: #1e293b; }
 
-:root[class*='app-dark'] .layout-menu > li.active-menuitem > ul {
-    background-color: color-mix(in srgb, var(--surface-card, #1f2937), transparent 4%);
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
+    .p-treenode-content {
+        color: #1e293b;
 
-/* Submenús internos sin borde para evitar doble línea */
-.layout-menu ul li.active-menuitem > ul {
-    padding: 0.35rem 0 0.35rem;
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-}
+        &:hover {
+            background: rgba(14, 116, 144, 0.07);
+            color: #0284c7;
+            box-shadow: inset 3px 0 0 rgba(2, 132, 199, 0.4);
+        }
 
-/* Último hijo hoja con esquinas completas redondeadas */
-.layout-menu > li.active-menuitem > ul > li:last-child > a:not(.layout-menuitem-root-link) {
-    border-radius: 12px;
-}
+        &.p-highlight {
+            background: rgba(2, 132, 199, 0.1) !important;
+            color: #0284c7 !important;
+            box-shadow: inset 3px 0 0 #0284c7;
 
-.layout-menu li:not(.active-menuitem) > ul {
-    overflow: hidden;                   // Evita que asomen bordes internos
+            .p-treenode-icon { color: #0284c7 !important; }
+        }
+    }
+
+    .p-tree-container > .p-treenode > .p-treenode-content {
+        color: #64748b;
+
+        &:hover { background: transparent; color: #0284c7; box-shadow: none; }
+
+        &.p-highlight {
+            background: transparent !important;
+            color: #0284c7 !important;
+            box-shadow: none;
+            .p-treenode-icon { color: #0284c7 !important; }
+        }
+    }
+
+    .p-tree-container > .p-treenode + .p-treenode {
+        border-top-color: #e2e8f0;
+    }
+
+    .p-treenode-icon { color: #475569; }
+    .p-treenode-toggler { color: #475569; &:hover { color: #0284c7; } }
 }
 
 /* =========================================================
-   LINKS DEL SUBMENÚ
-   ========================================================= */
-.layout-menu ul a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;                         // Espacio icono ↔ texto
-
-    padding: 0.55rem 0.85rem;            // Espaciado compacto
-    padding-left: 2.6rem;                // Sangría base para primer nivel
-    margin-top: 0.15rem;                 // Separación vertical leve
-
-    width: 100%;
-    box-sizing: border-box;              // Mantiene el mismo borde final
-
-    line-height: 1.3;                    // Texto cómodo de leer
-    color: var(--text-color);            // Color del tema
-
-    border-radius: 12px;                 // Bordes suaves
-    cursor: pointer;
-    border: none;
-    font-weight: 600;
-
-    transition:
-        background-color var(--element-transition-duration),
-        box-shadow var(--element-transition-duration),
-        color var(--element-transition-duration);
-}
-
-:root[class*='app-dark'] .layout-menu ul a {
-    color: var(--text-color, #e5e7eb);
-}
-
-/* =========================================================
-   HOVER Y ACTIVO SUBMENÚ
-   ========================================================= */
-.layout-menu ul a:hover {
-    background-color: color-mix(in srgb, var(--primary-color), transparent 93%);
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary-color), transparent 55%);
-}
-
-:root[class*='app-dark'] .layout-menu ul a:hover {
-    background-color: color-mix(in srgb, var(--primary-color), transparent 80%);
-}
-
-.layout-menu ul a.active-route {
-    font-weight: 700;
-    background-color: color-mix(in srgb, var(--primary-color), transparent 88%);
-    color: var(--primary-color);
-    box-shadow: inset 2px 0 0 var(--primary-color);
-    border-radius: 12px;
-}
-
-:root[class*='app-dark'] .layout-menu ul a.active-route {
-    background-color: color-mix(in srgb, var(--primary-color), transparent 75%);
-    color: var(--primary-color);
-    border-radius: 12px;
-}
-
-/* Sombra solo en seleccionados hijos */
-.layout-menu ul a.active-route {
-    box-shadow: inset 2px 0 0 var(--primary-color), 0 2px 10px rgba(15, 23, 42, 0.08);
-}
-
-.layout-menu > li > a.active-route,
-.layout-menu > li.active-menuitem > a.active-route {
-    box-shadow: inset 2px 0 0 var(--primary-color); // Sin sombra extra en raíz
-}
-
-/* =========================================================
-   ACCESIBILIDAD (FOCUS)
-   ========================================================= */
-.layout-menu ul a:focus {
-    @include focused-inset();
-}
-
-/* =========================================================
-   ICONOS DE SUBMENÚ
-   ========================================================= */
-.layout-menu ul .layout-menuitem-icon {
-    flex-shrink: 0;                      // Nunca se encogen
-}
-
-.layout-menu ul a.active-route .layout-menuitem-icon {
-    color: var(--primary-color);
-}
-
-/* =========================================================
-   NIVELES DE PROFUNDIDAD (INDENTACIÓN)
-   ========================================================= */
-.layout-menu ul ul {
-    overflow: hidden;
-    padding-left: 0;                     // Sin sangría en contenedor
-}
-
-/* Indentación al inicio sin afectar el borde derecho */
-.layout-menu ul ul a { padding-left: 3.2rem; padding-right: 0.9rem; }
-.layout-menu ul ul ul a { padding-left: 3.9rem; padding-right: 0.9rem; }
-.layout-menu ul ul ul ul a { padding-left: 4.6rem; padding-right: 0.9rem; }
-.layout-menu ul ul ul ul ul a { padding-left: 5.3rem; padding-right: 0.9rem; }
-.layout-menu ul ul ul ul ul ul a { padding-left: 6rem; padding-right: 0.9rem; }
-
-/* =========================================================
-   ANIMACIONES DEL SUBMENÚ
+   ANIMACIONES DE APERTURA/CIERRE
    ========================================================= */
 .layout-submenu-enter-from,
 .layout-submenu-leave-to {
-    max-height: 0;                       // Estado cerrado
+    max-height: 0;
 }
 
 .layout-submenu-enter-to,
 .layout-submenu-leave-from {
-    max-height: 1000px;                  // Estado abierto
+    max-height: 1000px;
 }
 
 .layout-submenu-enter-active {
     overflow: hidden;
-    transition: max-height 0.8s ease-in-out; // Apertura suave
+    transition: max-height 0.8s ease-in-out;
 }
 
 .layout-submenu-leave-active {
     overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0, 1, 0, 1); // Cierre rápido
+    transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
 }
