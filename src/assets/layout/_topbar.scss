@@ -1,6 +1,13 @@
 @use 'mixins' as *;
 
 .layout-topbar {
+    /* ── CSS vars locales: siempre contexto oscuro ── */
+    --text-color:           var(--shell-text);
+    --text-color-secondary: var(--shell-text-muted);
+    --surface-hover:        var(--shell-hover);
+    --surface-overlay:      var(--shell-bg-2);
+    --surface-border:       rgba(255, 255, 255, 0.1);
+
     position: fixed;
     height: 4rem;
     z-index: 997;
@@ -8,7 +15,9 @@
     top: 0;
     width: 100%;
     padding: 0 2rem;
-    background-color: var(--surface-card);
+    background: linear-gradient(135deg, var(--shell-bg) 0%, var(--shell-bg-2) 100%);
+    border-bottom: 1px solid var(--shell-border);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.45);
     transition: left var(--layout-section-transition-duration);
     display: flex;
     align-items: center;
@@ -26,10 +35,11 @@
         align-items: center;
         font-size: 1.5rem;
         border-radius: var(--content-border-radius);
-        color: var(--text-color);
-        font-weight: 500;
+        color: var(--shell-accent);
+        font-weight: 700;
         gap: 0.5rem;
         line-height: 1;
+        letter-spacing: -0.01em;
 
         svg {
             width: 3rem;
@@ -46,6 +56,8 @@
         display: flex;
         align-items: center;
         overflow: hidden;
+        /* Hereda el color claro del contexto del topbar */
+        color: var(--shell-text-muted);
     }
 
     .layout-topbar-breadcrumb .app-breadcrumb {
@@ -56,22 +68,25 @@
         font-size: 0.875rem;
         line-height: 1;
         white-space: nowrap;
+        background: transparent;
+        border: none;
+        color: var(--shell-text-muted);
     }
 
     .layout-topbar-action {
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        color: var(--text-color-secondary);
+        color: var(--shell-text-muted);
         border-radius: 50%;
         width: 2.5rem;
         height: 2.5rem;
-        color: var(--text-color);
-        transition: background-color var(--element-transition-duration);
+        transition: background-color var(--element-transition-duration), color var(--element-transition-duration);
         cursor: pointer;
 
         &:hover {
-            background-color: var(--surface-hover);
+            background-color: var(--shell-hover);
+            color: var(--shell-text);
         }
 
         &:focus-visible {
@@ -88,8 +103,9 @@
         }
 
         &.layout-topbar-action-highlight {
-            background-color: var(--primary-color);
-            color: var(--primary-contrast-color);
+            background-color: var(--shell-accent-dim);
+            color: var(--shell-accent);
+            border: 1px solid var(--shell-border);
         }
     }
 
@@ -142,18 +158,15 @@
 
         .layout-topbar-menu {
             position: absolute;
-            background-color: var(--surface-overlay);
+            background: linear-gradient(135deg, var(--shell-bg) 0%, var(--shell-bg-2) 100%);
             transform-origin: top;
-            box-shadow:
-                0px 3px 5px rgba(0, 0, 0, 0.02),
-                0px 0px 2px rgba(0, 0, 0, 0.05),
-                0px 1px 4px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             border-radius: var(--content-border-radius);
             padding: 1rem;
             right: 2rem;
             top: 4rem;
             min-width: 15rem;
-            border: 1px solid var(--surface-border);
+            border: 1px solid var(--shell-border);
 
             .layout-topbar-menu-content {
                 gap: 0.5rem;
@@ -183,4 +196,41 @@
             flex-direction: column;
         }
     }
+}
+
+/* ── Overrides explícitos para elementos PrimeNG dentro del topbar ── */
+.layout-topbar .p-breadcrumb-list li,
+.layout-topbar .p-breadcrumb-list li a,
+.layout-topbar .p-breadcrumb-list li span {
+    color: var(--shell-text-muted) !important;
+}
+
+.layout-topbar .p-breadcrumb-list li.p-breadcrumb-home a,
+.layout-topbar .p-breadcrumb-list li:last-child span {
+    color: var(--shell-text) !important;
+}
+
+.layout-topbar .p-breadcrumb-separator {
+    color: var(--shell-text-muted) !important;
+    opacity: 0.5;
+}
+
+/* Avatar / user menu en topbar */
+.layout-topbar .p-avatar {
+    background-color: var(--shell-accent-dim);
+    color: var(--shell-accent);
+    border: 1px solid var(--shell-border);
+}
+
+/* Textos del usuario y sucursal en topbar */
+.layout-topbar .layout-topbar-actions span,
+.layout-topbar .layout-topbar-actions small,
+.layout-topbar .layout-topbar-actions p,
+.layout-topbar .layout-topbar-actions div {
+    color: var(--shell-text);
+}
+
+/* Separadores verticales */
+.layout-topbar .layout-topbar-actions .p-divider-vertical {
+    border-color: rgba(255, 255, 255, 0.15);
 }

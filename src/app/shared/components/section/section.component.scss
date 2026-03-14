@@ -1,14 +1,24 @@
 .section-wrapper {
     background: var(--surface-card);
-    border: 1px solid var(--surface-border);
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(96, 165, 250, 0.12);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 0.875rem;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(96, 165, 250, 0.06);
     padding: 1.25rem 1.5rem 1.5rem 1.5rem;
     margin-bottom: 1.25rem;
-    transition: background 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
     color: var(--text-color);
     scrollbar-width: none;
     -ms-overflow-style: none;
+
+    &:hover {
+        border-color: rgba(96, 165, 250, 0.22);
+        box-shadow:
+            0 6px 24px rgba(0, 0, 0, 0.25),
+            inset 0 1px 0 rgba(96, 165, 250, 0.1);
+    }
 }
 
 .section-wrapper::-webkit-scrollbar {
@@ -25,7 +35,8 @@
 .section-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--primary-color);
+    color: #93c5fd;
+    letter-spacing: -0.01em;
 }
 
 .section-actions {
@@ -35,5 +46,9 @@
 }
 
 :host-context(.app-dark) .section-wrapper {
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.28);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+
+    &:hover {
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+    }
 }

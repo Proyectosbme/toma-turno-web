@@ -1,5 +1,12 @@
 :root[class*='app-dark'] {
-    --surface-ground: var(--p-surface-950);
-    --code-background: var(--p-surface-800);
+    /* ── Paleta navy-azul unificada (sin negros) ── */
+    --surface-ground:  #0c1e3a;   /* fondo de página: azul oscuro */
+    --surface-card:    #112244;   /* tarjetas/secciones: azul medio */
+    --surface-hover:   rgba(96, 165, 250, 0.08);
+    --surface-border:  rgba(96, 165, 250, 0.14);
+    --surface-overlay: #1a2f55;   /* modales/overlays */
+
+    /* Código */
+    --code-background: #1a2f55;
     --code-color: var(--p-surface-100);
 }

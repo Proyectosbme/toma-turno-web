@@ -1,27 +1,46 @@
 .user-avatar {
     cursor: pointer;
+    background: #1e3a5f !important;
+    color: #93c5fd !important;
+    border: 1px solid rgba(96, 165, 250, 0.3) !important;
+    font-weight: 700 !important;
+    font-size: 0.8rem !important;
+    transition: background 0.2s, border-color 0.2s;
+
+    &:hover {
+        background: rgba(96, 165, 250, 0.25) !important;
+        border-color: rgba(96, 165, 250, 0.5) !important;
+    }
 }
 
 .user-info {
+    padding-top: 0.5rem;
     display: flex;
     flex-direction: column;
-    line-height: 1.2;
+    line-height: 1.3;
 
     .user-nombre {
         font-size: 0.875rem;
         font-weight: 600;
-        color: var(--text-color);
+        color: #e2e8f0;
         white-space: nowrap;
 
         .user-label {
             font-weight: 400;
-            color: var(--text-color-secondary);
+            color: #94a3b8;
         }
     }
 
     .user-sucursal {
-        font-size: 0.75rem;
-        color: var(--text-color-secondary);
+          font-size: 0.875rem;
+        font-weight: 600;
+        color: #e2e8f0;
         white-space: nowrap;
+
+         .user-label {
+            font-weight: 400;
+            color: #94a3b8;
+        }
+    
     }
 }

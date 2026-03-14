@@ -17,4 +17,20 @@
     --focus-ring-color: var(--p-focus-ring-color);
     --focus-ring-offset: var(--p-focus-ring-offset);
     --focus-ring-shadow: var(--p-focus-ring-shadow);
+
+    /* ── Shell: topbar · sidebar · footer (siempre oscuro) ── */
+    --shell-bg:            #091527;   /* más oscuro que el ground para jerarquía */
+    --shell-bg-2:          #0d1e36;
+    --shell-bg-card:       #142a4e;
+    --shell-border:        rgba(96, 165, 250, 0.2);
+    --shell-text:          #e2e8f0;
+    --shell-text-muted:    #94a3b8;
+    --shell-accent:        #60a5fa;
+    --shell-accent-dim:    rgba(96, 165, 250, 0.12);
+    --shell-hover:         rgba(96, 165, 250, 0.08);
+    --shell-secondary:     #a78bfa;
+    --shell-secondary-dim: rgba(167, 139, 250, 0.15);
+
+    /* Color para títulos/headings */
+    --heading-color: #93c5fd;
 }

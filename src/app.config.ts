@@ -11,17 +11,17 @@ import { MessageService } from 'primeng/api';
 const TomaTurnoPreset = definePreset(Aura, {
     semantic: {
         primary: {
-            50:  '{emerald.50}',
-            100: '{emerald.100}',
-            200: '{emerald.200}',
-            300: '{emerald.300}',
-            400: '{emerald.400}',
-            500: '{emerald.500}',
-            600: '{emerald.600}',
-            700: '{emerald.700}',
-            800: '{emerald.800}',
-            900: '{emerald.900}',
-            950: '{emerald.950}'
+            50:  '{sky.50}',
+            100: '{sky.100}',
+            200: '{sky.200}',
+            300: '{sky.300}',
+            400: '{sky.400}',
+            500: '{sky.500}',
+            600: '{sky.600}',
+            700: '{sky.700}',
+            800: '{sky.800}',
+            900: '{sky.900}',
+            950: '{sky.950}'
         }
     }
 });
