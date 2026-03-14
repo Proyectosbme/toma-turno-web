@@ -17,7 +17,6 @@
     letter-spacing: 0.03rem;
 }
 
-/* Botón para activar audio (visible hasta que el usuario toca) */
 .btn-activar-audio {
     display: inline-flex;
     align-items: center;
@@ -40,7 +39,6 @@
     i { font-size: 0.75rem; }
 }
 
-/* Badge cuando el sonido ya está activo */
 .audio-activo-badge {
     display: inline-flex;
     align-items: center;
@@ -56,6 +54,55 @@
     i { font-size: 0.7rem; }
 }
 
+/* Botón fullscreen en el header */
+.btn-fullscreen-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    border: 1px solid var(--surface-border);
+    background: transparent;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+        background: var(--surface-hover);
+        color: var(--text-color);
+    }
+
+    i { font-size: 0.85rem; }
+}
+
+/* Botón flotante: oculto en modo normal, visible en fullscreen */
+.btn-fullscreen-float {
+    display: none;
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 9999;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(0, 0, 0, 0.7); }
+
+    i { font-size: 1.1rem; }
+}
+
+body.layout-fullscreen .btn-fullscreen-float {
+    display: inline-flex;
+}
+
 .monitor-content {
     height: 100%;
     min-height: 400px;
@@ -67,10 +114,11 @@
     gap: 0;
     height: 100%;
     min-height: 400px;
-    background: #0f172a;
-    color: #f1f5f9;
+    background: var(--surface-ground);
+    color: var(--text-color);
     overflow: hidden;
     border-radius: 0.75rem;
+    border: 1px solid var(--surface-border);
 }
 
 /* ═══════════════════════════
@@ -79,21 +127,21 @@
 .panel-lista {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(255,255,255,0.07);
+    border-right: 1px solid var(--surface-border);
     overflow: hidden;
 }
 
 .lista-header {
     padding: 1.25rem 1.5rem;
-    background: #1e293b;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: var(--surface-card);
+    border-bottom: 1px solid var(--surface-border);
 
     .lista-titulo {
         font-size: 1rem;
         font-weight: 700;
         letter-spacing: 0.1rem;
         text-transform: uppercase;
-        color: #94a3b8;
+        color: var(--text-color-secondary);
     }
 }
 
@@ -101,22 +149,21 @@
     display: grid;
     grid-template-columns: 120px 80px 70px 1fr;
     padding: 0.5rem 1.5rem;
-    background: #1e293b;
-    border-bottom: 2px solid rgba(255,255,255,0.1);
+    background: var(--surface-card);
+    border-bottom: 2px solid var(--surface-border);
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08rem;
-    color: #94a3b8;
+    color: var(--text-color-secondary);
+
+    /* Todos los spans del subheader comparten el mismo color */
+    span { color: var(--text-color-secondary); }
 }
 
 .lista-body {
     flex: 1;
     overflow-y: auto;
-
-    &::-webkit-scrollbar { width: 4px; }
-    &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
 }
 
 .fila-turno {
@@ -124,10 +171,10 @@
     grid-template-columns: 120px 80px 70px 1fr;
     align-items: center;
     padding: 0.75rem 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--surface-border);
     transition: background 0.2s;
 
-    &:hover { background: rgba(255,255,255,0.03); }
+    &:hover { background: var(--surface-hover); }
 
     &.fila-llamado {
         background: rgba(99, 102, 241, 0.12);
@@ -146,20 +193,20 @@
     font-weight: 800;
     font-family: monospace;
     letter-spacing: 0.05rem;
-    color: #e2e8f0;
+    color: var(--text-color);
 
     .fila-llamado & { color: #a5b4fc; }
 }
 
 .col-puesto {
     font-size: 0.9rem;
-    color: #94a3b8;
+    color: var(--text-color-secondary);
     text-align: center;
 }
 
 .col-hora {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-color-secondary);
     font-variant-numeric: tabular-nums;
 }
 
@@ -179,8 +226,8 @@
 
     &.badge-finalizado {
         background: rgba(100, 116, 139, 0.25);
-        color: #94a3b8;
-        border: 1px solid rgba(100, 116, 139, 0.3);
+        color: var(--text-color-secondary);
+        border: 1px solid var(--surface-border);
     }
 }
 
@@ -190,7 +237,8 @@
     align-items: center;
     gap: 0.75rem;
     padding: 4rem 1rem;
-    color: #334155;
+    color: var(--text-color-secondary);
+    opacity: 0.5;
 
     i { font-size: 3rem; }
     span { font-size: 0.95rem; }
@@ -206,7 +254,7 @@
     justify-content: center;
     gap: 1.5rem;
     padding: 2rem;
-    background: #0f172a;
+    background: var(--surface-ground);
 }
 
 .destacado-card {
@@ -217,15 +265,15 @@
     gap: 0.75rem;
     width: 100%;
     min-height: 280px;
-    border: 2px solid #1e293b;
+    border: 2px solid var(--surface-border);
     border-radius: 20px;
-    background: #1e293b;
+    background: var(--surface-card);
     transition: all 0.4s ease;
     padding: 2rem;
 
     &.destacado-activo {
         border-color: #22c55e;
-        background: linear-gradient(145deg, #052e16 0%, #1e293b 100%);
+        background: linear-gradient(145deg, #052e16 0%, var(--surface-card) 100%);
         box-shadow: 0 0 40px rgba(34, 197, 94, 0.2), inset 0 0 40px rgba(34, 197, 94, 0.05);
         animation: glowPulse 2.5s ease-in-out infinite;
     }
@@ -246,7 +294,7 @@
     font-weight: 700;
     letter-spacing: 0.25rem;
     text-transform: uppercase;
-    color: #64748b;
+    color: var(--text-color-secondary);
     margin-bottom: -0.5rem;
 }
 
@@ -255,7 +303,7 @@
     font-weight: 900;
     font-family: monospace;
     letter-spacing: 0.15rem;
-    color: #f1f5f9;
+    color: var(--text-color);
     line-height: 1;
     text-align: center;
 }
@@ -277,17 +325,19 @@
 
 .destacado-hora {
     font-size: 0.85rem;
-    color: #475569;
+    color: var(--text-color-secondary);
 }
 
 .sin-llamado-icon {
     font-size: 3.5rem;
-    color: #1e293b;
+    color: var(--text-color-secondary);
+    opacity: 0.3;
 }
 
 .sin-llamado-texto {
     font-size: 0.9rem;
-    color: #334155;
+    color: var(--text-color-secondary);
+    opacity: 0.5;
 }
 
 /* ═══════════════════════════

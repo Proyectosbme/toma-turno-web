@@ -520,3 +520,94 @@
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.55; }
 }
+
+/* ═══════════════════════════════════════════════
+   BOTÓN PANTALLA COMPLETA
+═══════════════════════════════════════════════ */
+.btn-fullscreen-corner {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 9999;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(0, 0, 0, 0.6); }
+
+    i { font-size: 1.1rem; }
+}
+
+/* ═══════════════════════════════════════════════
+   MODO OSCURO
+═══════════════════════════════════════════════ */
+:host-context(.app-dark) {
+    .seleccion-turno {
+        background: linear-gradient(160deg, #0e2a50 0%, var(--surface-ground) 60%);
+    }
+
+    .dui-badge {
+        background: var(--surface-card);
+        border-color: var(--surface-border);
+    }
+
+    .ticket-card {
+        background: var(--surface-card);
+
+        &::before,
+        &::after {
+            background: var(--surface-ground);
+        }
+    }
+
+    .ticket-info {
+        background: var(--surface-card);
+
+        .ticket-info-row {
+            border-bottom-color: var(--surface-border);
+        }
+    }
+
+    .ticket-espere {
+        background: var(--surface-overlay);
+    }
+
+    .scan-lector-wrapper {
+        background: var(--surface-card);
+    }
+
+    .permiso-container {
+        background: var(--surface-card);
+    }
+
+    .caso-btn {
+        background: var(--surface-card);
+        border-color: var(--surface-border);
+
+        &:hover {
+            background: var(--surface-hover);
+            border-color: var(--primary-color);
+        }
+
+        &--activo {
+            background: rgba(96, 165, 250, 0.15) !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        &--ninguno {
+            background: var(--surface-ground) !important;
+
+            &.caso-btn--activo {
+                background: var(--surface-overlay) !important;
+            }
+        }
+    }
+}
