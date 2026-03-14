@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { TooltipModule } from 'primeng/tooltip';
 import { LayoutService } from '../../service/layout.service';
+import { BrandingService } from '../../service/branding.service';
 import { UserMenuComponent } from '../user.menu.component';
 import { AppBreadcrumb } from '../breadcrumb/app.breadcrumb';
 
@@ -16,7 +17,10 @@ import { AppBreadcrumb } from '../breadcrumb/app.breadcrumb';
 })
 export class AppTopbar {
 
-    constructor(public layoutService: LayoutService) {}
+    constructor(
+        public layoutService: LayoutService,
+        public branding: BrandingService
+    ) {}
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));

@@ -9,6 +9,90 @@
     gap: 0.5rem;
 }
 
+/* ── Apariencia ── */
+.branding-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.25rem 0;
+}
+
+.branding-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-color-secondary);
+    }
+}
+
+.branding-input-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    max-width: 480px;
+
+    input { flex: 1; }
+}
+
+.branding-hint {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    opacity: 0.8;
+}
+
+.branding-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.branding-logo-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    border: 1px solid var(--surface-border);
+    background: var(--surface-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.branding-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.branding-logo-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.branding-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background: var(--surface-hover); }
+}
+
 .advertencia-busqueda {
     display: flex;
     align-items: center;

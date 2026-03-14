@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { BrandingService } from '../../service/branding.service';
 
 @Component({
     standalone: true,
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
 })
 export class AppFooter {
     readonly currentYear = new Date().getFullYear();
-
+    readonly branding = inject(BrandingService);
 }

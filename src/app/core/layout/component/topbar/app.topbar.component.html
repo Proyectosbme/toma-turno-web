@@ -4,8 +4,8 @@
             <i class="pi pi-bars"></i>
         </button>
         <a class="layout-topbar-logo" routerLink="/">
-            <img src="images/logo.png" alt="TOMA-TURNO" class="layout-topbar-logo-img" />
-            <span>Toma turno</span>
+            <img [src]="branding.logoUrl() ?? 'images/logo.png'" alt="logo" class="layout-topbar-logo-img" />
+            <span>{{ branding.nombreEmpresa() }}</span>
         </a>
     </div>
 

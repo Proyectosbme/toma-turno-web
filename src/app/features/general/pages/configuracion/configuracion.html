@@ -13,6 +13,56 @@
 
     <!-- ═══ CONTENT ═══ -->
     <div page-content>
+
+        <!-- Sección: Apariencia -->
+        <app-section title="Apariencia de la Empresa">
+            <div class="branding-form">
+
+                <!-- Nombre -->
+                <div class="branding-field">
+                    <label>Nombre de la empresa</label>
+                    <div class="branding-input-row">
+                        <input pInputText [(ngModel)]="nombreInput"
+                            placeholder="Ej: Mi Empresa S.A."
+                            maxlength="60" />
+                        <button pButton icon="pi pi-check" label="Aplicar"
+                            (click)="guardarNombre()"
+                            [disabled]="!nombreInput.trim()">
+                        </button>
+                    </div>
+                    <small class="branding-hint">
+                        Se muestra en el topbar y el footer. Actual: <strong>{{ branding.nombreEmpresa() }}</strong>
+                    </small>
+                </div>
+
+                <!-- Logo -->
+                <div class="branding-field">
+                    <label>Logo de la empresa</label>
+                    <div class="branding-logo-row">
+                        <div class="branding-logo-preview">
+                            <img [src]="branding.logoUrl() ?? 'images/logo.png'"
+                                alt="Logo actual" class="branding-logo-img" />
+                        </div>
+                        <div class="branding-logo-actions">
+                            <label class="branding-upload-btn" pTooltip="Seleccionar imagen (PNG, JPG, SVG)">
+                                <i class="pi pi-upload"></i> Subir logo
+                                <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                                    (change)="onLogoSeleccionado($event)" hidden />
+                            </label>
+                            <button pButton icon="pi pi-trash" label="Restaurar"
+                                severity="secondary" [outlined]="true"
+                                pTooltip="Volver al logo por defecto"
+                                (click)="restaurarLogo()"
+                                [disabled]="!branding.logoUrl()">
+                            </button>
+                        </div>
+                    </div>
+                    <small class="branding-hint">La imagen se guarda localmente en el navegador.</small>
+                </div>
+
+            </div>
+        </app-section>
+
         <!-- Sección: Búsqueda -->
         <app-section id="sec-busqueda" title="Búsqueda por sucursal">
             <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda" [columns]="2"

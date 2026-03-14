@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
+import { InputTextModule } from 'primeng/inputtext';
+import { BrandingService } from '@core/layout/service/branding.service';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { SectionComponent } from '@shared/components/section/section.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
@@ -26,11 +28,13 @@ import { extraerMensajeError } from '@shared/utils/error.util';
     standalone: true,
     imports: [
         CommonModule,
+        FormsModule,
         ReactiveFormsModule,
         ButtonModule,
         TooltipModule,
         DialogModule,
         ToastModule,
+        InputTextModule,
         PageLayoutComponent,
         SectionComponent,
         PageTitleComponent,
@@ -42,6 +46,28 @@ import { extraerMensajeError } from '@shared/utils/error.util';
     styleUrl: './configuracion.scss'
 })
 export class ConfiguracionPage implements OnInit {
+
+    readonly branding = inject(BrandingService);
+
+    /* ── Apariencia ── */
+    nombreInput = this.branding.nombreEmpresa();
+
+    guardarNombre(): void {
+        this.branding.setNombre(this.nombreInput);
+        this.notificacion.exito('Nombre actualizado', `Empresa: "${this.branding.nombreEmpresa()}"`);
+    }
+
+    onLogoSeleccionado(event: Event): void {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => this.branding.setLogo(reader.result as string);
+        reader.readAsDataURL(file);
+    }
+
+    restaurarLogo(): void {
+        this.branding.clearLogo();
+    }
 
     /* ── Formulario crear / editar ── */
     formularioConfig = crearFormularioConfiguracion();
