@@ -20,6 +20,10 @@
             <i class="pi pi-circle-fill" style="color: #22c55e; font-size: 0.6rem;"></i>
             En vivo
         </span>
+        <button class="btn-fullscreen-header" (click)="layoutService.toggleFullscreen()"
+            title="Pantalla completa">
+            <i class="pi pi-expand"></i>
+        </button>
     </ng-container>
 
     <!-- ═══ CONTENT ═══ -->
@@ -92,3 +96,9 @@
     </div>
 
 </app-page-layout>
+
+<!-- Botón flotante: solo visible en pantalla completa -->
+<button class="btn-fullscreen-float" (click)="layoutService.toggleFullscreen()"
+    title="Salir de pantalla completa">
+    <i class="pi pi-compress"></i>
+</button>

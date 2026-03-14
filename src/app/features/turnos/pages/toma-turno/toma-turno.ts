@@ -7,6 +7,7 @@ import { TurnoResponseDTO } from '@turnos/dto/turno.dto';
 import { AuthService } from '@auth/services/auth.service';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
+import { LayoutService } from '@core/layout/service/layout.service';
 
 interface FilaTurno {
     codigoTurno: string;
@@ -25,6 +26,7 @@ interface FilaTurno {
 export class TomaTurnoPage implements OnInit, OnDestroy {
 
     private readonly authService = inject(AuthService);
+    readonly layoutService = inject(LayoutService);
 
     get idSucursalActual(): number {
         return this.authService.getUsuario()?.idSucursal ?? 0;

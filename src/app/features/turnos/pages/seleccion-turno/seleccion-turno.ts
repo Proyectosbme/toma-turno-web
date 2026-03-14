@@ -14,6 +14,7 @@ import { TurnoResponseDTO } from '@turnos/dto/turno.dto';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { AuthService } from '@auth/services/auth.service';
 import { ConfiguracionServicio } from '@general/services/configuracion.servicio';
+import { LayoutService } from '@core/layout/service/layout.service';
 
 export interface DuiData {
     numero: string;
@@ -32,6 +33,8 @@ export interface DuiData {
     styleUrl: './seleccion-turno.scss'
 })
 export class SeleccionTurnoPage implements OnInit {
+
+    readonly layoutService = inject(LayoutService);
 
     private readonly authService = inject(AuthService);
 

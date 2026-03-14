@@ -238,4 +238,10 @@
 
     </ng-container>
 
+    <!-- Botón pantalla completa (esquina inferior derecha, siempre visible) -->
+    <button class="btn-fullscreen-corner" (click)="layoutService.toggleFullscreen()"
+        [title]="layoutService.isFullscreen() ? 'Salir de pantalla completa' : 'Pantalla completa'">
+        <i [class]="layoutService.isFullscreen() ? 'pi pi-compress' : 'pi pi-expand'"></i>
+    </button>
+
 </div>
