@@ -54,22 +54,17 @@
 ========================= */
 .banner-wrapper {
     flex: 1;
-    background-color: var(--surface-card);
     border-radius: var(--content-border-radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin-top: 1rem;
     overflow: hidden;
     min-height: 200px;
-    max-height: 60vh;
-}
+    max-height: 65vh;
 
-.banner-wrapper img {
-    width: auto;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    display: block;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
 }
