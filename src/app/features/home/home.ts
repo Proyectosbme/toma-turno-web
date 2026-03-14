@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule for ngFor
-import { RouterModule } from '@angular/router'; // Import RouterModule for routerLink
+import { Component, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { BrandingService } from '@core/layout/service/branding.service';
 
 interface Access {
     id: number;
@@ -26,6 +27,8 @@ interface SessionInfo {
     encapsulation: ViewEncapsulation.None
 })
 export class Home implements OnInit {
+
+    readonly branding = inject(BrandingService);
 
     accesses: Access[] = [];
     sessionInfo!: SessionInfo;
