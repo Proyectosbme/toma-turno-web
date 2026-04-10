@@ -69,6 +69,13 @@ export class AppConfigurator {
     ngOnInit() {
         if (isPlatformBrowser(this.platformId)) {
             this.onPresetChange(this.layoutService.layoutConfig().preset);
+            const savedPrimary = this.layoutService.layoutConfig().primary;
+            if (savedPrimary && savedPrimary !== 'sky') {
+                const color = this.primaryColors().find(c => c.name === savedPrimary);
+                if (color) {
+                    this.applyTheme('primary', color);
+                }
+            }
         }
     }
 

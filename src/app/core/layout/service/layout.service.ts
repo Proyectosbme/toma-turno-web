@@ -23,7 +23,7 @@ interface LayoutState {
 export class LayoutService {
     _config: layoutConfig = {
         preset: 'Aura',
-        primary: 'sky',
+        primary: localStorage.getItem('primaryColor') ?? 'sky',
         surface: null,
         darkTheme: localStorage.getItem('theme') !== 'light',
         menuMode: 'static'
@@ -181,6 +181,9 @@ export class LayoutService {
 
     onConfigUpdate() {
         this._config = { ...this.layoutConfig() };
+        if (this._config.primary) {
+            localStorage.setItem('primaryColor', this._config.primary);
+        }
         this.configUpdate.next(this.layoutConfig());
     }
 
