@@ -1,15 +1,15 @@
 .user-avatar {
     cursor: pointer;
-    background: #1e3a5f !important;
-    color: #93c5fd !important;
-    border: 1px solid rgba(96, 165, 250, 0.3) !important;
+    background: color-mix(in srgb, var(--p-primary-900), black 20%) !important;
+    color: var(--p-primary-300) !important;
+    border: 1px solid color-mix(in srgb, var(--p-primary-400), transparent 70%) !important;
     font-weight: 700 !important;
     font-size: 0.8rem !important;
     transition: background 0.2s, border-color 0.2s;
 
     &:hover {
-        background: rgba(96, 165, 250, 0.25) !important;
-        border-color: rgba(96, 165, 250, 0.5) !important;
+        background: color-mix(in srgb, var(--p-primary-400), transparent 75%) !important;
+        border-color: color-mix(in srgb, var(--p-primary-400), transparent 50%) !important;
     }
 }
 

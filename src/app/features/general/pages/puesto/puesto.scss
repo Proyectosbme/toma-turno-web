@@ -105,9 +105,9 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 0.8rem;
-    background: var(--blue-50);
-    border: 1px solid var(--blue-200);
+    background: color-mix(in srgb, var(--p-primary-400), transparent 90%);
+    border: 1px solid var(--p-primary-200);
     border-radius: 6px;
-    color: var(--blue-700);
+    color: var(--p-primary-color);
     font-size: 0.85rem;
 }

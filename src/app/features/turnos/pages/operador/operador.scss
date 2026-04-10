@@ -161,7 +161,7 @@
         font-family: monospace;
         color: var(--primary-color);
         background: var(--primary-50, #eff6ff);
-        border: 1px solid var(--primary-200, #bfdbfe);
+        border: 1px solid var(--p-primary-200);
         border-radius: 8px;
         padding: 0.2rem 0.75rem;
         margin: 0.35rem 0;
@@ -376,14 +376,14 @@
 /* ── Modo oscuro ── */
 :host-context(.app-dark) {
     .timer-atencion {
-        background: rgba(96, 165, 250, 0.12);
-        border-color: rgba(96, 165, 250, 0.3);
+        background: color-mix(in srgb, var(--p-primary-400), transparent 88%);
+        border-color: color-mix(in srgb, var(--p-primary-400), transparent 70%);
         color: var(--primary-color);
     }
 
     .turno-espera-item {
         &.primero {
-            background: rgba(96, 165, 250, 0.1);
+            background: color-mix(in srgb, var(--p-primary-400), transparent 90%);
         }
 
         &.aviso {

@@ -1,11 +1,11 @@
 .section-wrapper {
     background: var(--surface-card);
-    border: 1px solid rgba(96, 165, 250, 0.12);
+    border: 1px solid color-mix(in srgb, var(--p-primary-400), transparent 88%);
     border-top: 2px solid var(--primary-color);
     border-radius: 0.875rem;
     box-shadow:
         0 4px 20px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(96, 165, 250, 0.06);
+        inset 0 1px 0 color-mix(in srgb, var(--p-primary-400), transparent 94%);
     padding: 1.25rem 1.5rem 1.5rem 1.5rem;
     margin-bottom: 1.25rem;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -14,10 +14,10 @@
     -ms-overflow-style: none;
 
     &:hover {
-        border-color: rgba(96, 165, 250, 0.22);
+        border-color: color-mix(in srgb, var(--p-primary-400), transparent 78%);
         box-shadow:
             0 6px 24px rgba(0, 0, 0, 0.25),
-            inset 0 1px 0 rgba(96, 165, 250, 0.1);
+            inset 0 1px 0 color-mix(in srgb, var(--p-primary-400), transparent 90%);
     }
 }
 
@@ -35,7 +35,7 @@
 .section-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #93c5fd;
+    color: var(--p-primary-300);
     letter-spacing: -0.01em;
 }
 

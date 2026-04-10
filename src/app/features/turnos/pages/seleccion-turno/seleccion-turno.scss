@@ -78,7 +78,7 @@
     flex-wrap: wrap;
     justify-content: center;
     background: white;
-    border: 1.5px solid var(--primary-200, #bfdbfe);
+    border: 1.5px solid var(--p-primary-200);
     border-radius: 50px;
     padding: 0.55rem 1.25rem;
     margin-top: 0.75rem;
@@ -598,7 +598,7 @@
         }
 
         &--activo {
-            background: rgba(96, 165, 250, 0.15) !important;
+            background: color-mix(in srgb, var(--p-primary-400), transparent 85%) !important;
             border-color: var(--primary-color) !important;
         }
 
