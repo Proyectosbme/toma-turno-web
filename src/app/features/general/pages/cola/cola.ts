@@ -22,6 +22,7 @@ import {
 import { DetalleRequestDTO } from '@general/dto/detalle.dto';
 import { NotificacionServicio } from '@shared/services/notificacion.servicio';
 import { extraerMensajeError } from '@shared/utils/error.util';
+import { AuthService } from '@auth/services/auth.service';
 
 @Component({
     selector: 'app-cola',
@@ -79,7 +80,8 @@ export class ColaPage implements OnInit {
     constructor(
         private readonly colaServicio: ColaServicio,
         private readonly sucursalServicio: SucursalServicio,
-        private readonly notificacion: NotificacionServicio
+        private readonly notificacion: NotificacionServicio,
+        private readonly authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -171,7 +173,8 @@ export class ColaPage implements OnInit {
             nombre: datos.nombre ?? '',
             codigo: datos.codigo ?? '',
             prioridad: Number(datos.prioridad),
-            estado: Number(datos.estado)
+            estado: Number(datos.estado),
+            usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
 
         try {
@@ -212,7 +215,8 @@ export class ColaPage implements OnInit {
         const dto: DetalleRequestDTO = {
             nombre: datos.nombre ?? '',
             codigo: datos.codigo ?? '',
-            estado: Number(datos.estado)
+            estado: Number(datos.estado),
+            usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
 
         try {

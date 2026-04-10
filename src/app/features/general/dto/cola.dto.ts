@@ -7,6 +7,7 @@ export interface ColaRequestDTO {
     codigo: string;
     prioridad: number;
     estado: number;
+    usuario: string;
 }
 
 /** Datos que RESPONDE el backend al consultar colas (listado, sin detalles) */

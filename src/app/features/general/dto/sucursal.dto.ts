@@ -5,6 +5,7 @@ export interface SucursalRequestDTO {
     correo: string;
     direccion: string;
     estado: number | null;
+    usuario: string;
 }
 
 /** Datos que RESPONDE el backend al consultar sucursales */
@@ -27,4 +28,5 @@ export interface ReplicarResponseDTO {
     totalSaltadas: number;
     colasCopidas: string[];
     colasSaltadas: string[];
+    detallesCopiados: string[];
 }

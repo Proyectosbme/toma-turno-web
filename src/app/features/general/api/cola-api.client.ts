@@ -30,6 +30,13 @@ export class ColaApiClient {
         );
     }
 
+    buscarColasConDetalle(idSucursal: number): Promise<ColaResponseDTO[]> {
+        const params = new HttpParams().set('idSucursal', idSucursal);
+        return firstValueFrom(
+            this.http.get<ColaResponseDTO[]>(`${this.BASE_URL}/buscarConDetalles`, { params })
+        );
+    }
+
     crear(dto: ColaRequestDTO): Promise<ColaResponseDTO> {
         return firstValueFrom(
             this.http.post<ColaResponseDTO>(`${this.BASE_URL}/crear`, dto)

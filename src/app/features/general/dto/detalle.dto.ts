@@ -2,6 +2,7 @@ export interface DetalleRequestDTO {
     nombre: string;
     codigo: string;
     estado: number;
+    usuario: string;
 }
 
 export interface DetalleResponseDTO {

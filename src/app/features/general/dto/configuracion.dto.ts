@@ -8,6 +8,7 @@ export interface ConfiguracionRequestDTO {
     valorTexto: string;
     descripcion: string;
     estado: number;
+    usuario: string;
 }
 
 /** Datos que RESPONDE el backend al consultar configuraciones */

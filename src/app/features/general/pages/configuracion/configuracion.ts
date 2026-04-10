@@ -22,6 +22,7 @@ import {
 } from './configuracion.config';
 import { NotificacionServicio } from '@shared/services/notificacion.servicio';
 import { extraerMensajeError } from '@shared/utils/error.util';
+import { AuthService } from '@auth/services/auth.service';
 
 @Component({
     selector: 'app-configuracion',
@@ -115,7 +116,8 @@ export class ConfiguracionPage implements OnInit {
     constructor(
         private readonly configServicio: ConfiguracionServicio,
         private readonly sucursalServicio: SucursalServicio,
-        private readonly notificacion: NotificacionServicio
+        private readonly notificacion: NotificacionServicio,
+        private readonly authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -196,7 +198,8 @@ export class ConfiguracionPage implements OnInit {
             parametro: datos.parametro != null ? Number(datos.parametro) : null,
             valorTexto: datos.valorTexto ?? '',
             descripcion: datos.descripcion ?? '',
-            estado: Number(datos.estado)
+            estado: Number(datos.estado),
+            usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
 
         try {

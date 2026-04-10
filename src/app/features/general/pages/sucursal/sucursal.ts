@@ -18,6 +18,7 @@ import { SucursalRequestDTO, ReplicarResponseDTO } from '@general/dto/sucursal.d
 import { NotificacionServicio } from '@shared/services/notificacion.servicio';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { ColaApiClient } from '@general/api/cola-api.client';
+import { AuthService } from '@auth/services/auth.service';
 
 @Component({
     selector: 'app-sucursal',
@@ -51,7 +52,8 @@ export class Sucursal implements OnInit {
     constructor(
         private readonly sucursalServicio: SucursalServicio,
         private readonly notificacion: NotificacionServicio,
-        private readonly colaApi: ColaApiClient
+        private readonly colaApi: ColaApiClient,
+        private readonly authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -187,7 +189,8 @@ export class Sucursal implements OnInit {
             telefono: datos.telefono ?? '',
             correo: datos.correo ?? '',
             direccion: datos.direccion ?? '',
-            estado: Number(datos.estado)
+            estado: Number(datos.estado),
+            usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
 
         try {
