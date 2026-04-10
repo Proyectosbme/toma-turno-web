@@ -82,7 +82,7 @@ export class SeleccionTurnoPage implements OnInit {
         try {
             const configs = await this.configuracionServicio.buscarPorSucursal(this.idSucursalActual);
             const cfgEspecial = configs.find(c => c.nombre === 'CASOS_ESPECIALES');
-            this.casosEspecialesActivados = cfgEspecial?.estado === 1 && cfgEspecial?.parametro === 1234;
+            this.casosEspecialesActivados = cfgEspecial?.estado === 1 && cfgEspecial?.parametro === 1;
             const cfg = configs.find(c => c.nombre === 'ESCANEAR_DUI');
             this.lectorBarcodeActivo = cfg?.estado === 1 && cfg?.parametro === 1;
             if (this.lectorBarcodeActivo) {
@@ -169,7 +169,7 @@ export class SeleccionTurnoPage implements OnInit {
     private async cargarColas(): Promise<void> {
         try {
             this.cargandoColas = true;
-            const resultado = await this.colaApi.buscar({ idSucursal: this.idSucursalActual });
+            const resultado = await this.colaApi.buscarColasConDetalle(this.idSucursalActual);
             this.colas = resultado
                 .filter(c => c.estado === 1)
                 .sort((a, b) => a.prioridad - b.prioridad);
