@@ -20,6 +20,14 @@
             <i class="pi pi-circle-fill" style="color: #22c55e; font-size: 0.6rem;"></i>
             En vivo
         </span>
+        <!-- Selector de carpeta de publicidad -->
+        <input #inputCarpeta type="file" webkitdirectory multiple style="display:none"
+            (change)="seleccionarCarpeta($event)">
+        <button class="btn-publicidad" (click)="inputCarpeta.click()" title="Seleccionar carpeta de publicidad">
+            <i class="pi pi-images"></i>
+            {{ archivosPublicidad.length ? archivosPublicidad.length + ' archivo(s)' : 'Publicidad' }}
+        </button>
+
         <button class="btn-fullscreen-header" (click)="layoutService.toggleFullscreen()"
             title="Pantalla completa">
             <i class="pi pi-expand"></i>
@@ -71,7 +79,7 @@
                 </div>
             </div>
 
-            <!-- ══ LADO DERECHO: turno destacado ══ -->
+            <!-- ══ LADO DERECHO: turno destacado + publicidad ══ -->
             <div class="panel-destacado">
 
                 <div class="destacado-card" [class.destacado-activo]="turnoDestacado">
@@ -89,6 +97,29 @@
                         <span class="sin-llamado-texto">En espera</span>
                     </ng-template>
                 </div>
+
+                <!-- Panel de publicidad -->
+                <div class="panel-publicidad" *ngIf="archivosPublicidad.length; else sinPublicidad">
+                    <ng-container *ngIf="archivoActual">
+                        <img *ngIf="archivoActual.tipo === 'imagen'"
+                            [src]="archivoActual.url"
+                            class="publicidad-media" alt="Publicidad">
+                        <video *ngIf="archivoActual.tipo === 'video'"
+                            [src]="archivoActual.url"
+                            class="publicidad-media"
+                            autoplay muted
+                            (ended)="siguienteSlide()">
+                            <track kind="metadata">
+                        </video>
+                    </ng-container>
+                </div>
+                <ng-template #sinPublicidad>
+                    <div class="panel-publicidad panel-publicidad--vacio">
+                        <i class="pi pi-image"></i>
+                        <span>Selecciona una carpeta para mostrar publicidad</span>
+                    </div>
+                </ng-template>
+
             </div>
 
         </div>

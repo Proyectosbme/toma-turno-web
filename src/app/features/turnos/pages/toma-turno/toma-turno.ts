@@ -51,6 +51,12 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     // Bloquea actualización del display 4 s después del último anuncio
     private postAnuncioTimer?: ReturnType<typeof setTimeout>;
 
+    // ── Publicidad ──
+    archivosPublicidad: { url: string; tipo: 'imagen' | 'video' }[] = [];
+    indicePublicidad = 0;
+    private slideshowTimer?: ReturnType<typeof setTimeout>;
+    private readonly DURACION_IMAGEN_MS = 6000;
+
     constructor(
         private readonly turnoApi: TurnoApiClient,
         private readonly turnoWebSocket: TurnoWebSocketApi,
@@ -220,10 +226,62 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         }
     }
 
+    /* ══════════════════════════════════════════
+       Publicidad — selección de carpeta local
+    ══════════════════════════════════════════ */
+    get archivoActual(): { url: string; tipo: 'imagen' | 'video' } | null {
+        return this.archivosPublicidad[this.indicePublicidad] ?? null;
+    }
+
+    seleccionarCarpeta(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        if (!input.files?.length) return;
+
+        this.archivosPublicidad.forEach(a => URL.revokeObjectURL(a.url));
+        this.archivosPublicidad = [];
+        clearTimeout(this.slideshowTimer);
+
+        const extImagen = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+        const extVideo  = ['mp4', 'webm'];
+
+        const filtrados = Array.from(input.files)
+            .filter(f => {
+                const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+                return extImagen.includes(ext) || extVideo.includes(ext);
+            })
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        this.archivosPublicidad = filtrados.map(f => {
+            const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+            return { url: URL.createObjectURL(f), tipo: extVideo.includes(ext) ? 'video' : 'imagen' };
+        });
+
+        this.indicePublicidad = 0;
+        this.iniciarSlide();
+        // Limpiar el input para poder volver a seleccionar la misma carpeta
+        input.value = '';
+    }
+
+    private iniciarSlide(): void {
+        clearTimeout(this.slideshowTimer);
+        if (this.archivoActual?.tipo === 'imagen') {
+            this.slideshowTimer = setTimeout(() => this.siguienteSlide(), this.DURACION_IMAGEN_MS);
+        }
+        // los videos llaman a siguienteSlide() desde (ended) en el template
+    }
+
+    siguienteSlide(): void {
+        if (!this.archivosPublicidad.length) return;
+        this.indicePublicidad = (this.indicePublicidad + 1) % this.archivosPublicidad.length;
+        this.iniciarSlide();
+    }
+
     ngOnDestroy(): void {
         clearInterval(this.intervalo);
         clearInterval(this.keepAliveIntervalo);
         clearTimeout(this.postAnuncioTimer);
+        clearTimeout(this.slideshowTimer);
+        this.archivosPublicidad.forEach(a => URL.revokeObjectURL(a.url));
         this.wsSubscription?.unsubscribe();
         this.turnoWebSocket.close();
         if (this.audioSoportado) window.speechSynthesis.cancel();

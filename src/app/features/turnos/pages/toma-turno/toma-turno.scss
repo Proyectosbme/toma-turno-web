@@ -247,14 +247,37 @@ body.layout-fullscreen .btn-fullscreen-float {
 /* ═══════════════════════════
    Panel destacado (derecho)
 ═══════════════════════════ */
+.btn-publicidad {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    border-radius: 2rem;
+    padding: 0.3rem 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+
+    &:hover {
+        background: rgba(124, 58, 237, 0.22);
+        border-color: rgba(124, 58, 237, 0.7);
+    }
+
+    i { font-size: 0.75rem; }
+}
+
 .panel-destacado {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    padding: 2rem;
+    justify-content: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
     background: var(--surface-ground);
+    overflow: hidden;
 }
 
 .destacado-card {
@@ -356,4 +379,40 @@ body.layout-fullscreen .btn-fullscreen-float {
 @keyframes pulsarAccion {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.75; transform: scale(1.04); }
+}
+
+/* ═══════════════════════════
+   Panel publicidad
+═══════════════════════════ */
+.panel-publicidad {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--surface-border);
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--vacio {
+        background: var(--surface-card);
+        flex-direction: column;
+        gap: 0.5rem;
+        color: var(--text-color-secondary);
+        opacity: 0.45;
+        font-size: 0.8rem;
+        text-align: center;
+        padding: 1rem;
+
+        i { font-size: 2rem; }
+    }
+}
+
+.publicidad-media {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
