@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -10,6 +10,7 @@ import { AppFloatingConfigurator } from '@core/layout/component/app.floatingconf
 import { AuthApiClient } from '@auth/api/auth-api.client';
 import { AuthService } from '@auth/services/auth.service';
 import { SucursalApiClient } from '@general/api/sucursal-api.client';
+import { BrandingService } from '@core/layout/service/branding.service';
 
 @Component({
     selector: 'app-login',
@@ -18,6 +19,8 @@ import { SucursalApiClient } from '@general/api/sucursal-api.client';
     templateUrl: './login.component.html'
 })
 export class Login implements OnInit {
+    readonly branding = inject(BrandingService);
+
     codigoUsuario: string = '';
     contrasena: string = '';
     idSucursal: number | null = null;
@@ -53,6 +56,7 @@ export class Login implements OnInit {
         try {
             const usuario = await this.authApiClient.login(this.codigoUsuario, this.contrasena, this.idSucursal);
             this.authService.setUsuario(usuario);
+            await this.branding.cargar();
             this.redirigir(usuario.perfil);
         } catch (err: any) {
             const mensaje = err?.error?.error;
