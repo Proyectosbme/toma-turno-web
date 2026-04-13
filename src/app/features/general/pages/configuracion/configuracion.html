@@ -20,13 +20,14 @@
 
                 <!-- Nombre -->
                 <div class="branding-field">
-                    <label>Nombre de la empresa</label>
+                    <label for="nombreEmpresaInput">Nombre de la empresa</label>
                     <div class="branding-input-row">
-                        <input pInputText [(ngModel)]="nombreInput"
+                        <input id="nombreEmpresaInput" pInputText [(ngModel)]="nombreInput"
                             placeholder="Ej: Mi Empresa S.A."
                             maxlength="60" />
                         <button pButton icon="pi pi-check" label="Aplicar"
                             (click)="guardarNombre()"
+                            [loading]="guardandoNombre"
                             [disabled]="!nombreInput.trim()">
                         </button>
                     </div>
@@ -37,49 +38,46 @@
 
                 <!-- Logo -->
                 <div class="branding-field">
-                    <label>Logo de la empresa</label>
+                    <label for="logoInput">Logo de la empresa</label>
                     <div class="branding-logo-row">
                         <div class="branding-logo-preview">
-                            <img [src]="branding.logoUrl() ?? 'images/logo.png'"
+                            <img [src]="branding.logoUrl() || '/images/logo.png'"
+                                (error)="$any($event.target).src='/images/logo.png'"
                                 alt="Logo actual" class="branding-logo-img" />
                         </div>
                         <div class="branding-logo-actions">
-                            <label class="branding-upload-btn" pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
-                                <i class="pi pi-upload"></i> Subir logo
-                                <input type="file" accept="image/*"
-                                    (change)="onLogoSeleccionado($event)" hidden />
+                            <label class="branding-upload-btn" [class.disabled]="guardandoLogo"
+                                pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
+                                <i class="pi" [ngClass]="guardandoLogo ? 'pi-spin pi-spinner' : 'pi-upload'"></i>
+                                {{ guardandoLogo ? 'Subiendo...' : 'Subir logo' }}
+                                <input id="logoInput" type="file" accept="image/*"
+                                    (change)="onLogoSeleccionado($event)"
+                                    [disabled]="guardandoLogo" hidden />
                             </label>
-                            <button pButton icon="pi pi-trash" label="Restaurar"
-                                severity="secondary" [outlined]="true"
-                                pTooltip="Volver al logo por defecto"
-                                (click)="restaurarLogo()"
-                                [disabled]="!branding.logoUrl()">
-                            </button>
                         </div>
                     </div>
-                    <small class="branding-hint">La imagen se guarda localmente en el navegador.</small>
+                    <small class="branding-hint">Se guarda en la base de datos y se aplica en toda la aplicación.</small>
                 </div>
 
                 <!-- Banner -->
                 <div class="branding-field">
-                    <label>Banner del inicio</label>
+                    <label for="bannerInput">Banner del inicio</label>
                     <div class="branding-banner-preview">
-                        <img [src]="branding.bannerUrl() ?? '/images/banner.png'" alt="Banner actual" />
+                        <img [src]="branding.bannerUrl() || '/images/banner.jpeg'"
+                                (error)="$any($event.target).src='/images/banner.jpeg'"
+                                alt="Banner actual" />
                     </div>
                     <div class="branding-logo-actions" style="margin-top: 0.5rem;">
-                        <label class="branding-upload-btn" pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
-                            <i class="pi pi-upload"></i> Subir banner
-                            <input type="file" accept="image/*"
-                                (change)="onBannerSeleccionado($event)" hidden />
+                        <label class="branding-upload-btn" [class.disabled]="guardandoBanner"
+                            pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
+                            <i class="pi" [ngClass]="guardandoBanner ? 'pi-spin pi-spinner' : 'pi-upload'"></i>
+                            {{ guardandoBanner ? 'Subiendo...' : 'Subir banner' }}
+                            <input id="bannerInput" type="file" accept="image/*"
+                                (change)="onBannerSeleccionado($event)"
+                                [disabled]="guardandoBanner" hidden />
                         </label>
-                        <button pButton icon="pi pi-trash" label="Restaurar"
-                            severity="secondary" [outlined]="true"
-                            pTooltip="Volver al banner por defecto"
-                            (click)="restaurarBanner()"
-                            [disabled]="!branding.bannerUrl()">
-                        </button>
                     </div>
-                    <small class="branding-hint">Se muestra en la pantalla de inicio. La imagen se guarda localmente.</small>
+                    <small class="branding-hint">Se guarda en la base de datos y se muestra en la pantalla de inicio.</small>
                 </div>
 
             </div>

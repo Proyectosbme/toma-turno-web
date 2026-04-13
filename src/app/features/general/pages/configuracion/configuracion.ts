@@ -51,46 +51,59 @@ export class ConfiguracionPage implements OnInit {
     readonly branding = inject(BrandingService);
 
     /* ── Apariencia ── */
-    nombreInput = this.branding.nombreEmpresa();
+    nombreInput = '';
+    guardandoNombre  = false;
+    guardandoLogo    = false;
+    guardandoBanner  = false;
 
-    guardarNombre(): void {
-        this.branding.setNombre(this.nombreInput);
-        this.notificacion.exito('Nombre actualizado', `Empresa: "${this.branding.nombreEmpresa()}"`);
+    ngOnInit(): void {
+        this.cargarSucursales();
+        this.nombreInput = this.branding.nombreEmpresa();
     }
 
-    onLogoSeleccionado(event: Event): void {
-        const file = (event.target as HTMLInputElement).files?.[0];
+    async guardarNombre(): Promise<void> {
+        if (!this.nombreInput.trim()) return;
+        try {
+            this.guardandoNombre = true;
+            await this.branding.setNombre(this.nombreInput);
+            this.notificacion.exito('Nombre actualizado', `Empresa: "${this.branding.nombreEmpresa()}"`);
+        } catch {
+            this.notificacion.error('Error', 'No se pudo actualizar el nombre');
+        } finally {
+            this.guardandoNombre = false;
+        }
+    }
+
+    async onLogoSeleccionado(event: Event): Promise<void> {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.branding.setLogo(reader.result as string);
-            this.notificacion.exito('Logo actualizado', 'El nuevo logo reemplazó al anterior');
-        };
-        reader.readAsDataURL(file);
-        // Limpiar el input para permitir subir el mismo archivo de nuevo
-        (event.target as HTMLInputElement).value = '';
+        try {
+            this.guardandoLogo = true;
+            await this.branding.setLogo(file);
+            this.notificacion.exito('Logo actualizado', 'El nuevo logo se guardó correctamente');
+        } catch {
+            this.notificacion.error('Error', 'No se pudo actualizar el logo');
+        } finally {
+            this.guardandoLogo = false;
+            input.value = '';
+        }
     }
 
-    restaurarLogo(): void {
-        this.branding.clearLogo();
-        this.notificacion.exito('Logo restaurado', 'Se volvió al logo por defecto');
-    }
-
-    onBannerSeleccionado(event: Event): void {
-        const file = (event.target as HTMLInputElement).files?.[0];
+    async onBannerSeleccionado(event: Event): Promise<void> {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.branding.setBanner(reader.result as string);
-            this.notificacion.exito('Banner actualizado', 'El nuevo banner reemplazó al anterior');
-        };
-        reader.readAsDataURL(file);
-        (event.target as HTMLInputElement).value = '';
-    }
-
-    restaurarBanner(): void {
-        this.branding.clearBanner();
-        this.notificacion.exito('Banner restaurado', 'Se volvió al banner por defecto');
+        try {
+            this.guardandoBanner = true;
+            await this.branding.setBanner(file);
+            this.notificacion.exito('Banner actualizado', 'El nuevo banner se guardó correctamente');
+        } catch {
+            this.notificacion.error('Error', 'No se pudo actualizar el banner');
+        } finally {
+            this.guardandoBanner = false;
+            input.value = '';
+        }
     }
 
     /* ── Formulario crear / editar ── */
@@ -119,10 +132,6 @@ export class ConfiguracionPage implements OnInit {
         private readonly notificacion: NotificacionServicio,
         private readonly authService: AuthService
     ) { }
-
-    ngOnInit(): void {
-        this.cargarSucursales();
-    }
 
     /* ══════════════════════════════════════════
        Carga de sucursales
