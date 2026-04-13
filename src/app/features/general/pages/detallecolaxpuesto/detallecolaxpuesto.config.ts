@@ -5,6 +5,7 @@ import { TableColumn } from '@shared/components/table/table';
 export const COLUMNAS_TABLA: TableColumn[] = [
     { field: 'nombreCola', header: 'Cola', sortable: true },
     { field: 'nombreDetalle', header: 'Detalle', sortable: true },
+    { field: 'prioridad', header: 'Prioridad', sortable: true },
     { field: 'userCreacion', header: 'Creado por' },
     { field: 'fechaCreacion', header: 'Fecha asignación' }
 ];

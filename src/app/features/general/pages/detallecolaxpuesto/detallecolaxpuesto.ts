@@ -6,6 +6,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { SelectModule } from 'primeng/select';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { SectionComponent } from '@shared/components/section/section.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
@@ -20,6 +21,7 @@ import { NotificacionServicio } from '@shared/services/notificacion.servicio';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { OpcionSelect } from '@shared/dto/opcion-select.dto';
 import { ColaResponseDTO } from '@general/dto/cola.dto';
+import { AuthService } from '@auth/services/auth.service';
 
 @Component({
     selector: 'app-detallecolaxpuesto',
@@ -33,6 +35,7 @@ import { ColaResponseDTO } from '@general/dto/cola.dto';
         DialogModule,
         ToastModule,
         SelectModule,
+        InputNumberModule,
         PageLayoutComponent,
         SectionComponent,
         PageTitleComponent,
@@ -68,7 +71,8 @@ export class DetalleColaxPuestoPage implements OnInit {
 
     formularioAsignar = new FormGroup({
         idCola: new FormControl<number | null>(null, [Validators.required]),
-        idDetalle: new FormControl<number | null>(null)
+        idDetalle: new FormControl<number | null>(null),
+        prioridad: new FormControl<number>(1, [Validators.required, Validators.min(1), Validators.max(10)])
     });
 
     constructor(
@@ -76,7 +80,8 @@ export class DetalleColaxPuestoPage implements OnInit {
         private readonly sucursalServicio: SucursalServicio,
         private readonly puestoServicio: PuestoServicio,
         private readonly colaServicio: ColaServicio,
-        private readonly notificacion: NotificacionServicio
+        private readonly notificacion: NotificacionServicio,
+        private readonly authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -152,6 +157,7 @@ export class DetalleColaxPuestoPage implements OnInit {
                 idCola: d.idCola,
                 idDetalle: d.idDetalle,
                 idSucursalCola: d.idSucursalCola,
+                prioridad: d.prioridad,
                 nombreCola: d.nombreCola,
                 nombreDetalle: d.nombreDetalle,
                 userCreacion: d.userCreacion,
@@ -190,7 +196,7 @@ export class DetalleColaxPuestoPage implements OnInit {
     async abrirAsignar(): Promise<void> {
         if (!this.puestoSeleccionado) return;
 
-        this.formularioAsignar.reset();
+        this.formularioAsignar.reset({ prioridad: 1 });
         this.opcionesColas = [];
         this.opcionesDetalles = [];
         this.colaSeleccionada = null;
@@ -235,21 +241,21 @@ export class DetalleColaxPuestoPage implements OnInit {
 
     cerrarDialogo(): void {
         this.dialogoVisible = false;
-        this.formularioAsignar.reset();
+        this.formularioAsignar.reset({ prioridad: 1 });
         this.opcionesDetalles = [];
         this.colaSeleccionada = null;
         this.todosAsignados = false;
     }
 
     async asignar(): Promise<void> {
-        if (this.formularioAsignar.controls.idCola.invalid) {
+        if (this.formularioAsignar.controls.idCola.invalid || this.formularioAsignar.controls.prioridad.invalid) {
             this.formularioAsignar.markAllAsTouched();
-            this.notificacion.advertencia('Formulario incompleto', 'Debes seleccionar una cola');
+            this.notificacion.advertencia('Formulario incompleto', 'Debes seleccionar una cola y una prioridad válida (1-10)');
             return;
         }
         if (!this.puestoSeleccionado || !this.colaSeleccionada) return;
 
-        const { idCola, idDetalle } = this.formularioAsignar.getRawValue();
+        const { idCola, idDetalle, prioridad } = this.formularioAsignar.getRawValue();
 
         const idsAAsignar: number[] = idDetalle != null
             ? [idDetalle]
@@ -262,13 +268,16 @@ export class DetalleColaxPuestoPage implements OnInit {
 
         try {
             this.cargandoDialog = true;
+            const usuario = this.authService.getUsuario()?.codigoUsuario ?? '';
             for (const idDet of idsAAsignar) {
                 await this.detalleServicio.asignar({
                     idPuesto: this.puestoSeleccionado.idPuesto,
                     idSucursalPuesto: this.puestoSeleccionado.idSucursal,
                     idCola: idCola!,
                     idDetalle: idDet,
-                    idSucursalCola: this.colaSeleccionada.idSucursal
+                    idSucursalCola: this.colaSeleccionada.idSucursal,
+                    prioridad: prioridad!,
+                    usuario
                 });
             }
 

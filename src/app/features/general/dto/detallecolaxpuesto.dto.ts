@@ -5,6 +5,8 @@ export interface DetalleColaxPuestoRequestDTO {
     idCola: number;
     idDetalle: number;
     idSucursalCola: number;
+    prioridad: number;
+    usuario: string;
 }
 
 /** Datos que RESPONDE el backend */
@@ -14,6 +16,7 @@ export interface DetalleColaxPuestoResponseDTO {
     idCola: number;
     idDetalle: number;
     idSucursalCola: number;
+    prioridad: number;
     nombreCola: string;
     nombreDetalle: string;
     userCreacion: string;

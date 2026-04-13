@@ -103,6 +103,25 @@
             </div>
         }
 
+        <!-- Prioridad -->
+        <div class="campo-form">
+            <label for="numPrioridad">Prioridad <span class="requerido">*</span></label>
+            <p-inputnumber
+                inputId="numPrioridad"
+                [formControl]="formularioAsignar.controls.prioridad"
+                [min]="1"
+                [max]="10"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                decrementButtonIcon="pi pi-minus"
+                incrementButtonIcon="pi pi-plus"
+                [style]="{ width: '100%' }">
+            </p-inputnumber>
+            @if (formularioAsignar.controls.prioridad.invalid && formularioAsignar.controls.prioridad.touched) {
+                <small class="error-campo">La prioridad debe ser entre 1 y 10</small>
+            }
+        </div>
+
     </div>
 
     <ng-template #footer>

@@ -7,6 +7,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { SelectModule } from 'primeng/select';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { SectionComponent } from '@shared/components/section/section.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
@@ -27,6 +28,7 @@ import { NotificacionServicio } from '@shared/services/notificacion.servicio';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { OpcionSelect } from '@shared/dto/opcion-select.dto';
 import { ColaResponseDTO } from '@general/dto/cola.dto';
+import { AuthService } from '@auth/services/auth.service';
 
 @Component({
     selector: 'app-puesto',
@@ -41,6 +43,7 @@ import { ColaResponseDTO } from '@general/dto/cola.dto';
         DialogModule,
         ToastModule,
         SelectModule,
+        InputNumberModule,
         PageLayoutComponent,
         SectionComponent,
         PageTitleComponent,
@@ -89,7 +92,8 @@ export class PuestoPage implements OnInit {
     formularioAsignarCola = new FormGroup({
         idCola: new FormControl<number | null>(null, [Validators.required]),
         /** Opcional: vacío = asignar todos los detalles disponibles de la cola */
-        idDetalle: new FormControl<number | null>(null)
+        idDetalle: new FormControl<number | null>(null),
+        prioridad: new FormControl<number>(1, [Validators.required, Validators.min(1), Validators.max(10)])
     });
 
     constructor(
@@ -97,7 +101,8 @@ export class PuestoPage implements OnInit {
         private readonly sucursalServicio: SucursalServicio,
         private readonly detalleServicio: DetalleColaxPuestoServicio,
         private readonly colaServicio: ColaServicio,
-        private readonly notificacion: NotificacionServicio
+        private readonly notificacion: NotificacionServicio,
+        private readonly authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -166,7 +171,8 @@ export class PuestoPage implements OnInit {
             idSucursal: Number(datos.idSucursal),
             nombre: datos.nombre ?? '',
             nombreLlamada: datos.nombreLlamada ?? '',
-            estado: Number(datos.estado)
+            estado: Number(datos.estado),
+            usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
 
         try {
@@ -277,6 +283,7 @@ export class PuestoPage implements OnInit {
                 idCola: d.idCola,
                 idDetalle: d.idDetalle,
                 idSucursalCola: d.idSucursalCola,
+                prioridad: d.prioridad,
                 nombreCola: d.nombreCola,
                 nombreDetalle: d.nombreDetalle,
                 userCreacion: d.userCreacion,
@@ -300,7 +307,7 @@ export class PuestoPage implements OnInit {
     async abrirAsignarCola(): Promise<void> {
         if (!this.puestoSeleccionado) return;
 
-        this.formularioAsignarCola.reset();
+        this.formularioAsignarCola.reset({ prioridad: 1 });
         this.opcionesColas = [];
         this.opcionesDetallesCola = [];
         this.colaSeleccionadaDialog = null;
@@ -348,21 +355,21 @@ export class PuestoPage implements OnInit {
 
     cerrarDialogoCola(): void {
         this.dialogoColaVisible = false;
-        this.formularioAsignarCola.reset();
+        this.formularioAsignarCola.reset({ prioridad: 1 });
         this.opcionesDetallesCola = [];
         this.colaSeleccionadaDialog = null;
         this.todosDetallesAsignados = false;
     }
 
     async asignarCola(): Promise<void> {
-        if (this.formularioAsignarCola.controls.idCola.invalid) {
+        if (this.formularioAsignarCola.controls.idCola.invalid || this.formularioAsignarCola.controls.prioridad.invalid) {
             this.formularioAsignarCola.markAllAsTouched();
-            this.notificacion.advertencia('Formulario incompleto', 'Debes seleccionar una cola');
+            this.notificacion.advertencia('Formulario incompleto', 'Debes seleccionar una cola y una prioridad válida (1-10)');
             return;
         }
         if (!this.puestoSeleccionado || !this.colaSeleccionadaDialog) return;
 
-        const { idCola, idDetalle } = this.formularioAsignarCola.getRawValue();
+        const { idCola, idDetalle, prioridad } = this.formularioAsignarCola.getRawValue();
         const idPuesto = this.puestoSeleccionado['id'] as number;
         const idSucursalPuesto = this.puestoSeleccionado['idSucursal'] as number;
 
@@ -378,13 +385,16 @@ export class PuestoPage implements OnInit {
 
         try {
             this.cargandoDialogCola = true;
+            const usuario = this.authService.getUsuario()?.codigoUsuario ?? '';
             for (const idDet of idsAAsignar) {
                 await this.detalleServicio.asignar({
                     idPuesto,
                     idSucursalPuesto,
                     idCola: idCola!,
                     idDetalle: idDet,
-                    idSucursalCola: this.colaSeleccionadaDialog.idSucursal
+                    idSucursalCola: this.colaSeleccionadaDialog.idSucursal,
+                    prioridad: prioridad!,
+                    usuario
                 });
             }
 
