@@ -5,22 +5,21 @@
             BIENVENIDO A {{ branding.nombreEmpresa() | uppercase }}
         </h5>
 
-        <div class="header-right">
+        <div class="header-right" *ngIf="usuario">
             <p class="m-0 session-text">
-                Última sesión: {{ sessionInfo.lastSessionDate }}
+                <span class="text-primary fw-semibold">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
             </p>
             <p class="m-0 session-text">
-                Duración: {{ sessionInfo.sessionDuration }}
+                Perfil: {{ usuario.perfil }}
             </p>
             <p class="m-0 session-text">
-                Cierre:
-                <span class="text-primary">Por usuario</span>
+                Sucursal: {{ usuario.nombreSucursal }}
             </p>
         </div>
     </div>
 
     <div class="banner-wrapper">
-        <img [src]="branding.bannerUrl() ?? '/images/banner.png'" alt="Banner empresa" />
+        <img [src]="branding.bannerUrl() || '/images/banner.jpeg'" (error)="$any($event.target).src='/images/banner.jpeg'" alt="Banner empresa" />
     </div>
 
 </div>
