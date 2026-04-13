@@ -38,9 +38,14 @@ export class AppMenu implements OnInit {
 
     private async loadMenuFromJson(): Promise<void> {
         try {
-            const response = await fetch('/assets/menu/menu.json');
+            const usuario = this.authService.getUsuario();
+            const perfil  = usuario?.perfil ?? null;
+            const archivo = (perfil === 'ADMIN' && usuario?.idSucursal !== 1)
+                ? '/assets/menu/menusubadmin.json'
+                : '/assets/menu/menu.json';
+
+            const response = await fetch(archivo);
             const menu = (await response.json()) as MenuItem[];
-            const perfil = this.authService.getPerfil();
             const menuFiltrado = this.filtrarPorPerfil(menu, perfil);
             this.treeNodes = this.mapMenuToTreeNodes(menuFiltrado);
             this.menuStateService.setMenu(menuFiltrado);
