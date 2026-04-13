@@ -1,15 +1,92 @@
-.user-avatar {
+.user-avatar-container {
+    position: relative;
     cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+        .photo-overlay {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.5);
+        }
+    }
+
+    &.cargando {
+        pointer-events: none;
+    }
+}
+
+.user-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.user-avatar {
     background: color-mix(in srgb, var(--p-primary-900), black 20%) !important;
     color: var(--p-primary-300) !important;
     border: 1px solid color-mix(in srgb, var(--p-primary-400), transparent 70%) !important;
     font-weight: 700 !important;
     font-size: 0.8rem !important;
     transition: background 0.2s, border-color 0.2s;
+    width: 50px !important;
+    height: 50px !important;
 
     &:hover {
         background: color-mix(in srgb, var(--p-primary-400), transparent 75%) !important;
         border-color: color-mix(in srgb, var(--p-primary-400), transparent 50%) !important;
+    }
+}
+
+.photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-radius: 50%;
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    border-radius: 50%;
+
+    i {
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 
@@ -32,15 +109,14 @@
     }
 
     .user-sucursal {
-          font-size: 0.875rem;
+        font-size: 0.875rem;
         font-weight: 600;
         color: #e2e8f0;
         white-space: nowrap;
 
-         .user-label {
+        .user-label {
             font-weight: 400;
             color: #94a3b8;
         }
-    
     }
 }

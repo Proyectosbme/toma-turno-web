@@ -67,7 +67,57 @@ body.layout-fullscreen {
     }
 }
 
-/* ── Diálogos: fondo azul coherente con el tema ── */
+/* ── Toast: modo claro (base) ── */
+.p-toast .p-toast-message {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+
+    * { color: inherit; }
+
+    .p-toast-message-content,
+    .p-toast-message-text  { color: #1e293b !important; }
+    .p-toast-summary        { color: #0f172a !important; font-weight: 700 !important; }
+    .p-toast-detail         { color: #374151 !important; }
+
+    .p-toast-icon-close {
+        color: #64748b !important;
+        &:hover { background: #f1f5f9 !important; color: #1e293b !important; }
+    }
+
+    &.p-toast-message-success {
+        background: #ffffff !important;
+        border-left: 4px solid #22c55e !important;
+        .p-toast-message-icon { color: #16a34a !important; }
+        .p-toast-summary      { color: #0f172a !important; }
+        .p-toast-detail       { color: #374151 !important; }
+    }
+    &.p-toast-message-error {
+        background: #ffffff !important;
+        border-left: 4px solid #ef4444 !important;
+        .p-toast-message-icon { color: #dc2626 !important; }
+        .p-toast-summary      { color: #0f172a !important; }
+        .p-toast-detail       { color: #374151 !important; }
+    }
+    &.p-toast-message-warn {
+        background: #ffffff !important;
+        border-left: 4px solid #f59e0b !important;
+        .p-toast-message-icon { color: #d97706 !important; }
+        .p-toast-summary      { color: #0f172a !important; }
+        .p-toast-detail       { color: #374151 !important; }
+    }
+    &.p-toast-message-info {
+        background: #ffffff !important;
+        border-left: 4px solid #3b82f6 !important;
+        .p-toast-message-icon { color: #2563eb !important; }
+        .p-toast-summary      { color: #0f172a !important; }
+        .p-toast-detail       { color: #374151 !important; }
+    }
+}
+
+/* ── Modo oscuro ── */
 .app-dark {
     .p-dialog {
         background: var(--surface-overlay);
@@ -79,7 +129,6 @@ body.layout-fullscreen {
         }
     }
 
-    /* ── Cards ── */
     .p-card {
         background: var(--surface-card) !important;
 
@@ -90,14 +139,12 @@ body.layout-fullscreen {
         }
     }
 
-    /* ── Inputs / InputText ── */
     .p-inputtext {
         background: var(--surface-card) !important;
         border-color: var(--surface-border) !important;
         color: var(--text-color) !important;
     }
 
-    /* ── Paginador: selector de filas por página ── */
     .p-paginator {
         .p-select,
         .p-select-label,
@@ -121,6 +168,42 @@ body.layout-fullscreen {
             &:hover {
                 background: var(--surface-hover) !important;
             }
+        }
+    }
+
+    /* ── Toast: modo oscuro ── */
+    .p-toast .p-toast-message {
+        background: color-mix(in srgb, var(--p-primary-900), black 15%) !important;
+        color: #f1f5f9 !important;
+        border: 1px solid var(--surface-border) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(8px);
+
+        .p-toast-message-content { color: #f1f5f9 !important; }
+        .p-toast-summary          { color: #f8fafc !important; font-weight: 700; }
+        .p-toast-detail           { color: #cbd5e1 !important; }
+
+        .p-toast-icon-close {
+            color: #94a3b8 !important;
+            &:hover { background: var(--surface-hover) !important; color: #f1f5f9 !important; }
+        }
+
+        &.p-toast-message-success {
+            border-left: 4px solid var(--p-green-400) !important;
+            .p-toast-message-icon { color: var(--p-green-400) !important; }
+        }
+        &.p-toast-message-error {
+            border-left: 4px solid var(--p-red-400) !important;
+            .p-toast-message-icon { color: var(--p-red-400) !important; }
+        }
+        &.p-toast-message-warn {
+            border-left: 4px solid var(--p-yellow-400) !important;
+            .p-toast-message-icon { color: var(--p-yellow-400) !important; }
+        }
+        &.p-toast-message-info {
+            border-left: 4px solid var(--p-blue-400) !important;
+            .p-toast-message-icon { color: var(--p-blue-400) !important; }
         }
     }
 }

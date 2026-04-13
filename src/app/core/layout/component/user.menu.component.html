@@ -1,5 +1,16 @@
 <div class="flex align-items-center gap-2 ml-2">
-    <p-avatar [label]="iniciales" class="user-avatar" size="large" shape="circle"></p-avatar>
+    <div class="user-avatar-container" (click)="seleccionarFoto()" [class.cargando]="cargandoFoto">
+        <img *ngIf="fotoUrl" [src]="fotoUrl" alt="Foto usuario" class="user-avatar-image"
+             (error)="fotoUrl = null" />
+        <p-avatar *ngIf="!fotoUrl" [label]="iniciales" class="user-avatar" size="large" shape="circle"></p-avatar>
+        <div class="photo-overlay" *ngIf="!cargandoFoto">
+            <i class="pi pi-camera"></i>
+        </div>
+        <div class="loading-overlay" *ngIf="cargandoFoto">
+            <i class="pi pi-spin pi-spinner"></i>
+        </div>
+    </div>
+    <input type="file" #fileInput hidden accept="image/*" (change)="actualizarFoto($event)" />
     <div class="user-info hidden lg:flex flex-column">
         <span class="user-nombre"><span class="user-label">Usuario: </span>{{ nombreCompleto }}</span>
         <span class="user-sucursal"><span class="user-label">Sucursal: </span>{{ nombreSucursal }}</span>
@@ -7,4 +18,5 @@
     <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
     <button pButton icon="pi pi-angle-down" class="p-button-rounded p-button-text p-button-sm"
         (click)="menu.toggle($event)"></button>
+    <p-toast position="bottom-right"></p-toast>
 </div>

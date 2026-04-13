@@ -223,10 +223,10 @@
 }
 
 /* Textos del usuario y sucursal en topbar */
-.layout-topbar .layout-topbar-actions span,
-.layout-topbar .layout-topbar-actions small,
-.layout-topbar .layout-topbar-actions p,
-.layout-topbar .layout-topbar-actions div {
+.layout-topbar .layout-topbar-actions span:not(.p-toast *),
+.layout-topbar .layout-topbar-actions small:not(.p-toast *),
+.layout-topbar .layout-topbar-actions p:not(.p-toast *),
+.layout-topbar .layout-topbar-actions div:not(.p-toast *) {
     color: var(--shell-text);
 }
 
