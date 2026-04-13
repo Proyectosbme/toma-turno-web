@@ -244,4 +244,69 @@
         <i [class]="layoutService.isFullscreen() ? 'pi pi-compress' : 'pi pi-expand'"></i>
     </button>
 
+    <!-- Botón configurar impresora (esquina inferior izquierda) -->
+    <button class="btn-impresora-corner" (click)="abrirModalImpresora()"
+        [title]="impresoraGuardada ? 'Impresora: ' + impresoraGuardada : 'Configurar impresora'">
+        <i class="pi pi-print"></i>
+        <span class="impresora-badge" *ngIf="impresoraGuardada">●</span>
+    </button>
+
 </div>
+
+<!-- ═══ MODAL: Configurar impresora ═══ -->
+<p-dialog
+    header="Configurar impresora"
+    [(visible)]="modalImpresoraVisible"
+    [modal]="true"
+    [draggable]="false"
+    [style]="{ width: '26rem' }">
+
+    <div class="impresora-modal-body">
+
+        <p class="impresora-info">
+            <i class="pi pi-info-circle"></i>
+            La impresora se guarda en este navegador/PC. Al imprimir un ticket
+            se usará sin mostrar el diálogo. Si no hay impresora configurada
+            o QZ Tray no está activo, se abrirá el diálogo del navegador.
+        </p>
+
+        <div *ngIf="cargandoImpresoras" class="impresora-spinner">
+            <p-progressSpinner strokeWidth="4" [style]="{ width: '32px', height: '32px' }" />
+            <span>Cargando impresoras...</span>
+        </div>
+
+        <ng-container *ngIf="!cargandoImpresoras">
+
+            <div *ngIf="impresoras.length === 0" class="impresora-warning">
+                <i class="pi pi-exclamation-triangle"></i>
+                QZ Tray no disponible. Se usará el diálogo del navegador.
+            </div>
+
+            <div *ngIf="impresoras.length > 0" class="impresora-select-wrap">
+                <label for="selectImpresora">Selecciona la impresora</label>
+                <p-select
+                    inputId="selectImpresora"
+                    [options]="impresoras"
+                    [(ngModel)]="impresoraSeleccionada"
+                    placeholder="Sin impresora (usar diálogo)"
+                    [showClear]="true"
+                    styleClass="w-full" />
+            </div>
+
+            <div class="impresora-actual" *ngIf="impresoraGuardada">
+                <i class="pi pi-check-circle"></i>
+                Guardada: <strong>{{ impresoraGuardada }}</strong>
+            </div>
+
+        </ng-container>
+    </div>
+
+    <ng-template #footer>
+        <button pButton label="Cancelar" class="p-button-text p-button-sm"
+            (click)="modalImpresoraVisible = false"></button>
+        <button pButton label="Guardar" class="p-button-sm"
+            [disabled]="cargandoImpresoras"
+            (click)="guardarImpresora()"></button>
+    </ng-template>
+
+</p-dialog>

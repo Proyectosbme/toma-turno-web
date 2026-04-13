@@ -546,6 +546,85 @@
     i { font-size: 1.1rem; }
 }
 
+.btn-impresora-corner {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    z-index: 9999;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(0, 0, 0, 0.6); }
+
+    i { font-size: 1.1rem; }
+
+    .impresora-badge {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        font-size: 0.55rem;
+        color: #22c55e;
+        line-height: 1;
+    }
+}
+
+.impresora-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.5rem 0;
+
+    .impresora-info {
+        font-size: 0.85rem;
+        color: var(--text-color-secondary);
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-start;
+        i { margin-top: 2px; flex-shrink: 0; }
+    }
+
+    .impresora-spinner {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--text-color-secondary);
+    }
+
+    .impresora-warning {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--yellow-600);
+        i { color: var(--yellow-500); }
+    }
+
+    .impresora-select-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        label { font-size: 0.9rem; font-weight: 600; }
+    }
+
+    .impresora-actual {
+        font-size: 0.85rem;
+        color: var(--green-600);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+}
+
 /* ═══════════════════════════════════════════════
    MODO OSCURO
 ═══════════════════════════════════════════════ */

@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { ColaApiClient } from '@general/api/cola-api.client';
 import { PersonaApiClient } from '@general/api/persona-api.client';
@@ -15,6 +17,7 @@ import { extraerMensajeError } from '@shared/utils/error.util';
 import { AuthService } from '@auth/services/auth.service';
 import { ConfiguracionServicio } from '@general/services/configuracion.servicio';
 import { LayoutService } from '@core/layout/service/layout.service';
+import { ImpresoraService } from '@shared/services/impresora.service';
 
 export interface DuiData {
     numero: string;
@@ -27,7 +30,7 @@ export interface DuiData {
 @Component({
     selector: 'app-seleccion-turno',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, ProgressSpinnerModule, ToastModule],
+    imports: [CommonModule, FormsModule, ButtonModule, ProgressSpinnerModule, ToastModule, DialogModule, SelectModule],
     providers: [MessageService],
     templateUrl: './seleccion-turno.html',
     styleUrl: './seleccion-turno.scss'
@@ -64,12 +67,23 @@ export class SeleccionTurnoPage implements OnInit {
     /* ── Lector físico de barcode ── */
     inputScanner = '';
 
+    /* ── Impresora ── */
+    modalImpresoraVisible = false;
+    impresoras: string[] = [];
+    cargandoImpresoras = false;
+    impresoraSeleccionada: string | null = null;
+
+    get impresoraGuardada(): string | null {
+        return this.impresoraService.getImpresoraPreferida();
+    }
+
     constructor(
         private readonly colaApi:               ColaApiClient,
         private readonly personaApi:            PersonaApiClient,
         private readonly turnoApi:              TurnoApiClient,
         private readonly messageService:        MessageService,
         private readonly configuracionServicio: ConfiguracionServicio,
+        readonly impresoraService:              ImpresoraService,
     ) {}
 
     ngOnInit(): void { this.cargarConfigEscaneo(); }
@@ -303,11 +317,45 @@ export class SeleccionTurnoPage implements OnInit {
   <div class="pie">Por favor espere a ser llamado</div>
 </body></html>`;
 
-        const win = window.open('', '_blank', 'width=210,height=500,toolbar=0,menubar=0,scrollbars=0');
-        if (!win) return;
-        win.document.write(html);
-        win.document.close();
-        setTimeout(() => { win.focus(); win.print(); win.close(); }, 300);
+        this.impresoraService.imprimir(html);
+    }
+
+    /* ══════════════════════════════════════════
+       Configuración de impresora
+    ══════════════════════════════════════════ */
+    async abrirModalImpresora(): Promise<void> {
+        this.impresoraSeleccionada = this.impresoraService.getImpresoraPreferida();
+        this.modalImpresoraVisible = true;
+        this.impresoras = [];
+        this.cargandoImpresoras = true;
+        try {
+            this.impresoras = await this.impresoraService.obtenerImpresoras();
+        } catch {
+            this.messageService.add({
+                severity: 'warn', summary: 'QZ Tray no disponible',
+                detail: 'No se pudo conectar a QZ Tray. Asegúrate de que esté instalado y corriendo.',
+                life: 5000
+            });
+        } finally {
+            this.cargandoImpresoras = false;
+        }
+    }
+
+    guardarImpresora(): void {
+        if (this.impresoraSeleccionada) {
+            this.impresoraService.setImpresoraPreferida(this.impresoraSeleccionada);
+            this.messageService.add({
+                severity: 'success', summary: 'Impresora guardada',
+                detail: `Se usará "${this.impresoraSeleccionada}" para imprimir tickets`, life: 3000
+            });
+        } else {
+            this.impresoraService.limpiarImpresora();
+            this.messageService.add({
+                severity: 'info', summary: 'Sin impresora',
+                detail: 'Se usará el diálogo del navegador al imprimir', life: 3000
+            });
+        }
+        this.modalImpresoraVisible = false;
     }
 
     nuevoTurno(): void {
