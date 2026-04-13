@@ -54,7 +54,6 @@
     i { font-size: 0.7rem; }
 }
 
-/* Botón fullscreen en el header */
 .btn-fullscreen-header {
     display: inline-flex;
     align-items: center;
@@ -76,7 +75,6 @@
     i { font-size: 0.85rem; }
 }
 
-/* Botón flotante: oculto en modo normal, visible en fullscreen */
 .btn-fullscreen-float {
     display: none;
     position: fixed;
@@ -110,7 +108,7 @@ body.layout-fullscreen .btn-fullscreen-float {
 
 .monitor-layout {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 1fr;
     gap: 0;
     height: 100%;
     min-height: 400px;
@@ -132,12 +130,12 @@ body.layout-fullscreen .btn-fullscreen-float {
 }
 
 .lista-header {
-    padding: 1.25rem 1.5rem;
+    padding: 0.75rem 0.75rem;
     background: var(--surface-card);
     border-bottom: 1px solid var(--surface-border);
 
     .lista-titulo {
-        font-size: 1rem;
+        font-size: 0.8rem;
         font-weight: 700;
         letter-spacing: 0.1rem;
         text-transform: uppercase;
@@ -147,8 +145,8 @@ body.layout-fullscreen .btn-fullscreen-float {
 
 .lista-subheader {
     display: grid;
-    grid-template-columns: 120px 80px 70px 1fr;
-    padding: 0.5rem 1.5rem;
+    grid-template-columns: 100px 1fr 65px;
+    padding: 0.5rem 1rem;
     background: var(--surface-card);
     border-bottom: 2px solid var(--surface-border);
     font-size: 0.7rem;
@@ -157,7 +155,6 @@ body.layout-fullscreen .btn-fullscreen-float {
     letter-spacing: 0.08rem;
     color: var(--text-color-secondary);
 
-    /* Todos los spans del subheader comparten el mismo color */
     span { color: var(--text-color-secondary); }
 }
 
@@ -168,9 +165,9 @@ body.layout-fullscreen .btn-fullscreen-float {
 
 .fila-turno {
     display: grid;
-    grid-template-columns: 120px 80px 70px 1fr;
+    grid-template-columns: 100px 1fr 65px;
     align-items: center;
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem;
     border-bottom: 1px solid var(--surface-border);
     transition: background 0.2s;
 
@@ -189,7 +186,7 @@ body.layout-fullscreen .btn-fullscreen-float {
 }
 
 .fila-codigo {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 800;
     font-family: monospace;
     letter-spacing: 0.05rem;
@@ -269,17 +266,70 @@ body.layout-fullscreen .btn-fullscreen-float {
     i { font-size: 0.75rem; }
 }
 
+/* ── Panel contenedor derecho ── */
 .panel-destacado {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 1rem;
-    padding: 1.25rem;
-    background: var(--surface-ground);
+    position: relative;
     overflow: hidden;
+    background: var(--surface-ground);
+
+    /* ── Wrapper de la tarjeta de turno ── */
+    .destacado-wrapper {
+        overflow: hidden;
+        max-height: 400px;
+        opacity: 1;
+        transition: max-height 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+                    opacity     0.45s ease,
+                    padding     0.55s ease;
+        padding: 1.25rem 1.25rem 0;
+    }
+
+    /* ── Wrapper de publicidad ── */
+    .publicidad-wrapper {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem;
+        transition: padding 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ════════════════════════════════
+       IDLE: publicidad grande
+       (sin .modo-llamando)
+    ════════════════════════════════ */
+    &:not(.modo-llamando) {
+        .destacado-wrapper {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .publicidad-wrapper {
+            padding: 0;
+        }
+
+        .panel-publicidad {
+            border-radius: 0;
+            border: none;
+        }
+    }
+
+    /* ════════════════════════════════
+       LLAMANDO: turno grande + publicidad pequeña
+    ════════════════════════════════ */
+    &.modo-llamando {
+        gap: 0;
+
+        .destacado-card {
+            min-height: 260px;
+        }
+    }
 }
 
+/* ── Tarjeta de turno ── */
 .destacado-card {
     display: flex;
     flex-direction: column;
@@ -287,7 +337,7 @@ body.layout-fullscreen .btn-fullscreen-float {
     justify-content: center;
     gap: 0.75rem;
     width: 100%;
-    min-height: 280px;
+    min-height: 260px;
     border: 2px solid var(--surface-border);
     border-radius: 20px;
     background: var(--surface-card);
@@ -364,24 +414,6 @@ body.layout-fullscreen .btn-fullscreen-float {
 }
 
 /* ═══════════════════════════
-   Animaciones
-═══════════════════════════ */
-@keyframes pulseRow {
-    0%, 100% { background: rgba(99, 102, 241, 0.12); }
-    50%       { background: rgba(99, 102, 241, 0.2); }
-}
-
-@keyframes glowPulse {
-    0%, 100% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.2), inset 0 0 40px rgba(34, 197, 94, 0.05); }
-    50%       { box-shadow: 0 0 70px rgba(34, 197, 94, 0.4), inset 0 0 60px rgba(34, 197, 94, 0.12); }
-}
-
-@keyframes pulsarAccion {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.75; transform: scale(1.04); }
-}
-
-/* ═══════════════════════════
    Panel publicidad
 ═══════════════════════════ */
 .panel-publicidad {
@@ -395,6 +427,7 @@ body.layout-fullscreen .btn-fullscreen-float {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: border-radius 0.55s ease, border 0.55s ease;
 
     &--vacio {
         background: var(--surface-card);
@@ -415,4 +448,22 @@ body.layout-fullscreen .btn-fullscreen-float {
     height: 100%;
     object-fit: contain;
     display: block;
+}
+
+/* ═══════════════════════════
+   Animaciones
+═══════════════════════════ */
+@keyframes pulseRow {
+    0%, 100% { background: rgba(99, 102, 241, 0.12); }
+    50%       { background: rgba(99, 102, 241, 0.2); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.2), inset 0 0 40px rgba(34, 197, 94, 0.05); }
+    50%       { box-shadow: 0 0 70px rgba(34, 197, 94, 0.4), inset 0 0 60px rgba(34, 197, 94, 0.12); }
+}
+
+@keyframes pulsarAccion {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.75; transform: scale(1.04); }
 }

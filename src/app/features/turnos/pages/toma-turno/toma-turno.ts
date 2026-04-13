@@ -39,16 +39,19 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     audioActivado = false;
     readonly audioSoportado = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
+    // ── Modo layout ──
+    // true  → publicidad grande (idle)
+    // false → turno grande, publicidad pequeña (llamando)
+    modoLlamando = false;
+
     private intervalo?: ReturnType<typeof setInterval>;
     private keepAliveIntervalo?: ReturnType<typeof setInterval>;
     private wsSubscription?: Subscription;
+    private fadeInterval?: ReturnType<typeof setInterval>;
 
-    // Cola de anuncios: cada ítem lleva el texto Y el turno a mostrar en pantalla
     private clavesAnunciadas = new Set<string>();
     private anuncioQueue: { text: string; turno: TurnoResponseDTO }[] = [];
     private isSpeaking = false;
-
-    // Bloquea actualización del display 4 s después del último anuncio
     private postAnuncioTimer?: ReturnType<typeof setTimeout>;
 
     // ── Publicidad ──
@@ -70,7 +73,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     /* ══════════════════════════════════════════
-       Activar audio — REQUIERE gesto del usuario
+       Activar audio
     ══════════════════════════════════════════ */
     activarAudio(): void {
         if (!this.audioSoportado) return;
@@ -79,15 +82,14 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         desbloqueo.onend = () => {
             this.audioActivado = true;
             this.iniciarKeepAlive();
+            // Activar audio del video si hay uno reproduciéndose
+            this.setVolumenVideo(this.modoLlamando ? 0 : 1, 500);
             this.procesarCola();
         };
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(desbloqueo);
     }
 
-    /* ══════════════════════════════════════════
-       Keep-alive iOS Safari
-    ══════════════════════════════════════════ */
     private iniciarKeepAlive(): void {
         this.keepAliveIntervalo = setInterval(() => {
             if (window.speechSynthesis.paused) window.speechSynthesis.resume();
@@ -105,7 +107,6 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             this.turnoApi.buscar({ idSucursal: this.idSucursalActual, estado: 4, fecha: hoy })
         ]).catch(() => [[], []] as [TurnoResponseDTO[], TurnoResponseDTO[]]);
 
-        // Ordenar de más antiguo a más reciente → anunciar en ese orden
         const ordenados = [...llamados].sort((a, b) =>
             (a.fechaLlamada ?? a.fechaCreacion).localeCompare(b.fechaLlamada ?? b.fechaCreacion)
         );
@@ -123,7 +124,6 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             this.encolarAnuncio(`Turno ${codigoHablado}${destino}`, turno);
         }
 
-        // Solo actualizar display si no hay anuncio activo ni cooldown post-anuncio
         if (!this.isSpeaking && this.anuncioQueue.length === 0 && !this.postAnuncioTimer) {
             this.turnoDestacado = ordenados[ordenados.length - 1] ?? null;
         }
@@ -155,10 +155,9 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     /* ══════════════════════════════════════════
-       Cola de anuncios — voz + pantalla en orden
+       Cola de anuncios
     ══════════════════════════════════════════ */
     private encolarAnuncio(text: string, turno: TurnoResponseDTO): void {
-        // Hay nuevo contenido: cancelar cooldown si estaba corriendo
         if (this.postAnuncioTimer) {
             clearTimeout(this.postAnuncioTimer);
             this.postAnuncioTimer = undefined;
@@ -168,24 +167,26 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     private procesarCola(): void {
-        // Seguridad: resetear isSpeaking si el browser terminó sin disparar onend
         if (this.isSpeaking && this.audioSoportado && !window.speechSynthesis.speaking) {
             this.isSpeaking = false;
         }
-
         if (this.isSpeaking || this.anuncioQueue.length === 0) return;
 
         const item = this.anuncioQueue.shift()!;
-
-        // Actualizar display al inicio del anuncio (sincronizado con la voz)
         this.turnoDestacado = item.turno;
 
+        // Activar modo llamando: publicidad se achica, volumen baja
+        if (!this.modoLlamando) {
+            this.modoLlamando = true;
+            if (this.audioActivado) this.setVolumenVideo(0, 700);
+        }
+
         if (!this.audioSoportado || !this.audioActivado) {
-            // Sin audio: mostrar el turno 4 s y avanzar al siguiente
             this.isSpeaking = true;
             this.postAnuncioTimer = setTimeout(() => {
                 this.isSpeaking = false;
                 this.postAnuncioTimer = undefined;
+                this.volverAIdle();
                 this.procesarCola();
             }, 4000);
             return;
@@ -206,9 +207,9 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             const siguiente = () => {
                 this.isSpeaking = false;
                 if (this.anuncioQueue.length === 0) {
-                    // Último anuncio: cooldown 4 s — display queda fijo en este turno
                     this.postAnuncioTimer = setTimeout(() => {
                         this.postAnuncioTimer = undefined;
+                        this.volverAIdle();
                     }, 4000);
                 }
                 this.procesarCola();
@@ -226,8 +227,39 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         }
     }
 
+    private volverAIdle(): void {
+        this.modoLlamando = false;
+        if (this.audioActivado) this.setVolumenVideo(1, 1000);
+    }
+
     /* ══════════════════════════════════════════
-       Publicidad — selección de carpeta local
+       Control de volumen del video
+    ══════════════════════════════════════════ */
+    private setVolumenVideo(objetivo: number, duracionMs: number): void {
+        const video = document.querySelector<HTMLVideoElement>('.panel-publicidad video');
+        if (!video) return;
+
+        // Asegurarse de que el video no está muted para poder controlar el volumen
+        video.muted = false;
+
+        if (this.fadeInterval) clearInterval(this.fadeInterval);
+
+        const inicio = video.volume;
+        const pasos = 20;
+        const delta = (objetivo - inicio) / pasos;
+        let paso = 0;
+
+        this.fadeInterval = setInterval(() => {
+            const v = document.querySelector<HTMLVideoElement>('.panel-publicidad video');
+            if (!v) { clearInterval(this.fadeInterval); return; }
+            paso++;
+            v.volume = Math.max(0, Math.min(1, v.volume + delta));
+            if (paso >= pasos) clearInterval(this.fadeInterval);
+        }, duracionMs / pasos);
+    }
+
+    /* ══════════════════════════════════════════
+       Publicidad
     ══════════════════════════════════════════ */
     get archivoActual(): { url: string; tipo: 'imagen' | 'video' } | null {
         return this.archivosPublicidad[this.indicePublicidad] ?? null;
@@ -258,7 +290,6 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
 
         this.indicePublicidad = 0;
         this.iniciarSlide();
-        // Limpiar el input para poder volver a seleccionar la misma carpeta
         input.value = '';
     }
 
@@ -267,18 +298,22 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         if (this.archivoActual?.tipo === 'imagen') {
             this.slideshowTimer = setTimeout(() => this.siguienteSlide(), this.DURACION_IMAGEN_MS);
         }
-        // los videos llaman a siguienteSlide() desde (ended) en el template
     }
 
     siguienteSlide(): void {
         if (!this.archivosPublicidad.length) return;
         this.indicePublicidad = (this.indicePublicidad + 1) % this.archivosPublicidad.length;
         this.iniciarSlide();
+        // Restaurar volumen en el nuevo video si está en modo idle
+        if (this.audioActivado && !this.modoLlamando) {
+            setTimeout(() => this.setVolumenVideo(1, 300), 100);
+        }
     }
 
     ngOnDestroy(): void {
         clearInterval(this.intervalo);
         clearInterval(this.keepAliveIntervalo);
+        clearInterval(this.fadeInterval);
         clearTimeout(this.postAnuncioTimer);
         clearTimeout(this.slideshowTimer);
         this.archivosPublicidad.forEach(a => URL.revokeObjectURL(a.url));

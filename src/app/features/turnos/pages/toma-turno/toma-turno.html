@@ -4,7 +4,6 @@
     <app-page-title title="Monitor de Turnos" page-header-title></app-page-title>
     <ng-container page-header-actions>
 
-        <!-- Botón activar sonido: requerido en móviles (iOS/Android bloquean audio sin gesto) -->
         <ng-container *ngIf="audioSoportado">
             <button *ngIf="!audioActivado" class="btn-activar-audio" (click)="activarAudio()">
                 <i class="pi pi-volume-off"></i>
@@ -20,7 +19,7 @@
             <i class="pi pi-circle-fill" style="color: #22c55e; font-size: 0.6rem;"></i>
             En vivo
         </span>
-        <!-- Selector de carpeta de publicidad -->
+
         <input #inputCarpeta type="file" webkitdirectory multiple style="display:none"
             (change)="seleccionarCarpeta($event)">
         <button class="btn-publicidad" (click)="inputCarpeta.click()" title="Seleccionar carpeta de publicidad">
@@ -48,9 +47,8 @@
 
                 <div class="lista-subheader">
                     <span class="col-turno">Turno</span>
-                    <span class="col-puesto">Llamada</span>
+                    <span class="col-puesto">Ventanilla</span>
                     <span class="col-hora">Hora</span>
-                    <span class="col-estado">Estado</span>
                 </div>
 
                 <div class="lista-body">
@@ -63,13 +61,7 @@
                         <span class="col-turno fila-codigo">{{ fila.codigoTurno }}</span>
                         <span class="col-puesto">{{ fila.nombreLlamada ?? '—' }}</span>
                         <span class="col-hora">{{ fila.hora }}</span>
-                        <span class="col-estado">
-                            <span class="estado-badge"
-                                [class.badge-llamado]="fila.estado === 2"
-                                [class.badge-finalizado]="fila.estado === 4">
-                                {{ fila.estado === 2 ? 'En atención' : 'Finalizado' }}
-                            </span>
-                        </span>
+
                     </div>
 
                     <div *ngIf="filas.length === 0" class="sin-filas">
@@ -80,45 +72,51 @@
             </div>
 
             <!-- ══ LADO DERECHO: turno destacado + publicidad ══ -->
-            <div class="panel-destacado">
+            <div class="panel-destacado" [class.modo-llamando]="modoLlamando">
 
-                <div class="destacado-card" [class.destacado-activo]="turnoDestacado">
-                    <ng-container *ngIf="turnoDestacado; else sinDestacado">
-                        <div class="destacado-accion">PASAR</div>
-                        <div class="destacado-turno-etiqueta">Turno</div>
-                        <div class="destacado-codigo">{{ turnoDestacado.codigoTurno }}</div>
-                        <div class="destacado-puesto" *ngIf="turnoDestacado.nombreLlamada">
-                            Pasa a <strong>{{ turnoDestacado.nombreLlamada }}</strong>
-                        </div>
-                        <div class="destacado-hora">{{ hora(turnoDestacado.fechaLlamada ?? turnoDestacado.fechaCreacion) }}</div>
-                    </ng-container>
-                    <ng-template #sinDestacado>
-                        <i class="pi pi-clock sin-llamado-icon"></i>
-                        <span class="sin-llamado-texto">En espera</span>
-                    </ng-template>
+                <!-- Tarjeta de turno: visible solo cuando se llama -->
+                <div class="destacado-wrapper">
+                    <div class="destacado-card" [class.destacado-activo]="turnoDestacado">
+                        <ng-container *ngIf="turnoDestacado; else sinDestacado">
+                            <div class="destacado-accion">PASAR</div>
+                            <div class="destacado-turno-etiqueta">Turno</div>
+                            <div class="destacado-codigo">{{ turnoDestacado.codigoTurno }}</div>
+                            <div class="destacado-puesto" *ngIf="turnoDestacado.nombreLlamada">
+                                Pasa a <strong>{{ turnoDestacado.nombreLlamada }}</strong>
+                            </div>
+                            <div class="destacado-hora">{{ hora(turnoDestacado.fechaLlamada ?? turnoDestacado.fechaCreacion) }}</div>
+                        </ng-container>
+                        <ng-template #sinDestacado>
+                            <i class="pi pi-clock sin-llamado-icon"></i>
+                            <span class="sin-llamado-texto">En espera</span>
+                        </ng-template>
+                    </div>
                 </div>
 
                 <!-- Panel de publicidad -->
-                <div class="panel-publicidad" *ngIf="archivosPublicidad.length; else sinPublicidad">
-                    <ng-container *ngIf="archivoActual">
-                        <img *ngIf="archivoActual.tipo === 'imagen'"
-                            [src]="archivoActual.url"
-                            class="publicidad-media" alt="Publicidad">
-                        <video *ngIf="archivoActual.tipo === 'video'"
-                            [src]="archivoActual.url"
-                            class="publicidad-media"
-                            autoplay muted
-                            (ended)="siguienteSlide()">
-                            <track kind="metadata">
-                        </video>
-                    </ng-container>
-                </div>
-                <ng-template #sinPublicidad>
-                    <div class="panel-publicidad panel-publicidad--vacio">
-                        <i class="pi pi-image"></i>
-                        <span>Selecciona una carpeta para mostrar publicidad</span>
+                <div class="publicidad-wrapper">
+                    <div class="panel-publicidad" *ngIf="archivosPublicidad.length; else sinPublicidad">
+                        <ng-container *ngIf="archivoActual">
+                            <img *ngIf="archivoActual.tipo === 'imagen'"
+                                [src]="archivoActual.url"
+                                class="publicidad-media" alt="Publicidad">
+                            <video *ngIf="archivoActual.tipo === 'video'"
+                                [src]="archivoActual.url"
+                                class="publicidad-media"
+                                autoplay
+                                muted
+                                (ended)="siguienteSlide()">
+                                <track kind="metadata">
+                            </video>
+                        </ng-container>
                     </div>
-                </ng-template>
+                    <ng-template #sinPublicidad>
+                        <div class="panel-publicidad panel-publicidad--vacio">
+                            <i class="pi pi-image"></i>
+                            <span>Selecciona una carpeta para mostrar publicidad</span>
+                        </div>
+                    </ng-template>
+                </div>
 
             </div>
 
@@ -128,7 +126,7 @@
 
 </app-page-layout>
 
-<!-- Botón flotante: solo visible en pantalla completa -->
+<!-- Botón flotante fullscreen -->
 <button class="btn-fullscreen-float" (click)="layoutService.toggleFullscreen()"
     title="Salir de pantalla completa">
     <i class="pi pi-compress"></i>
