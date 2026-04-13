@@ -13,6 +13,8 @@ export interface UsuarioRequestDTO {
     telefono: string;
     ip: string;
     perfil: string;
+    usuario: string;
+    perfilCreador: string;
 }
 
 /** Datos que RESPONDE el backend al consultar usuarios */

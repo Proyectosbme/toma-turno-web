@@ -24,6 +24,7 @@ import {
 import { NotificacionServicio } from '@shared/services/notificacion.servicio';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { FormFieldConfig } from '@shared/components/form-panel/form-panel';
+import { AuthService } from '@auth/services/auth.service';
 
 @Component({
     selector: 'app-usuario',
@@ -72,7 +73,8 @@ export class UsuarioPage implements OnInit {
         private readonly usuarioServicio: UsuarioServicio,
         private readonly sucursalServicio: SucursalServicio,
         private readonly puestoServicio: PuestoServicio,
-        private readonly notificacion: NotificacionServicio
+        private readonly notificacion: NotificacionServicio,
+        private readonly authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -214,7 +216,9 @@ export class UsuarioPage implements OnInit {
             telefono: datos.telefono ?? '',
             ip: datos.ip ?? '',
             perfil: datos.perfil ?? '',
-            atenderCasosEspeciales: datos.atenderCasosEspeciales != null ? Number(datos.atenderCasosEspeciales) : null
+            atenderCasosEspeciales: datos.atenderCasosEspeciales != null ? Number(datos.atenderCasosEspeciales) : null,
+            usuario: this.authService.getUsuario()?.codigoUsuario ?? '',
+            perfilCreador: this.authService.getUsuario()?.perfil ?? ''
         };
 
         try {

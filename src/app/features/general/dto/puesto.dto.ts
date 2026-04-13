@@ -4,6 +4,7 @@ export interface PuestoRequestDTO {
     nombre: string;
     nombreLlamada: string;
     estado: number | null;
+    usuario: string;
 }
 
 /** Datos que RESPONDE el backend al consultar puestos */

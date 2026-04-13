@@ -38,4 +38,18 @@ export class UsuarioApiClient {
             this.http.put<UsuarioResponseDTO>(`${this.BASE_URL}/${idUsuario}/sucursal/${idSucursal}`, dto)
         );
     }
+
+    obtenerFoto(idUsuario: number, idSucursal: number): Promise<Blob> {
+        return firstValueFrom(
+            this.http.get(`${this.BASE_URL}/${idUsuario}/sucursal/${idSucursal}/foto`, { responseType: 'blob' })
+        );
+    }
+
+    asignarFoto(idUsuario: number, idSucursal: number, foto: File): Promise<UsuarioResponseDTO> {
+        const formData = new FormData();
+        formData.append('foto', foto);
+        return firstValueFrom(
+            this.http.patch<UsuarioResponseDTO>(`${this.BASE_URL}/${idUsuario}/sucursal/${idSucursal}/foto`, formData)
+        );
+    }
 }
