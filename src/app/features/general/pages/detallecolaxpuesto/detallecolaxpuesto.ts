@@ -94,7 +94,16 @@ export class DetalleColaxPuestoPage implements OnInit {
     ══════════════════════════════════════════ */
     private async cargarSucursales(): Promise<void> {
         try {
-            const opciones = await this.sucursalServicio.obtenerOpciones();
+            let opciones = await this.sucursalServicio.obtenerOpciones();
+
+            if (this.authService.esSubAdmin()) {
+                const idFija = this.authService.idSucursalFija()!;
+                opciones = opciones.filter(o => o.value === idFija);
+                // Disparar el valueChanges para que cargue los puestos automáticamente
+                this.formularioFiltro.get('idSucursal')?.setValue(idFija);
+                this.formularioFiltro.get('idSucursal')?.disable();
+            }
+
             const campo = this.camposFiltro.find(f => f.name === 'idSucursal');
             if (campo) campo.options = opciones;
         } catch {

@@ -19,6 +19,17 @@ export class AuthService {
         return this.getUsuario()?.perfil ?? null;
     }
 
+    /** Admin de una sucursal específica (no de la sucursal raíz 1) */
+    esSubAdmin(): boolean {
+        const u = this.getUsuario();
+        return u?.perfil === 'ADMIN' && u?.idSucursal !== 1;
+    }
+
+    /** Devuelve el idSucursal fijo si es subadmin, null si es admin global */
+    idSucursalFija(): number | null {
+        return this.esSubAdmin() ? (this.getUsuario()?.idSucursal ?? null) : null;
+    }
+
     isLoggedIn(): boolean {
         return this.getUsuario() !== null;
     }

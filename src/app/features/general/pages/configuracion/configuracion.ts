@@ -138,13 +138,23 @@ export class ConfiguracionPage implements OnInit {
     ══════════════════════════════════════════ */
     private async cargarSucursales(): Promise<void> {
         try {
-            const opciones = await this.sucursalServicio.obtenerOpciones();
+            let opciones = await this.sucursalServicio.obtenerOpciones();
+
+            if (this.authService.esSubAdmin()) {
+                const idFija = this.authService.idSucursalFija()!;
+                opciones = opciones.filter(o => o.value === idFija);
+
+                this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
+                this.formularioBusqueda.get('idSucursal')?.disable();
+            }
 
             const campoForm = this.camposFormulario.find(f => f.name === 'idSucursal');
             if (campoForm) campoForm.options = opciones;
 
             const campoBusqueda = this.camposBusqueda.find(f => f.name === 'idSucursal');
             if (campoBusqueda) campoBusqueda.options = opciones;
+
+            if (this.authService.esSubAdmin()) this.buscar();
         } catch {
             this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
         }
@@ -159,7 +169,12 @@ export class ConfiguracionPage implements OnInit {
         this.formularioConfig = crearFormularioConfiguracion(false);
         this.camposFormulario = CAMPOS_FORMULARIO.map(c => ({ ...c }));
         this.cargarSucursales();
-        this.formularioConfig.get('idSucursal')?.enable();
+        if (this.authService.esSubAdmin()) {
+            this.formularioConfig.get('idSucursal')?.setValue(this.authService.idSucursalFija());
+            this.formularioConfig.get('idSucursal')?.disable();
+        } else {
+            this.formularioConfig.get('idSucursal')?.enable();
+        }
         this.dialogoTitulo = 'Nueva Configuración';
         this.dialogoVisible = true;
     }

@@ -101,13 +101,23 @@ export class ColaPage implements OnInit {
     ══════════════════════════════════════════ */
     private async cargarSucursales(): Promise<void> {
         try {
-            const opciones = await this.sucursalServicio.obtenerOpciones();
+            let opciones = await this.sucursalServicio.obtenerOpciones();
+
+            if (this.authService.esSubAdmin()) {
+                const idFija = this.authService.idSucursalFija()!;
+                opciones = opciones.filter(o => o.value === idFija);
+
+                this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
+                this.formularioBusqueda.get('idSucursal')?.disable();
+            }
 
             const campoFormulario = this.camposFormulario.find(f => f.name === 'idSucursal');
             if (campoFormulario) campoFormulario.options = opciones;
 
             const campoBusqueda = this.camposBusqueda.find(f => f.name === 'idSucursal');
             if (campoBusqueda) campoBusqueda.options = opciones;
+
+            if (this.authService.esSubAdmin()) this.buscar();
         } catch (err) {
             this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
         }
@@ -119,7 +129,12 @@ export class ColaPage implements OnInit {
     abrirNuevo(): void {
         this.colaSeleccionada = null;
         this.formularioCola.reset({ estado: 1 });
-        this.formularioCola.get('idSucursal')?.enable();
+        if (this.authService.esSubAdmin()) {
+            this.formularioCola.get('idSucursal')?.setValue(this.authService.idSucursalFija());
+            this.formularioCola.get('idSucursal')?.disable();
+        } else {
+            this.formularioCola.get('idSucursal')?.enable();
+        }
         this.dialogoTitulo = 'Nueva Cola';
         this.dialogoVisible = true;
     }
