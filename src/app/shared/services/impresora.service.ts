@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import qz from 'qz-tray';
+import { QZ_CERTIFICATE, QZ_PRIVATE_KEY } from './qz-credentials';
 
 const STORAGE_KEY = 'impresora_preferida';
 
@@ -61,8 +62,49 @@ export class ImpresoraService {
     }
 
     private async conectar(): Promise<void> {
-        if (!qz.websocket.isActive()) {
-            await qz.websocket.connect({ retries: 1, delay: 0.5 });
-        }
+        if (qz.websocket.isActive()) return;
+
+        qz.security.setCertificatePromise((resolve: (cert: string) => void) => {
+            resolve(QZ_CERTIFICATE);
+        });
+
+        // Debe declararse antes de setSignaturePromise
+        qz.security.setSignatureAlgorithm('SHA512');
+
+        qz.security.setSignaturePromise((toSign: string) => {
+            return async (resolve: (sig: string) => void, reject: (err: unknown) => void) => {
+                try {
+                    const sig = await this.firmar(toSign);
+                    resolve(sig);
+                } catch (e) {
+                    reject(e);
+                }
+            };
+        });
+
+        await qz.websocket.connect({ retries: 2, delay: 1 });
+    }
+
+    private async firmar(mensaje: string): Promise<string> {
+        // Extrae solo el contenido base64 de la llave PEM
+        const pem = QZ_PRIVATE_KEY
+            .replace('-----BEGIN PRIVATE KEY-----', '')
+            .replace('-----END PRIVATE KEY-----', '')
+            .replace(/\s/g, '');
+
+        const keyBuffer = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
+
+        const cryptoKey = await crypto.subtle.importKey(
+            'pkcs8',
+            keyBuffer,
+            { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-512' },
+            false,
+            ['sign']
+        );
+
+        const datos = new TextEncoder().encode(mensaje);
+        const firma = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', cryptoKey, datos);
+
+        return btoa(String.fromCharCode(...new Uint8Array(firma)));
     }
 }

@@ -1,5 +1,9 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+# QZ Tray — credenciales privadas (nunca commitear)
+src/app/shared/services/qz-credentials.ts
+qz-certs/
+
 # Compiled output
 /dist
 /tmp
