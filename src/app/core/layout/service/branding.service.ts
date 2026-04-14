@@ -1,5 +1,6 @@
 import { Injectable, signal, inject, effect } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 import { EmpresaApiClient } from '@general/api/empresa-api.client';
 import { EmpresaResponseDTO } from '@general/dto/empresa.dto';
 
@@ -8,6 +9,7 @@ export class BrandingService {
 
     private readonly titleService = inject(Title);
     private readonly empresaApi   = inject(EmpresaApiClient);
+    private readonly document     = inject(DOCUMENT);
 
     nombreEmpresa = signal<string>('Mi empresa');
     logoUrl       = signal<string | null>(null);
@@ -16,6 +18,7 @@ export class BrandingService {
 
     constructor() {
         effect(() => this.titleService.setTitle(this.nombreEmpresa()));
+        effect(() => this.actualizarFavicon(this.logoUrl()));
         this.cargar();
     }
 
@@ -56,6 +59,11 @@ export class BrandingService {
 
         if (prevLogo?.startsWith('blob:'))   URL.revokeObjectURL(prevLogo);
         if (prevBanner?.startsWith('blob:')) URL.revokeObjectURL(prevBanner);
+    }
+
+    private actualizarFavicon(url: string | null): void {
+        const link = this.document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+        if (link) link.href = url ?? '/images/logo.svg';
     }
 
     /**

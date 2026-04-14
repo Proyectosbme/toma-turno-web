@@ -4,7 +4,7 @@
             <i class="pi pi-bars"></i>
         </button>
         <a class="layout-topbar-logo" routerLink="/">
-            <img [src]="branding.logoUrl() || '/images/logo.png'" (error)="$any($event.target).src='/images/logo.png'" alt="logo" class="layout-topbar-logo-img" />
+            <img [src]="branding.logoUrl() || '/images/logo.svg'" (error)="$any($event.target).src='/images/logo.svg'" alt="logo" class="layout-topbar-logo-img" />
             <span>{{ branding.nombreEmpresa() }}</span>
         </a>
     </div>
