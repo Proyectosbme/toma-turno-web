@@ -62,7 +62,7 @@ export const CAMPOS_FORMULARIO_CREAR: FormFieldConfig[] = [
     { name: 'contrasena',    label: 'Contraseña',          placeholder: '********',           type: 'password' },
     { name: 'nombres',       label: 'Nombres',             placeholder: 'Ej: Juan Carlos',    type: 'text'     },
     { name: 'apellidos',     label: 'Apellidos',           placeholder: 'Ej: Pérez López',    type: 'text'     },
-    { name: 'dui',           label: 'DUI',                 placeholder: 'Ej: 01234567-8',     type: 'text'     },
+    { name: 'dui',           label: 'DUI',                                                    type: 'text', mask: '99999999-9' },
     { name: 'telefono',      label: 'Teléfono',            placeholder: 'Ej: 7777-8888',      type: 'text'     },
     { name: 'ip',            label: 'IP',                  placeholder: 'Ej: 192.168.1.10',   type: 'text'     },
     {
@@ -93,7 +93,7 @@ export const CAMPOS_FORMULARIO_EDITAR: FormFieldConfig[] = [
     { name: 'contrasena',    label: 'Nueva Contraseña (opcional)',     placeholder: 'Dejar vacío para no cambiar',       type: 'password' },
     { name: 'nombres',       label: 'Nombres',                        placeholder: 'Ej: Juan Carlos',                  type: 'text'     },
     { name: 'apellidos',     label: 'Apellidos',                      placeholder: 'Ej: Pérez López',                  type: 'text'     },
-    { name: 'dui',           label: 'DUI',                            placeholder: 'Ej: 01234567-8',                   type: 'text'     },
+    { name: 'dui',           label: 'DUI',                                                                             type: 'text', mask: '99999999-9' },
     { name: 'telefono',      label: 'Teléfono',                       placeholder: 'Ej: 7777-8888',                    type: 'text'     },
     { name: 'ip',            label: 'IP',                             placeholder: 'Ej: 192.168.1.10',                 type: 'text'     },
     {

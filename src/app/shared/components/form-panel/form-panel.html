@@ -15,7 +15,18 @@
           </select>
         </ng-container>
 
-        <ng-container *ngIf="field.type !== 'select'">
+        <ng-container *ngIf="field.type !== 'select' && field.mask">
+          <p-inputMask
+            [id]="field.name"
+            [mask]="field.mask"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder || field.mask"
+            [class.input-error]="form.get(field.name)?.invalid && form.get(field.name)?.touched"
+            styleClass="w-full"
+          />
+        </ng-container>
+
+        <ng-container *ngIf="field.type !== 'select' && !field.mask">
           <input
             [id]="field.name"
             [type]="field.type || 'text'"

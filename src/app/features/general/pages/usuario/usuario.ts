@@ -86,13 +86,23 @@ export class UsuarioPage implements OnInit {
     ══════════════════════════════════════════ */
     private async cargarSucursales(): Promise<void> {
         try {
-            const opciones = await this.sucursalServicio.obtenerOpciones();
+            let opciones = await this.sucursalServicio.obtenerOpciones();
+
+            if (this.authService.esSubAdmin()) {
+                const idFija = this.authService.idSucursalFija()!;
+                opciones = opciones.filter(o => o.value === idFija);
+
+                this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
+                this.formularioBusqueda.get('idSucursal')?.disable();
+            }
 
             const campoFormSucursal = this.camposFormulario.find(f => f.name === 'idSucursal');
             if (campoFormSucursal) campoFormSucursal.options = opciones;
 
             const campoBusquedaSucursal = this.camposBusqueda.find(f => f.name === 'idSucursal');
             if (campoBusquedaSucursal) campoBusquedaSucursal.options = opciones;
+
+            if (this.authService.esSubAdmin()) this.buscar();
         } catch {
             this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
         }
@@ -132,7 +142,13 @@ export class UsuarioPage implements OnInit {
         this.formularioUsuario = crearFormularioUsuario(false);
         this.camposFormulario = CAMPOS_FORMULARIO_CREAR.map(c => ({ ...c }));
         this.cargarSucursales();
-        this.formularioUsuario.get('idSucursal')?.enable();
+        if (this.authService.esSubAdmin()) {
+            this.formularioUsuario.get('idSucursal')?.setValue(this.authService.idSucursalFija());
+            this.formularioUsuario.get('idSucursal')?.disable();
+            this.cargarPuestos(this.authService.idSucursalFija()!);
+        } else {
+            this.formularioUsuario.get('idSucursal')?.enable();
+        }
 
         // ✅ Escuchar cambios de sucursal para cargar puestos
         this.formularioUsuario.get('idSucursal')?.valueChanges.subscribe(idSucursal => {
@@ -150,28 +166,35 @@ export class UsuarioPage implements OnInit {
     async abrirEditar(): Promise<void> {
         if (!this.usuarioSeleccionado) return;
 
+        // Guardar referencia local antes de cualquier llamada async, ya que
+        // cargarSucursales() llama a buscar() que resetea usuarioSeleccionado a null
+        const usuario = this.usuarioSeleccionado;
+
         this.esEdicion = true;
         this.formularioUsuario = crearFormularioUsuario(true);
         this.camposFormulario = CAMPOS_FORMULARIO_EDITAR.map(c => ({ ...c }));
         await this.cargarSucursales();
 
-        const idSucursal = this.usuarioSeleccionado['idSucursal'] as number;
+        const idSucursal = usuario['idSucursal'] as number;
         await this.cargarPuestos(idSucursal);
 
         this.formularioUsuario.patchValue({
             idSucursal,
-            idPuesto: this.usuarioSeleccionado['idPuesto'] as number,
-            correlativo: this.usuarioSeleccionado['correlativo'] as number,
-            codigoUsuario: this.usuarioSeleccionado['codigoUsuario'] as string,
-            nombres: this.usuarioSeleccionado['nombres'] as string,
-            apellidos: this.usuarioSeleccionado['apellidos'] as string,
-            dui: this.usuarioSeleccionado['dui'] as string,
-            telefono: this.usuarioSeleccionado['telefono'] as string,
-            ip: this.usuarioSeleccionado['ip'] as string,
-            estado: this.usuarioSeleccionado['estado'] as number,
-            perfil: this.usuarioSeleccionado['perfil'] as string ?? '',
-            atenderCasosEspeciales: this.usuarioSeleccionado['atenderCasosEspeciales'] as number ?? 0
+            idPuesto: usuario['idPuesto'] as number,
+            correlativo: usuario['correlativo'] as number,
+            codigoUsuario: usuario['codigoUsuario'] as string,
+            nombres: usuario['nombres'] as string,
+            apellidos: usuario['apellidos'] as string,
+            dui: usuario['dui'] as string,
+            telefono: usuario['telefono'] as string,
+            ip: usuario['ip'] as string,
+            estado: usuario['estado'] as number,
+            perfil: usuario['perfil'] as string ?? '',
+            atenderCasosEspeciales: usuario['atenderCasosEspeciales'] as number ?? 0
         });
+
+        // Restaurar la referencia para que guardar() pueda obtener el id
+        this.usuarioSeleccionado = usuario;
 
         // ✅ Escuchar cambios de sucursal también en edición (si se habilitara)
         this.formularioUsuario.get('idSucursal')?.valueChanges.subscribe(id => {
@@ -183,6 +206,7 @@ export class UsuarioPage implements OnInit {
 
         this.configurarValidacionPerfil();
         this.formularioUsuario.get('idSucursal')?.disable({ emitEvent: false });
+        this.formularioUsuario.get('codigoUsuario')?.disable({ emitEvent: false });
         this.dialogoTitulo = 'Editar Usuario';
         this.dialogoVisible = true;
     }
