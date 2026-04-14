@@ -36,6 +36,15 @@ export class TurnoApiClient {
         );
     }
 
+    sinAtender(idSucursal: number, codigoTurno: string, fechaCreacion: string): Promise<TurnoResponseDTO> {
+        const params = new HttpParams().set('fechaCreacion', fechaCreacion);
+        return firstValueFrom(
+            this.http.put<TurnoResponseDTO>(
+                `${this.BASE_URL}/${idSucursal}/${codigoTurno}/sin-atender`, null, { params }
+            )
+        );
+    }
+
     reasignar(idSucursal: number, codigoTurno: string, fechaCreacion: string,
               dto: { idSucursalDestino: number; idColaDestino: number; idDetalleDestino?: number }): Promise<TurnoResponseDTO> {
         const params = new HttpParams().set('fechaCreacion', fechaCreacion);
@@ -57,13 +66,16 @@ export class TurnoApiClient {
     }
 
     buscar(filtro: { idSucursal?: number; idCola?: number; idDetalle?: number;
-                     estado?: number; fecha?: string }): Promise<TurnoResponseDTO[]> {
+                     estado?: number; fecha?: string;
+                     idPuesto?: number; idSucursalPuesto?: number }): Promise<TurnoResponseDTO[]> {
         let params = new HttpParams();
-        if (filtro.idSucursal != null) params = params.set('idSucursal', filtro.idSucursal);
-        if (filtro.idCola     != null) params = params.set('idCola',     filtro.idCola);
-        if (filtro.idDetalle  != null) params = params.set('idDetalle',  filtro.idDetalle);
-        if (filtro.estado     != null) params = params.set('estado',     filtro.estado);
-        if (filtro.fecha)              params = params.set('fecha',      filtro.fecha);
+        if (filtro.idSucursal       != null) params = params.set('idSucursal',       filtro.idSucursal);
+        if (filtro.idCola           != null) params = params.set('idCola',           filtro.idCola);
+        if (filtro.idDetalle        != null) params = params.set('idDetalle',        filtro.idDetalle);
+        if (filtro.estado           != null) params = params.set('estado',           filtro.estado);
+        if (filtro.fecha)                    params = params.set('fecha',            filtro.fecha);
+        if (filtro.idPuesto         != null) params = params.set('idPuesto',         filtro.idPuesto);
+        if (filtro.idSucursalPuesto != null) params = params.set('idSucursalPuesto', filtro.idSucursalPuesto);
         return firstValueFrom(
             this.http.get<TurnoResponseDTO[]>(`${this.BASE_URL}/buscar`, { params })
         );

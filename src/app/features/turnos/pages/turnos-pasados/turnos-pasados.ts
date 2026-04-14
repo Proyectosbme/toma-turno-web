@@ -98,10 +98,10 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
                 )
             );
 
-            // FINALIZADO (4) y TRASLADO (3) únicamente — LLAMADO y CREADO no son "pasados"
+            // FINALIZADO (4), TRASLADO (3) y SIN_ATENDER (5) — LLAMADO y CREADO no son "pasados"
             this.turnos = resultados
                 .flat()
-                .filter(t => t.estado === 3 || t.estado === 4)
+                .filter(t => t.estado === 3 || t.estado === 4 || t.estado === 5)
                 .sort((a, b) => {
                     const da = a.fechaLlamada ?? a.fechaCreacion;
                     const db = b.fechaLlamada ?? b.fechaCreacion;
@@ -117,13 +117,15 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
     async rellamar(turno: TurnoResponseDTO): Promise<void> {
         if (!this.idPuesto) return;
         this.llamandoId = turno.id;
+        const dto = { idPuesto: this.idPuesto, idSucursalPuesto: this.idSucursalActual, idUsuario: this.idUsuarioActual };
         try {
-            await this.turnoApi.rellamar(
-                turno.idSucursal,
-                turno.codigoTurno,
-                turno.fechaCreacion,
-                { idPuesto: this.idPuesto, idSucursalPuesto: this.idSucursalActual, idUsuario: this.idUsuarioActual }
-            );
+            // Estado 5 (SIN_ATENDER): usar /llamar porque el turno volvió a estado pendiente
+            // Resto (LLAMADO, FINALIZADO, TRASLADO): usar /re-llamar
+            if (turno.estado === 5) {
+                await this.turnoApi.llamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
+            } else {
+                await this.turnoApi.rellamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
+            }
             this.messageService.add({
                 severity: 'success', summary: 'Turno llamado',
                 detail: `${turno.codigoTurno} ha sido llamado nuevamente`
@@ -139,14 +141,16 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         switch (estado) {
             case 3: return 'Trasladado';
             case 4: return 'Finalizado';
+            case 5: return 'Sin atender';
             default: return '';
         }
     }
 
-    severidadEstado(estado: number): 'warn' | 'success' | 'secondary' {
+    severidadEstado(estado: number): 'warn' | 'success' | 'secondary' | 'danger' {
         switch (estado) {
             case 3: return 'warn';
             case 4: return 'success';
+            case 5: return 'danger';
             default: return 'secondary';
         }
     }

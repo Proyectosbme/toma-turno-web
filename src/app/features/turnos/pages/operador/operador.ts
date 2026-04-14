@@ -147,32 +147,28 @@ export class OperadorPage implements OnInit, OnDestroy {
     }
 
     async refrescarTurnos(): Promise<void> {
-       const hoy = new Date().toLocaleDateString('en-CA'); 
+        const hoy = new Date().toLocaleDateString('en-CA');
 
-        // Colas únicas por idCola.
-        // Se usa idSucursalCola (sucursal operativa de la cola) para todas las búsquedas
-        // porque los turnos se crean con la sucursal del kiosco público, que coincide
-        // con idSucursalCola y puede diferir del idSucursal del usuario operador.
-        const colasUnicas = [...new Map(this.colasAsignadas.map(c => [c.idCola, c])).values()];
-        const idSucursalColas = colasUnicas[0]?.idSucursalCola ?? this.idSucursalActual;
+        const idSucursalColas = this.colasAsignadas[0]?.idSucursalCola ?? this.idSucursalActual;
+        const idPuesto        = this.idPuesto ?? undefined;
 
-        const resultados = await Promise.all([
+        const [turnosLlamados, turnosFinalizados, turnosEnEspera] = await Promise.all([
             this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: 2, fecha: hoy }),
             this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: 4, fecha: hoy }),
-            ...colasUnicas.map(c =>
-                this.turnoApi.buscar({
-                    idSucursal: c.idSucursalCola,
-                    idCola: c.idCola,
-                    estado: 1,
-                    fecha: hoy
-                })
-            )
+            this.turnoApi.buscar({
+                idSucursal: idSucursalColas,
+                estado: 1,
+                fecha: hoy,
+                idPuesto,
+                idSucursalPuesto: idPuesto != null ? this.idSucursalActual : undefined
+            })
         ]);
 
-        const turnosLlamados = resultados[0];
         const idUsr = this.idUsuarioActual;
-        this.turnosFinalizados = resultados[1].filter(t => idUsr != null && t.idUsuario === idUsr);
-        const turnosPorCola = resultados.slice(2);
+        this.turnosFinalizados = turnosFinalizados.filter(t => idUsr != null && t.idUsuario === idUsr);
+
+        // El backend ya devuelve los turnos ordenados por prioridad del puesto
+        this.turnosEnEspera = turnosEnEspera;
 
         // Cada operador rastrea SU turno activo por código (guardado en localStorage por user ID).
         // Así dos operadores con el mismo idPuesto son completamente independientes.
@@ -182,7 +178,6 @@ export class OperadorPage implements OnInit, OnDestroy {
             if (!this.turnoActual) localStorage.removeItem(this.turnoActualKey); // ya fue finalizado
         } else {
             // Auto-recuperación al reiniciar sesión: buscar por idUsuario si localStorage está vacío
-            const idUsr = this.idUsuarioActual;
             this.turnoActual = idUsr != null
                 ? (turnosLlamados.find(t => t.idUsuario === idUsr) ?? null)
                 : null;
@@ -190,28 +185,6 @@ export class OperadorPage implements OnInit, OnDestroy {
                 localStorage.setItem(this.turnoActualKey, this.turnoActual.codigoTurno);
             }
         }
-
-        const todos = turnosPorCola.flat();
-        const unicos = new Map<string, TurnoResponseDTO>();
-        todos.forEach(t => unicos.set(t.codigoTurno, t));
-        this.turnosEnEspera = Array.from(unicos.values())
-            .sort((a, b) => {
-                const pa = this.colasAsignadas.findIndex(c => c.idCola === a.idCola);
-                const pb = this.colasAsignadas.findIndex(c => c.idCola === b.idCola);
-                if (pa !== pb) return pa - pb;
-                // If operator handles special cases, prioritize them
-                const usuario = this.authService.getUsuario();
-                if (usuario?.atenderCasosEspeciales === 1) {
-                    const aEsp = (a.tipoCasoEspecial != null && a.tipoCasoEspecial > 0) ? 0 : 1;
-                    const bEsp = (b.tipoCasoEspecial != null && b.tipoCasoEspecial > 0) ? 0 : 1;
-                    if (aEsp !== bEsp) return aEsp - bEsp;
-                }
-                // Reasigned turns get priority within the same queue
-                const aR = a.idTurnoRelacionado != null ? 0 : 1;
-                const bR = b.idTurnoRelacionado != null ? 0 : 1;
-                if (aR !== bR) return aR - bR;
-                return a.codigoTurno.localeCompare(b.codigoTurno);
-            });
     }
 
     async llamarSiguiente(): Promise<void> {
@@ -263,13 +236,35 @@ export class OperadorPage implements OnInit, OnDestroy {
     saltarTurno(): void {
         if (!this.turnoActual) return;
         this.confirmationService.confirm({
-            message: `¿Marcar el turno ${this.turnoActual.codigoTurno} como no presentado?`,
-            header: 'No llegó / Saltar turno',
+            message: `¿Marcar el turno ${this.turnoActual.codigoTurno} como sin atender?`,
+            header: 'No llegó / Sin atender',
             icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Sí, saltar',
+            acceptLabel: 'Sí, marcar',
             rejectLabel: 'Cancelar',
-            accept: () => this.ejecutarFinalizar('Turno saltado — marcado como finalizado')
+            accept: () => this.ejecutarSinAtender()
         });
+    }
+
+    private async ejecutarSinAtender(): Promise<void> {
+        if (!this.turnoActual) return;
+        const turno = this.turnoActual;
+        try {
+            this.cargando = true;
+            await this.turnoApi.sinAtender(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion);
+            this.turnoActual = null;
+            localStorage.removeItem(this.turnoActualKey);
+            await this.refrescarTurnos();
+            this.messageService.add({
+                severity: 'warn', summary: 'Sin atender',
+                detail: `Turno ${turno.codigoTurno} marcado como sin atender`, life: 3000
+            });
+        } catch (err) {
+            this.messageService.add({
+                severity: 'error', summary: 'Error', detail: extraerMensajeError(err), life: 5000
+            });
+        } finally {
+            this.cargando = false;
+        }
     }
 
     private async ejecutarLlamar(turno: TurnoResponseDTO): Promise<void> {
