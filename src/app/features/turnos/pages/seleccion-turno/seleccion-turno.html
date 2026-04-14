@@ -214,6 +214,7 @@
                 </div>
 
                 <p class="ticket-espere">Por favor espere a ser llamado</p>
+                <p class="ticket-auto-reset">Regresando en {{ cuentaRegresiva }}s...</p>
 
                 <div class="ticket-acciones">
                     <p-button
@@ -290,6 +291,7 @@
                     [(ngModel)]="impresoraSeleccionada"
                     placeholder="Sin impresora (usar diálogo)"
                     [showClear]="true"
+                    appendTo="body"
                     styleClass="w-full" />
             </div>
 

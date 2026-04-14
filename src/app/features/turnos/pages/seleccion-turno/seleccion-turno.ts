@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -35,7 +35,7 @@ export interface DuiData {
     templateUrl: './seleccion-turno.html',
     styleUrl: './seleccion-turno.scss'
 })
-export class SeleccionTurnoPage implements OnInit {
+export class SeleccionTurnoPage implements OnInit, OnDestroy {
 
     readonly layoutService = inject(LayoutService);
 
@@ -67,6 +67,11 @@ export class SeleccionTurnoPage implements OnInit {
     /* ── Lector físico de barcode ── */
     inputScanner = '';
 
+    /* ── Auto-reset ── */
+    cuentaRegresiva = 0;
+    private _autoResetTimer: any = null;
+    private _cuentaInterval: any = null;
+
     /* ── Impresora ── */
     modalImpresoraVisible = false;
     impresoras: string[] = [];
@@ -87,6 +92,8 @@ export class SeleccionTurnoPage implements OnInit {
     ) {}
 
     ngOnInit(): void { this.cargarConfigEscaneo(); }
+
+    ngOnDestroy(): void { this.cancelarAutoReset(); }
 
     /* ══════════════════════════════════════════
        Config de escaneo
@@ -249,6 +256,7 @@ export class SeleccionTurnoPage implements OnInit {
                 tipoCasoEspecial: this.tipoCasoEspecial ?? undefined,
             });
             this.generarPdfTicket();
+            this.iniciarAutoReset();
         } catch (err) {
             this.messageService.add({
                 severity: 'error', summary: 'Error al generar turno',
@@ -358,7 +366,27 @@ export class SeleccionTurnoPage implements OnInit {
         this.modalImpresoraVisible = false;
     }
 
+    private iniciarAutoReset(): void {
+        this.cancelarAutoReset();
+        this.cuentaRegresiva = 3;
+        this._cuentaInterval = setInterval(() => {
+            this.cuentaRegresiva--;
+            if (this.cuentaRegresiva <= 0) {
+                clearInterval(this._cuentaInterval);
+                this._cuentaInterval = null;
+            }
+        }, 1000);
+        this._autoResetTimer = setTimeout(() => this.nuevoTurno(), 3000);
+    }
+
+    private cancelarAutoReset(): void {
+        if (this._autoResetTimer)   { clearTimeout(this._autoResetTimer);   this._autoResetTimer = null; }
+        if (this._cuentaInterval)   { clearInterval(this._cuentaInterval);  this._cuentaInterval = null; }
+        this.cuentaRegresiva = 0;
+    }
+
     nuevoTurno(): void {
+        this.cancelarAutoReset();
         this.colaSeleccionada    = null;
         this.detalleSeleccionado = null;
         this.detalles            = [];
