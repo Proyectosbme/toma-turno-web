@@ -18,6 +18,17 @@
             <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
         </button>
 
+        <div class="layout-topbar-palette" style="position: relative;">
+            <button class="layout-topbar-action" pStyleClass="@next"
+                enterFromClass="hidden" enterActiveClass="animate-scalein"
+                leaveToClass="hidden" leaveActiveClass="animate-fadeout"
+                [hideOnOutsideClick]="true"
+                pTooltip="Cambiar color" tooltipPosition="bottom">
+                <i class="pi pi-palette"></i>
+            </button>
+            <app-configurator />
+        </div>
+
         <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden"
             enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout"
             [hideOnOutsideClick]="true">

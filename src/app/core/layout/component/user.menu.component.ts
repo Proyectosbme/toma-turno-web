@@ -26,6 +26,7 @@ export class UserMenuComponent implements OnInit {
     nombreCompleto = '';
     nombreSucursal = '';
     fotoUrl: string | null = null;
+    /** Se pobla al recibir el perfil del backend tras el login de Keycloak */
     idUsuario: number = 0;
     idSucursal: number = 0;
     cargandoFoto = false;
@@ -38,13 +39,12 @@ export class UserMenuComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        const usuario = this.authService.getUsuario();
-        const nombres   = usuario?.nombres   ?? '';
-        const apellidos = usuario?.apellidos ?? '';
-        this.nombreCompleto  = `${nombres} ${apellidos}`.trim() || usuario?.codigoUsuario || 'Usuario';
-        this.nombreSucursal  = usuario?.nombreSucursal ?? '';
-        this.idUsuario = usuario?.id ?? 0;
-        this.idSucursal = usuario?.idSucursal ?? 0;
+        const nombres   = this.authService.getNombres();
+        const apellidos = this.authService.getApellidos();
+        this.nombreCompleto  = this.authService.getNombreCompleto();
+        this.nombreSucursal  = this.authService.getPerfilBackend()?.nombreSucursal ?? 'bme';
+        this.idUsuario  = this.authService.getPerfilBackend()?.id ?? 0;
+        this.idSucursal = this.authService.getPerfilBackend()?.idSucursal ?? 0;
         this.iniciales = [nombres, apellidos]
             .filter(Boolean)
             .map(s => s.charAt(0).toUpperCase())
@@ -59,10 +59,7 @@ export class UserMenuComponent implements OnInit {
                     {
                         label: 'Cerrar Sesión',
                         icon: 'pi pi-sign-out',
-                        command: () => {
-                            this.authService.logout();
-                            this.router.navigate(['/auth/login']);
-                        }
+                        command: () => this.authService.logout()
                     }
                 ]
             }
@@ -81,9 +78,10 @@ export class UserMenuComponent implements OnInit {
             if (!blob.type || blob.type === 'application/octet-stream') {
                 const bytes = new Uint8Array(await blob.slice(0, 4).arrayBuffer());
                 let mime = 'image/jpeg';
-                if (bytes[0] === 0x89 && bytes[1] === 0x50) mime = 'image/png';
+                if      (bytes[0] === 0x89 && bytes[1] === 0x50) mime = 'image/png';
                 else if (bytes[0] === 0x47 && bytes[1] === 0x49) mime = 'image/gif';
                 else if (bytes[0] === 0x52 && bytes[1] === 0x49) mime = 'image/webp';
+                else if (bytes[0] === 0x3C)                      mime = 'image/svg+xml'; // <svg o <?xml
                 typed = new Blob([blob], { type: mime });
             }
 

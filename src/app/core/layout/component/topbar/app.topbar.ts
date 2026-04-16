@@ -7,11 +7,12 @@ import { LayoutService } from '../../service/layout.service';
 import { BrandingService } from '../../service/branding.service';
 import { UserMenuComponent } from '../user.menu.component';
 import { AppBreadcrumb } from '../breadcrumb/app.breadcrumb';
+import { AppConfigurator } from '../app.configurator';
 
 @Component({
     selector: 'app-topbar',
     standalone: true,
-    imports: [RouterModule, CommonModule, StyleClassModule, TooltipModule, UserMenuComponent, AppBreadcrumb],
+    imports: [RouterModule, CommonModule, StyleClassModule, TooltipModule, UserMenuComponent, AppBreadcrumb, AppConfigurator],
     templateUrl: './app.topbar.component.html',
     styleUrls: ['./app.topbar.component.scss']
 })

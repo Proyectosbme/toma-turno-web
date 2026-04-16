@@ -75,9 +75,10 @@ export class BrandingService {
             const bytes = new Uint8Array(signedBytes.map(b => b < 0 ? b + 256 : b));
 
             let mime = 'image/jpeg';
-            if (bytes[0] === 0x89 && bytes[1] === 0x50) mime = 'image/png';
+            if      (bytes[0] === 0x89 && bytes[1] === 0x50) mime = 'image/png';
             else if (bytes[0] === 0x47 && bytes[1] === 0x49) mime = 'image/gif';
             else if (bytes[0] === 0x52 && bytes[1] === 0x49) mime = 'image/webp';
+            else if (bytes[0] === 0x3C)                      mime = 'image/svg+xml'; // <svg o <?xml
 
             return URL.createObjectURL(new Blob([bytes], { type: mime }));
         } catch (e) {
