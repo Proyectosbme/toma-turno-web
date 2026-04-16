@@ -24,6 +24,8 @@
         "@zxing/browser": "^0.1.5",
         "@zxing/library": "^0.21.3",
         "chart.js": "4.4.2",
+        "keycloak-angular": "^20.1.0",
+        "keycloak-js": "^26.2.3",
         "mrz": "^5.0.1",
         "primeclt": "^0.1.5",
         "primeicons": "^7.0.0",

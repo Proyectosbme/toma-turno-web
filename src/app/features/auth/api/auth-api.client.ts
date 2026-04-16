@@ -4,12 +4,6 @@ import { firstValueFrom } from 'rxjs';
 import { UsuarioResponseDTO } from '@general/dto/usuario.dto';
 import { environment } from '../../../../environments/environment';
 
-export interface LoginRequestDTO {
-    codigoUsuario: string;
-    contrasena: string;
-    idSucursal?: number;
-}
-
 @Injectable({ providedIn: 'root' })
 export class AuthApiClient {
 
@@ -17,10 +11,9 @@ export class AuthApiClient {
 
     constructor(private readonly http: HttpClient) {}
 
-    login(codigoUsuario: string, contrasena: string, idSucursal?: number): Promise<UsuarioResponseDTO> {
-        const body: LoginRequestDTO = { codigoUsuario, contrasena, idSucursal };
+    getPerfil(): Promise<UsuarioResponseDTO> {
         return firstValueFrom(
-            this.http.post<UsuarioResponseDTO>(`${this.BASE_URL}/login`, body)
+            this.http.get<UsuarioResponseDTO>(`${this.BASE_URL}/perfil`)
         );
     }
 }

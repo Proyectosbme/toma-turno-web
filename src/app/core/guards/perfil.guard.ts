@@ -2,21 +2,25 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '@auth/services/auth.service';
 
-export const perfilGuard: CanActivateFn = (route) => {
-    const authService = inject(AuthService);
-    const router = inject(Router);
-    const perfil = authService.getPerfil();
+export const perfilGuard: CanActivateFn = async (route) => {
+    const auth    = inject(AuthService);
+    const router  = inject(Router);
 
-    if (!perfil) {
-        router.navigate(['/auth/login']);
+    if (!auth.isLoggedIn()) {
+        await auth.login();
         return false;
     }
 
     const perfilesPermitidos: string[] = route.data?.['perfiles'] ?? [];
+    const perfil = auth.getPerfil();
+
+    if (!perfil) {
+        return router.navigate(['/auth/access']);
+    }
+
     if (perfilesPermitidos.length === 0 || perfilesPermitidos.includes(perfil)) {
         return true;
     }
 
-    router.navigate(['/auth/access']);
-    return false;
+    return router.navigate(['/auth/access']);
 };
