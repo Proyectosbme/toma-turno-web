@@ -175,6 +175,10 @@
 }
 
 .quick-nav-title {
-    color: var(--p-primary-300);
+    color: var(--p-primary-700);
     font-weight: 600;
+}
+
+:host-context(.app-dark) .quick-nav-title {
+    color: var(--p-primary-300);
 }

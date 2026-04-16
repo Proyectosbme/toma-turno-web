@@ -73,41 +73,41 @@
   }
 
   .p-datatable-thead > tr > th {
-      background: linear-gradient(135deg, var(--shell-bg) 0%, color-mix(in srgb, var(--p-primary-900), black 30%) 60%, var(--shell-bg-2) 100%) !important;
-      color: #e2e8f0 !important;
+      background: linear-gradient(135deg, var(--shell-bg) 0%, var(--shell-bg-2) 100%) !important;
+      color: #ffffff !important;
       font-size: 0.82rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em;
       padding: 0.9rem 1.1rem;
-      border-bottom: 2px solid color-mix(in srgb, var(--p-primary-400), transparent 65%) !important;
+      border-bottom: 2px solid color-mix(in srgb, var(--p-primary-300), transparent 60%) !important;
       border-top: none !important;
       border-left: none !important;
       border-right: none !important;
       white-space: nowrap;
 
       .pi, .p-sortable-column-icon {
-        color: var(--p-primary-300) !important;
+        color: rgba(255, 255, 255, 0.75) !important;
         font-weight: bold;
         opacity: 1 !important;
       }
   }
 
   .p-datatable-thead > tr > th.p-sortable-column:hover {
-    background: linear-gradient(135deg, var(--shell-bg-2) 0%, color-mix(in srgb, var(--p-primary-800), black 20%) 60%, var(--shell-bg) 100%) !important;
-    color: #f1f5f9 !important;
+    background: linear-gradient(135deg, var(--shell-bg-2) 0%, var(--shell-bg) 100%) !important;
+    color: #ffffff !important;
 
     .pi, .p-sortable-column-icon {
-      color: var(--p-primary-200) !important;
+      color: rgba(255, 255, 255, 0.9) !important;
     }
   }
 
   .p-datatable-thead > tr > th.p-sortable-column.p-highlight {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--p-primary-900), black 20%) 0%, color-mix(in srgb, var(--p-primary-600), transparent 87%) 60%, var(--shell-bg) 100%) !important;
-    color: #f1f5f9 !important;
+    background: linear-gradient(135deg, var(--p-primary-800) 0%, var(--p-primary-700) 100%) !important;
+    color: #ffffff !important;
 
     .pi, .p-sortable-column-icon {
-      color: var(--p-primary-200) !important;
+      color: rgba(255, 255, 255, 0.95) !important;
     }
   }
 

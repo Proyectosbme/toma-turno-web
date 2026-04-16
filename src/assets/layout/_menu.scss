@@ -22,13 +22,13 @@
     overflow-y: auto;
     user-select: none;
 
-    background: linear-gradient(175deg, var(--shell-bg-2) 0%, var(--shell-bg) 100%);
+    background: var(--shell-bg);
     border-radius: 1.25rem;
-    border: 1px solid rgba(96, 165, 250, 0.15);
+    border: 1px solid var(--shell-border);
     box-shadow:
-        4px 0 32px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(96, 165, 250, 0.1),
-        inset 1px 0 0 rgba(96, 165, 250, 0.05);
+        4px 0 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 color-mix(in srgb, var(--shell-accent), transparent 90%),
+        inset 1px 0 0 color-mix(in srgb, var(--shell-accent), transparent 95%);
     padding: 0.5rem 0.5rem 1rem;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -80,14 +80,14 @@
         box-shadow: none;
 
         &:hover {
-            background: rgba(96, 165, 250, 0.08);
+            background: var(--shell-hover);
             color: var(--shell-text);
-            box-shadow: inset 3px 0 0 rgba(96, 165, 250, 0.35);
+            box-shadow: inset 3px 0 0 color-mix(in srgb, var(--shell-accent), transparent 55%);
         }
 
         &:focus {
             outline: none;
-            box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.3);
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--shell-accent), transparent 65%);
         }
 
         /* Nodo seleccionado */
@@ -139,7 +139,7 @@
 
     /* Separador entre secciones */
     .p-tree-container > .p-treenode + .p-treenode {
-        border-top: 1px solid rgba(96, 165, 250, 0.08);
+        border-top: 1px solid color-mix(in srgb, var(--shell-border), transparent 60%);
         padding-top: 0.25rem;
         margin-top: 0.25rem;
     }
@@ -195,6 +195,65 @@
 }
 
 /* =========================================================
+   MODO OSCURO: sidebar con fondo de página (neutral)
+   ========================================================= */
+.app-dark .layout-sidebar {
+    /* Sobreescribir las variables locales del sidebar para usar el contexto de página */
+    --shell-text:       var(--p-text-color);
+    --shell-text-muted: var(--p-text-muted-color);
+    --shell-accent:     var(--p-primary-color);
+    --shell-accent-dim: color-mix(in srgb, var(--p-primary-color), transparent 88%);
+    --shell-hover:      var(--p-content-hover-background);
+
+    background: var(--p-content-background);
+    border: 1px solid var(--p-content-border-color);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+
+    .p-tree { color: var(--text-color); }
+
+    .p-treenode-content {
+        color: var(--text-color);
+
+        &:hover {
+            background: var(--surface-hover);
+            color: var(--primary-color);
+            box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary-color), transparent 60%);
+        }
+
+        &.p-highlight {
+            background: color-mix(in srgb, var(--primary-color), transparent 88%) !important;
+            color: var(--primary-color) !important;
+            box-shadow: inset 3px 0 0 var(--primary-color);
+
+            .p-treenode-icon { color: var(--primary-color) !important; }
+        }
+    }
+
+    .p-tree-container > .p-treenode > .p-treenode-content {
+        color: var(--text-color-secondary);
+
+        &:hover { background: transparent; color: var(--primary-color); box-shadow: none; }
+
+        &.p-highlight {
+            background: transparent !important;
+            color: var(--primary-color) !important;
+            box-shadow: none;
+            .p-treenode-icon { color: var(--primary-color) !important; }
+        }
+    }
+
+    .p-tree-container > .p-treenode + .p-treenode {
+        border-top-color: var(--surface-border);
+    }
+
+    .p-treenode-icon { color: var(--text-color-secondary); }
+    .p-treenode-toggler {
+        color: var(--text-color-secondary);
+        &:hover { color: var(--primary-color); }
+    }
+}
+
+/* =========================================================
    MODO CLARO: sidebar blanco
    ========================================================= */
 :root:not(.app-dark) .layout-sidebar {
@@ -208,30 +267,34 @@
         color: #1e293b;
 
         &:hover {
-            background: rgba(14, 116, 144, 0.07);
-            color: #0284c7;
-            box-shadow: inset 3px 0 0 rgba(2, 132, 199, 0.4);
+            background: color-mix(in srgb, var(--primary-color), transparent 93%);
+            color: var(--primary-color);
+            box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary-color), transparent 60%);
         }
 
         &.p-highlight {
-            background: rgba(2, 132, 199, 0.1) !important;
-            color: #0284c7 !important;
-            box-shadow: inset 3px 0 0 #0284c7;
+            background: color-mix(in srgb, var(--primary-color), transparent 90%) !important;
+            color: var(--primary-color) !important;
+            box-shadow: inset 3px 0 0 var(--primary-color);
 
-            .p-treenode-icon { color: #0284c7 !important; }
+            .p-treenode-icon { color: var(--primary-color) !important; }
         }
     }
 
     .p-tree-container > .p-treenode > .p-treenode-content {
         color: #64748b;
 
-        &:hover { background: transparent; color: #0284c7; box-shadow: none; }
+        &:hover {
+            background: transparent;
+            color: var(--primary-color);
+            box-shadow: none;
+        }
 
         &.p-highlight {
             background: transparent !important;
-            color: #0284c7 !important;
+            color: var(--primary-color) !important;
             box-shadow: none;
-            .p-treenode-icon { color: #0284c7 !important; }
+            .p-treenode-icon { color: var(--primary-color) !important; }
         }
     }
 
@@ -240,7 +303,10 @@
     }
 
     .p-treenode-icon { color: #475569; }
-    .p-treenode-toggler { color: #475569; &:hover { color: #0284c7; } }
+    .p-treenode-toggler {
+        color: #475569;
+        &:hover { color: var(--primary-color); }
+    }
 }
 
 /* =========================================================

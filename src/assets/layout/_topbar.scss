@@ -15,9 +15,9 @@
     top: 0;
     width: 100%;
     padding: 0 2rem;
-    background: linear-gradient(135deg, var(--shell-bg) 0%, var(--shell-bg-2) 100%);
+    background: var(--shell-bg);
     border-bottom: 1px solid var(--shell-border);
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--p-primary-900), transparent 60%);
     transition: left var(--layout-section-transition-duration);
     display: flex;
     align-items: center;
@@ -77,6 +77,9 @@
         display: inline-flex;
         justify-content: center;
         align-items: center;
+        padding: 0;
+        border: none;
+        background: transparent;
         color: var(--shell-text-muted);
         border-radius: 50%;
         width: 2.5rem;
@@ -158,7 +161,7 @@
 
         .layout-topbar-menu {
             position: absolute;
-            background: linear-gradient(135deg, var(--shell-bg) 0%, var(--shell-bg-2) 100%);
+            background: var(--shell-bg);
             transform-origin: top;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             border-radius: var(--content-border-radius);

@@ -221,14 +221,27 @@
     }
 }
 
-.btn-llamar-principal {
-    ::ng-deep .p-button {
-        width: 100%;
-        justify-content: center;
-        font-size: 1rem;
-        font-weight: 700;
-        letter-spacing: 0.04rem;
-        padding: 0.85rem 1rem;
+.botones-principales {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+
+    ::ng-deep .btn-llamar-principal {
+        flex: 1;
+
+        .p-button {
+            width: 100%;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04rem;
+            padding: 0.85rem 1rem;
+        }
+    }
+
+    ::ng-deep .btn-retomar .p-button {
+        height: 100%;
+        white-space: nowrap;
     }
 }
 
@@ -402,6 +415,10 @@
         border-color: rgba(251, 146, 60, 0.3);
         color: var(--orange-400);
     }
+
+    .turno-retomar-item {
+        border-left-color: var(--orange-400);
+    }
 }
 
 /* ── Reasignar dialog ── */
@@ -446,4 +463,58 @@
     margin-top: 0.5rem;
 
     i { font-size: 0.9rem; }
+}
+
+/* ── Retomar turno dialog ── */
+.retomar-lista {
+    display: flex;
+    flex-direction: column;
+    max-height: 380px;
+    overflow-y: auto;
+
+    .sin-retomar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 2rem 1rem;
+        color: var(--text-color-secondary);
+
+        i { font-size: 2rem; color: var(--green-400); }
+        span { font-size: 0.95rem; }
+    }
+}
+
+.turno-retomar-item {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr auto auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--surface-border);
+    border-left: 3px solid var(--orange-400);
+    transition: background 0.15s;
+
+    &:hover { background: var(--surface-hover); }
+
+    .retomar-codigo {
+        font-weight: 700;
+        font-size: 1rem;
+        font-family: monospace;
+        color: var(--orange-600);
+    }
+
+    .retomar-cola {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .retomar-hora {
+        font-size: 0.8rem;
+        color: var(--text-color-secondary);
+        white-space: nowrap;
+    }
 }

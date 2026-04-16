@@ -134,16 +134,29 @@
                             />
                         </div>
 
-                        <!-- Botón principal siempre visible -->
-                        <p-button
-                            label="LLAMAR SIGUIENTE TURNO"
-                            icon="pi pi-bell"
-                            severity="primary"
-                            size="large"
-                            [disabled]="cargando || turnosEnEspera.length === 0"
-                            (onClick)="llamarSiguiente()"
-                            styleClass="btn-llamar-principal"
-                        />
+                        <!-- Botones principales siempre visibles -->
+                        <div class="botones-principales">
+                            <p-button
+                                label="LLAMAR SIGUIENTE TURNO"
+                                icon="pi pi-bell"
+                                severity="primary"
+                                size="large"
+                                [disabled]="cargando || turnosEnEspera.length === 0"
+                                (onClick)="llamarSiguiente()"
+                                styleClass="btn-llamar-principal"
+                            />
+                            <p-button
+                                label="Retomar turno"
+                                icon="pi pi-history"
+                                [outlined]="true"
+                                size="large"
+                                [loading]="cargandoRetomar"
+                                [disabled]="cargando"
+                                (onClick)="abrirRetomar()"
+                                pTooltip="Ver turnos que no fueron atendidos"
+                                styleClass="btn-retomar"
+                            />
+                        </div>
 
                     </div>
                 </ng-template>
@@ -201,6 +214,39 @@
     </div>
 
 </app-page-layout>
+
+<!-- ═══ DIÁLOGO RETOMAR TURNO ═══ -->
+<p-dialog
+    [(visible)]="mostrarDialogoRetomar"
+    header="Retomar turno sin atender"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [style]="{ width: '480px' }"
+>
+    <div class="retomar-lista">
+        <div *ngIf="turnosSinAtender.length === 0" class="sin-retomar">
+            <i class="pi pi-check-circle"></i>
+            <span>No hay turnos sin atender hoy</span>
+        </div>
+        <div
+            *ngFor="let turno of turnosSinAtender"
+            class="turno-retomar-item"
+        >
+            <span class="retomar-codigo">{{ turno.codigoTurno }}</span>
+            <span class="retomar-cola">{{ nombreColaPorId(turno.idCola) }}</span>
+            <span class="retomar-hora">{{ horaDesde(turno.fechaCreacion) }}</span>
+            <p-button
+                label="Llamar"
+                icon="pi pi-phone"
+                severity="warn"
+                size="small"
+                [disabled]="cargando"
+                (onClick)="retomarTurno(turno)"
+            />
+        </div>
+    </div>
+</p-dialog>
 
 <!-- ═══ DIÁLOGO REASIGNAR ═══ -->
 <p-dialog

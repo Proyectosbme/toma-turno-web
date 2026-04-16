@@ -18,19 +18,35 @@
     --focus-ring-offset: var(--p-focus-ring-offset);
     --focus-ring-shadow: var(--p-focus-ring-shadow);
 
-    /* ── Shell: topbar · sidebar · footer (siempre oscuro) ── */
-    --shell-bg:            color-mix(in srgb, var(--p-primary-950), black 40%);
-    --shell-bg-2:          color-mix(in srgb, var(--p-primary-950), black 20%);
-    --shell-bg-card:       color-mix(in srgb, var(--p-primary-900), black 20%);
-    --shell-border:        color-mix(in srgb, var(--p-primary-400), transparent 80%);
-    --shell-text:          #e2e8f0;
-    --shell-text-muted:    #94a3b8;
-    --shell-accent:        var(--p-primary-400);
-    --shell-accent-dim:    color-mix(in srgb, var(--p-primary-400), transparent 88%);
-    --shell-hover:         color-mix(in srgb, var(--p-primary-400), transparent 92%);
+    /* ── Shell modo CLARO: topbar · sidebar · footer ── */
+    --shell-bg:         var(--p-primary-700);
+    --shell-bg-2:       var(--p-primary-700);   /* igual → color uniforme, sin diferencia de tono */
+    --shell-bg-card:    color-mix(in srgb, var(--p-primary-800), black 5%);
+    --shell-border:     color-mix(in srgb, white, transparent 80%);
+    --shell-text:       #ffffff;
+    --shell-text-muted: rgba(255, 255, 255, 0.72);
+    --shell-accent:     var(--p-primary-200);
+    --shell-accent-dim: color-mix(in srgb, var(--p-primary-200), transparent 80%);
+    --shell-hover:      color-mix(in srgb, white, transparent 88%);
     --shell-secondary:     #a78bfa;
     --shell-secondary-dim: rgba(167, 139, 250, 0.15);
 
-    /* Color para títulos/headings */
+    /* Color para títulos/headings (modo claro) */
+    --heading-color: var(--p-primary-700);
+}
+
+/* ── Shell modo OSCURO: fondo neutro muy oscuro, solo tinte leve del color ── */
+.app-dark {
+    --shell-bg:         color-mix(in srgb, var(--p-primary-950), #0c0c14 70%);
+    --shell-bg-2:       color-mix(in srgb, var(--p-primary-950), #0c0c14 70%);
+    --shell-bg-card:    color-mix(in srgb, var(--p-primary-950), #0c0c14 60%);
+    --shell-border:     color-mix(in srgb, var(--p-primary-400), transparent 82%);
+    --shell-text:       #f1f5f9;
+    --shell-text-muted: rgba(255, 255, 255, 0.55);
+    --shell-accent:     var(--p-primary-300);
+    --shell-accent-dim: color-mix(in srgb, var(--p-primary-300), transparent 82%);
+    --shell-hover:      color-mix(in srgb, white, transparent 90%);
+
+    /* Color para títulos/headings (modo oscuro) */
     --heading-color: var(--p-primary-300);
 }

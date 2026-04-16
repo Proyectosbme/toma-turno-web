@@ -85,6 +85,11 @@ export class OperadorPage implements OnInit, OnDestroy {
     detalleReasignarSeleccionado: DetalleResponseDTO | null = null;
     cargandoReasignar = false;
 
+    // Retomar turno dialog
+    mostrarDialogoRetomar = false;
+    turnosSinAtender: TurnoResponseDTO[] = [];
+    cargandoRetomar = false;
+
     cargando = false;
     cargandoInicial = false;
     ahora = Date.now();
@@ -311,6 +316,31 @@ export class OperadorPage implements OnInit, OnDestroy {
         } finally {
             this.cargando = false;
         }
+    }
+
+    async abrirRetomar(): Promise<void> {
+        try {
+            this.cargandoRetomar = true;
+            const hoy = new Date().toLocaleDateString('en-CA');
+            const idSucursalColas = this.colasAsignadas[0]?.idSucursalCola ?? this.idSucursalActual;
+            this.turnosSinAtender = await this.turnoApi.buscar({
+                idSucursal: idSucursalColas,
+                estado: 5,
+                fecha: hoy
+            });
+            this.mostrarDialogoRetomar = true;
+        } catch (err) {
+            this.messageService.add({
+                severity: 'error', summary: 'Error', detail: extraerMensajeError(err), life: 5000
+            });
+        } finally {
+            this.cargandoRetomar = false;
+        }
+    }
+
+    async retomarTurno(turno: TurnoResponseDTO): Promise<void> {
+        this.mostrarDialogoRetomar = false;
+        await this.ejecutarLlamar(turno);
     }
 
     async abrirReasignar(): Promise<void> {

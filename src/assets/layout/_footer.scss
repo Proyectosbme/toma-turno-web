@@ -4,17 +4,20 @@
     justify-content: center;
     padding: 1rem 2rem;
     gap: 0.5rem;
-    background: linear-gradient(135deg, var(--shell-bg) 0%, var(--shell-bg-2) 100%);
-    border-top: 1px solid var(--shell-border);
-    color: var(--shell-text-muted);
     font-size: 0.8rem;
     letter-spacing: 0.3px;
     margin-top: 1rem;
     border-radius: 1rem 1rem 0 0;
-}
 
-:root:not(.app-dark) .layout-footer {
+    /* Modo claro: blanco */
     background: #ffffff;
     border-top: 1px solid #e2e8f0;
     color: #475569;
+}
+
+/* Modo oscuro: igual al fondo de página */
+.app-dark .layout-footer {
+    background: var(--p-content-background);
+    border-top: 1px solid var(--p-content-border-color);
+    color: var(--p-text-muted-color);
 }
