@@ -4,8 +4,6 @@ export interface UsuarioRequestDTO {
     idPuesto: number | null;
     correlativo: number | null;
     atenderCasosEspeciales?: number | null;
-    codigoUsuario: string;
-    contrasena: string;
     nombres: string;
     apellidos: string;
     dui: string;

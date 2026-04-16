@@ -30,8 +30,6 @@ export function crearFormularioUsuario(esEdicion = false): FormGroup {
         idPuesto:      new FormControl<number | null>(null),
         correlativo:   new FormControl<number | null>(null),
         perfil:        new FormControl('', [Validators.required]),
-        codigoUsuario: new FormControl('', [Validators.required, Validators.maxLength(50)]),
-        contrasena:    new FormControl('', esEdicion ? [] : [Validators.required, Validators.maxLength(100)]),
         nombres:       new FormControl('', [Validators.required, Validators.maxLength(100)]),
         apellidos:     new FormControl('', [Validators.required, Validators.maxLength(100)]),
         dui:           new FormControl('', [Validators.maxLength(20)]),
@@ -58,8 +56,6 @@ export const CAMPOS_FORMULARIO_CREAR: FormFieldConfig[] = [
         name: 'perfil', label: 'Perfil', type: 'select',
         options: OPCIONES_PERFIL
     },
-    { name: 'codigoUsuario', label: 'Código de Usuario',  placeholder: 'Ej: jperez',        type: 'text'     },
-    { name: 'contrasena',    label: 'Contraseña',          placeholder: '********',           type: 'password' },
     { name: 'nombres',       label: 'Nombres',             placeholder: 'Ej: Juan Carlos',    type: 'text'     },
     { name: 'apellidos',     label: 'Apellidos',           placeholder: 'Ej: Pérez López',    type: 'text'     },
     { name: 'dui',           label: 'DUI',                                                    type: 'text', mask: '99999999-9' },
@@ -89,8 +85,6 @@ export const CAMPOS_FORMULARIO_EDITAR: FormFieldConfig[] = [
         name: 'perfil', label: 'Perfil', type: 'select',
         options: OPCIONES_PERFIL
     },
-    { name: 'codigoUsuario', label: 'Código de Usuario',              placeholder: 'Ej: jperez',                       type: 'text'     },
-    { name: 'contrasena',    label: 'Nueva Contraseña (opcional)',     placeholder: 'Dejar vacío para no cambiar',       type: 'password' },
     { name: 'nombres',       label: 'Nombres',                        placeholder: 'Ej: Juan Carlos',                  type: 'text'     },
     { name: 'apellidos',     label: 'Apellidos',                      placeholder: 'Ej: Pérez López',                  type: 'text'     },
     { name: 'dui',           label: 'DUI',                                                                             type: 'text', mask: '99999999-9' },

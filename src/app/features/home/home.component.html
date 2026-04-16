@@ -5,21 +5,21 @@
             BIENVENIDO A {{ branding.nombreEmpresa() | uppercase }}
         </h5>
 
-        <div class="header-right" *ngIf="usuario">
+        <div class="header-right" *ngIf="auth.isLoggedIn()">
             <p class="m-0 session-text">
-                <span class="text-primary fw-semibold">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
+                <span class="text-primary fw-semibold">{{ auth.getNombreCompleto() }}</span>
             </p>
             <p class="m-0 session-text">
-                Perfil: {{ usuario.perfil }}
+                Perfil: {{ auth.getPerfil() }}
             </p>
-            <p class="m-0 session-text">
-                Sucursal: {{ usuario.nombreSucursal }}
+            <p class="m-0 session-text" *ngIf="auth.getUsuario()?.nombreSucursal">
+                Sucursal: {{ auth.getUsuario()?.nombreSucursal }}
             </p>
         </div>
     </div>
 
-    <div class="banner-wrapper">
-        <img [src]="branding.bannerUrl() || '/images/banner.svg'" (error)="$any($event.target).src='/images/banner.svg'" alt="Banner empresa" />
+    <div class="banner-wrapper" *ngIf="branding.bannerUrl()">
+        <img [src]="branding.bannerUrl()" (error)="$any($event.target).hidden=true" alt="Banner empresa" />
     </div>
 
 </div>

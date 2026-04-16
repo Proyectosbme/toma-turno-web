@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BrandingService } from '@core/layout/service/branding.service';
 import { AuthService } from '@auth/services/auth.service';
-import { UsuarioResponseDTO } from '@general/dto/usuario.dto';
 
 @Component({
     selector: 'app-home',
@@ -13,14 +12,8 @@ import { UsuarioResponseDTO } from '@general/dto/usuario.dto';
     styleUrls: ['./home.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class Home implements OnInit {
+export class Home {
 
     readonly branding = inject(BrandingService);
-    private readonly auth = inject(AuthService);
-
-    usuario: UsuarioResponseDTO | null = null;
-
-    ngOnInit() {
-        this.usuario = this.auth.getUsuario();
-    }
+    readonly auth     = inject(AuthService);
 }

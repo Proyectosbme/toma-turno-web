@@ -63,9 +63,10 @@
                 <div class="branding-field">
                     <label for="bannerInput">Banner del inicio</label>
                     <div class="branding-banner-preview">
-                        <img [src]="branding.bannerUrl() || '/images/banner.svg'"
-                                (error)="$any($event.target).src='/images/banner.svg'"
+                        <img *ngIf="branding.bannerUrl()" [src]="branding.bannerUrl()"
+                                (error)="$any($event.target).hidden=true"
                                 alt="Banner actual" />
+                        <span *ngIf="!branding.bannerUrl()" class="text-secondary">Sin banner cargado</span>
                     </div>
                     <div class="branding-logo-actions" style="margin-top: 0.5rem;">
                         <label class="branding-upload-btn" [class.disabled]="guardandoBanner"

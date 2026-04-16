@@ -7,6 +7,7 @@ import { TableColumn } from '@shared/components/table/table';
    Configuración de columnas de la tabla sucursales
    ════════════════════════════════════════════════*/
 export const COLUMNAS_TABLA: TableColumn[] = [
+    { field: 'codigo', header: 'ID', sortable: true },
     { field: 'nombre', header: 'Nombre', sortable: true },
     { field: 'correo', header: 'Correo', sortable: true },    
     { field: 'telefono', header: 'Teléfono', sortable: true },

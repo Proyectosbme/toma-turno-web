@@ -150,7 +150,7 @@ export class UsuarioPage implements OnInit {
             this.formularioUsuario.get('idSucursal')?.enable();
         }
 
-        // ✅ Escuchar cambios de sucursal para cargar puestos
+        // Escuchar cambios de sucursal para cargar puestos
         this.formularioUsuario.get('idSucursal')?.valueChanges.subscribe(idSucursal => {
             this.formularioUsuario.get('idPuesto')?.setValue(null);
             const campoFormPuesto = this.camposFormulario.find(f => f.name === 'idPuesto');
@@ -196,7 +196,7 @@ export class UsuarioPage implements OnInit {
         // Restaurar la referencia para que guardar() pueda obtener el id
         this.usuarioSeleccionado = usuario;
 
-        // ✅ Escuchar cambios de sucursal también en edición (si se habilitara)
+        // Escuchar cambios de sucursal también en edición (si se habilitara)
         this.formularioUsuario.get('idSucursal')?.valueChanges.subscribe(id => {
             this.formularioUsuario.get('idPuesto')?.setValue(null);
             const campoFormPuesto = this.camposFormulario.find(f => f.name === 'idPuesto');
@@ -231,8 +231,6 @@ export class UsuarioPage implements OnInit {
             idSucursal: Number(datos.idSucursal),
             idPuesto: datos.idPuesto ? Number(datos.idPuesto) : null,
             correlativo: datos.correlativo ? Number(datos.correlativo) : null,
-            codigoUsuario: datos.codigoUsuario ?? '',
-            contrasena: datos.contrasena ?? '',
             nombres: datos.nombres ?? '',
             apellidos: datos.apellidos ?? '',
             dui: datos.dui ?? '',
@@ -242,7 +240,7 @@ export class UsuarioPage implements OnInit {
             perfil: datos.perfil ?? '',
             atenderCasosEspeciales: datos.atenderCasosEspeciales != null ? Number(datos.atenderCasosEspeciales) : null,
             usuario: this.authService.getUsuario()?.codigoUsuario ?? '',
-            perfilCreador: this.authService.getUsuario()?.perfil ?? ''
+            perfilCreador: this.authService.getPerfil() ?? ''
         };
 
         try {
@@ -257,10 +255,7 @@ export class UsuarioPage implements OnInit {
             await this.usuarioServicio.guardar(dto, idExistente, idSucursalExistente);
 
             this.notificacion.exito(
-                this.esEdicion ? 'Usuario modificado' : 'Usuario creado',
-                this.esEdicion
-                    ? `El usuario "${dto.codigoUsuario}" fue actualizado correctamente`
-                    : `El usuario "${dto.codigoUsuario}" fue creado correctamente`
+                this.esEdicion ? 'Usuario modificado' : 'Usuario creado'
             );
 
             this.cerrarDialogo();
