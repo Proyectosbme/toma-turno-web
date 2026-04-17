@@ -124,11 +124,13 @@
         margin-left: auto;
         flex-shrink: 0;
         display: flex;
+        align-items: center;
         gap: 1rem;
     }
 
     .layout-topbar-menu-content {
         display: flex;
+        align-items: center;
         gap: 1rem;
     }
 
@@ -201,6 +203,16 @@
     }
 }
 
+/* ── Panel configurator: restaurar variables al contexto global (no topbar) ── */
+.layout-topbar app-configurator {
+    --text-color:           var(--p-text-color);
+    --text-color-secondary: var(--p-text-muted-color);
+    --surface-hover:        var(--p-content-hover-background);
+    --surface-border:       var(--p-content-border-color);
+    --surface-overlay:      var(--p-overlay-popover-background);
+    color: var(--p-text-color);
+}
+
 /* ── Overrides explícitos para elementos PrimeNG dentro del topbar ── */
 .layout-topbar .p-breadcrumb-list li,
 .layout-topbar .p-breadcrumb-list li a,
@@ -225,11 +237,11 @@
     border: 1px solid var(--shell-border);
 }
 
-/* Textos del usuario y sucursal en topbar */
-.layout-topbar .layout-topbar-actions span:not(.p-toast *),
-.layout-topbar .layout-topbar-actions small:not(.p-toast *),
-.layout-topbar .layout-topbar-actions p:not(.p-toast *),
-.layout-topbar .layout-topbar-actions div:not(.p-toast *) {
+/* Textos del usuario y sucursal en topbar — solo dentro del user-menu, no del configurator */
+.layout-topbar app-user-menu span:not(.p-toast *),
+.layout-topbar app-user-menu small:not(.p-toast *),
+.layout-topbar app-user-menu p:not(.p-toast *),
+.layout-topbar app-user-menu div:not(.p-toast *) {
     color: var(--shell-text);
 }
 

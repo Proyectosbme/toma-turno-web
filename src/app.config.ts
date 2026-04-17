@@ -107,7 +107,7 @@ export const appConfig: ApplicationConfig = {
                         if (kc.authenticated) {
                             const codigoUsuario = authService.getCodigoUsuario();
                             if (codigoUsuario) {
-                                const perfil = await authApi.getPerfilPorCodigo(codigoUsuario);
+                                const perfil = await authApi.getPerfil();
                                 authService.setPerfilBackend(perfil);
                             }
                         }

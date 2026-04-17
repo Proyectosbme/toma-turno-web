@@ -1,12 +1,12 @@
 :root[class*='app-dark'] {
-    /* ── Paleta oscura dinámica según color primario ── */
-    --surface-ground:  color-mix(in srgb, var(--p-primary-950), black 30%);  /* fondo de página */
-    --surface-card:    color-mix(in srgb, var(--p-primary-950), black 10%);  /* tarjetas/secciones */
-    --surface-hover:   color-mix(in srgb, var(--p-primary-400), transparent 92%);
-    --surface-border:  color-mix(in srgb, var(--p-primary-400), transparent 86%);
-    --surface-overlay: color-mix(in srgb, var(--p-primary-900), black 10%);  /* modales/overlays */
+    /* ── Paleta oscura neutral — los fondos usan la surface seleccionada, no el primary ── */
+    --surface-ground:  var(--p-surface-950);   /* fondo de página */
+    --surface-card:    var(--p-surface-900);   /* tarjetas/secciones */
+    --surface-hover:   var(--p-surface-800);   /* hover */
+    --surface-border:  var(--p-surface-700);   /* bordes */
+    --surface-overlay: var(--p-surface-900);   /* modales/overlays */
 
     /* Código */
-    --code-background: color-mix(in srgb, var(--p-primary-900), black 10%);
+    --code-background: var(--p-surface-800);
     --code-color: var(--p-surface-100);
 }

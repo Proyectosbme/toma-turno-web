@@ -35,15 +35,15 @@
     --heading-color: var(--p-primary-700);
 }
 
-/* ── Shell modo OSCURO: fondo neutro muy oscuro, solo tinte leve del color ── */
+/* ── Shell modo OSCURO: superficie neutral, primary solo en acentos/texto ── */
 .app-dark {
-    --shell-bg:         color-mix(in srgb, var(--p-primary-950), #0c0c14 70%);
-    --shell-bg-2:       color-mix(in srgb, var(--p-primary-950), #0c0c14 70%);
-    --shell-bg-card:    color-mix(in srgb, var(--p-primary-950), #0c0c14 60%);
-    --shell-border:     color-mix(in srgb, var(--p-primary-400), transparent 82%);
+    --shell-bg:         var(--p-surface-900);
+    --shell-bg-2:       var(--p-surface-900);
+    --shell-bg-card:    var(--p-surface-800);
+    --shell-border:     color-mix(in srgb, white, transparent 88%);
     --shell-text:       #f1f5f9;
     --shell-text-muted: rgba(255, 255, 255, 0.55);
-    --shell-accent:     var(--p-primary-300);
+    --shell-accent:     var(--p-primary-300);   /* primary solo en acentos */
     --shell-accent-dim: color-mix(in srgb, var(--p-primary-300), transparent 82%);
     --shell-hover:      color-mix(in srgb, white, transparent 90%);
 
