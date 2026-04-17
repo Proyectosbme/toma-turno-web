@@ -72,7 +72,7 @@ export const appConfig: ApplicationConfig = {
                 clientId: environment.keycloak.clientId
             },
             initOptions: {
-                onLoad: 'login-required',   // fuerza login al arrancar
+                onLoad: 'check-sso',        // SSO silencioso; authGuard fuerza login en rutas protegidas
                 pkceMethod: 'S256',        // PKCE con SHA-256
                 checkLoginIframe: false
             },

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { UsuarioResponseDTO } from '@general/dto/usuario.dto';
+import { UsuarioRequestDTO, UsuarioResponseDTO } from '@general/dto/usuario.dto';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -20,6 +20,12 @@ export class AuthApiClient {
     getPerfilPorCodigo(codigoUsuario: string): Promise<UsuarioResponseDTO> {
         return firstValueFrom(
             this.http.get<UsuarioResponseDTO>(`${this.BASE_URL}/perfil/coduser/${codigoUsuario}`)
+        );
+    }
+
+    registrar(dto: UsuarioRequestDTO): Promise<UsuarioResponseDTO> {
+        return firstValueFrom(
+            this.http.post<UsuarioResponseDTO>(`${this.BASE_URL}/crear`, dto)
         );
     }
 

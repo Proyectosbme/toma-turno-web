@@ -59,6 +59,12 @@
                         Iniciar Sesión
                     </button>
 
+                    <!-- Registro -->
+                    <div class="tt-register-link">
+                        <span>¿Eres nuevo?</span>
+                        <a href="${properties.registroUrl!'http://localhost:4200/auth/registro'}">Regístrate aquí</a>
+                    </div>
+
                 </form>
             </div>
         </div>

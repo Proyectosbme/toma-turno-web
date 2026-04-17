@@ -1,0 +1,124 @@
+<app-floating-configurator />
+<div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
+    <div class="flex flex-col items-center justify-center w-full max-w-xl px-4">
+        <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, color-mix(in srgb, var(--p-primary-500) 40%, transparent) 10%, transparent 30%); width: 100%">
+            <div class="w-full bg-surface-0 dark:bg-surface-900 py-12 px-8 sm:px-12 flex flex-col" style="border-radius: 53px">
+
+                <!-- Encabezado -->
+                <div class="flex flex-col items-center mb-8">
+                    <div class="flex justify-center items-center border-2 border-primary rounded-full mb-4" style="width:3.2rem;height:3.2rem">
+                        <i class="pi pi-user-plus text-primary text-2xl!"></i>
+                    </div>
+                    <h1 class="text-surface-900 dark:text-surface-0 font-bold text-3xl mb-1">Registro de operador</h1>
+                    <span class="text-muted-color text-sm">Completa tus datos para obtener acceso</span>
+                </div>
+
+                <!-- Estado exitoso -->
+                @if (exitoso) {
+                    <div class="flex flex-col items-center gap-4 text-center">
+                        <i class="pi pi-check-circle text-green-500 text-5xl"></i>
+                        <p class="text-surface-700 dark:text-surface-200 text-lg">¡Registro exitoso! Tu código de acceso es:</p>
+                        <span class="font-bold text-2xl text-primary">{{ codigoGenerado }}</span>
+                        <p class="text-muted-color text-sm">Guarda este código, lo necesitarás para ingresar al sistema.</p>
+                        <p-button label="Ir al inicio de sesión" icon="pi pi-sign-in" (onClick)="irALogin()" class="mt-2" />
+                    </div>
+                } @else {
+                    <!-- Formulario -->
+                    <form [formGroup]="form" (ngSubmit)="registrar()" class="flex flex-col gap-4">
+
+                        <!-- Sucursal -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-surface-700 dark:text-surface-200 font-medium text-sm">Agencia *</label>
+                            <p-select
+                                formControlName="idSucursal"
+                                [options]="sucursales"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Selecciona una agencia"
+                                [style]="{ width: '100%' }"
+                                (onChange)="onSucursalChange($event.value)" />
+                            @if (form.get('idSucursal')?.invalid && form.get('idSucursal')?.touched) {
+                                <small class="text-red-500">Selecciona una agencia</small>
+                            }
+                        </div>
+
+                        <!-- Puesto -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-surface-700 dark:text-surface-200 font-medium text-sm">Puesto *</label>
+                            <p-select
+                                formControlName="idPuesto"
+                                [options]="puestos"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Selecciona un puesto"
+                                [disabled]="!form.get('idSucursal')?.value"
+                                [style]="{ width: '100%' }" />
+                            @if (form.get('idPuesto')?.invalid && form.get('idPuesto')?.touched) {
+                                <small class="text-red-500">Selecciona un puesto</small>
+                            }
+                        </div>
+
+                        <!-- Nombres y Apellidos -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-surface-700 dark:text-surface-200 font-medium text-sm">Nombres *</label>
+                                <input pInputText formControlName="nombres" placeholder="Ej: Juan Carlos" class="w-full" />
+                                @if (form.get('nombres')?.invalid && form.get('nombres')?.touched) {
+                                    <small class="text-red-500">Campo requerido</small>
+                                }
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-surface-700 dark:text-surface-200 font-medium text-sm">Apellidos *</label>
+                                <input pInputText formControlName="apellidos" placeholder="Ej: García López" class="w-full" />
+                                @if (form.get('apellidos')?.invalid && form.get('apellidos')?.touched) {
+                                    <small class="text-red-500">Campo requerido</small>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Correlativo -->
+                        <div class="flex flex-col gap-1">
+                            <label for="correlativo" class="text-surface-700 dark:text-surface-200 font-medium text-sm"># Número de escritorio/caja *</label>
+                            <input id="correlativo" pInputText type="number" formControlName="correlativo" placeholder="Ej: 1" class="w-full" min="1" />
+                            @if (form.get('correlativo')?.invalid && form.get('correlativo')?.touched) {
+                                <small class="text-red-500">Ingresa un número válido</small>
+                            }
+                        </div>
+
+                        <!-- DUI y Teléfono -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-surface-700 dark:text-surface-200 font-medium text-sm">DUI</label>
+                                <input pInputText formControlName="dui" placeholder="00000000-0" class="w-full" />
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-surface-700 dark:text-surface-200 font-medium text-sm">Teléfono</label>
+                                <input pInputText formControlName="telefono" placeholder="0000-0000" class="w-full" />
+                            </div>
+                        </div>
+
+                        <!-- Error -->
+                        @if (error) {
+                            <small class="text-red-500">{{ error }}</small>
+                        }
+
+                        <!-- Acciones -->
+                        <div class="flex justify-between items-center mt-2">
+                            <p-button
+                                label="¿Ya tienes cuenta? Inicia sesión"
+                                [link]="true"
+                                (onClick)="irALogin()"
+                                styleClass="p-0 text-sm" />
+                            <p-button
+                                type="submit"
+                                label="Registrarme"
+                                icon="pi pi-user-plus"
+                                [loading]="cargando" />
+                        </div>
+                    </form>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

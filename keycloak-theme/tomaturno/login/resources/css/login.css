@@ -168,6 +168,25 @@ body {
 .tt-btn:hover  { background: #0284c7; }
 .tt-btn:active { background: #0369a1; }
 
+/* ── Link de registro ────────────────────────────────────────────────────── */
+.tt-register-link {
+    margin-top: 1.25rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.tt-register-link a {
+    color: #0ea5e9;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 0.25rem;
+}
+
+.tt-register-link a:hover {
+    text-decoration: underline;
+}
+
 /* ── Dark mode ───────────────────────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
     body            { background-color: #020617; }
