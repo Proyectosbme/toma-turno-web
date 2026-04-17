@@ -229,8 +229,8 @@ export class UsuarioPage implements OnInit {
         const datos = this.formularioUsuario.getRawValue();
         const dto: UsuarioRequestDTO = {
             idSucursal: Number(datos.idSucursal),
-            idPuesto: datos.idPuesto ? Number(datos.idPuesto) : null,
-            correlativo: datos.correlativo ? Number(datos.correlativo) : null,
+            idPuesto: datos.idPuesto != null ? Number(datos.idPuesto) : null,
+            correlativo: datos.correlativo != null && datos.correlativo !== '' ? Number(datos.correlativo) : null,
             nombres: datos.nombres ?? '',
             apellidos: datos.apellidos ?? '',
             dui: datos.dui ?? '',
@@ -297,7 +297,7 @@ export class UsuarioPage implements OnInit {
                 id: u.id,
                 idSucursal: u.idSucursal,
                 idPuesto: u.idPuesto,
-                correlativo: u.correlativo,
+                correlativo: u.nombrePuesto ? u.correlativo : null,
                 codigoUsuario: u.codigoUsuario,
                 nombres: u.nombres,
                 apellidos: u.apellidos,

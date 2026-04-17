@@ -1,5 +1,6 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, Injector } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
 import { definePreset } from '@primeuix/themes';
@@ -13,8 +14,12 @@ import {
     AutoRefreshTokenService,
     UserActivityService,
     includeBearerTokenInterceptor,
-    INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG
+    INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+    KEYCLOAK_EVENT_SIGNAL,
+    KeycloakEventType
 } from 'keycloak-angular';
+import { filter, firstValueFrom } from 'rxjs';
+import Keycloak from 'keycloak-js';
 import { environment } from './environments/environment';
 import { AuthApiClient } from '@auth/api/auth-api.client';
 import { AuthService } from '@auth/services/auth.service';
@@ -23,7 +28,7 @@ import { BrandingService } from '@core/layout/service/branding.service';
 const TomaTurnoPreset = definePreset(Aura, {
     semantic: {
         primary: {
-            50:  '{sky.50}',
+            50: '{sky.50}',
             100: '{sky.100}',
             200: '{sky.200}',
             300: '{sky.300}',
@@ -54,45 +59,64 @@ export const appConfig: ApplicationConfig = {
             provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
             useValue: [
                 {
-                    // Solo adjunta el token a llamadas hacia tu API backend
-                    urlPattern: new RegExp(`^${environment.apiUrl.replace('/', '\\/')}`),
+                    // Adjunta el token a cualquier llamada que empiece con /api
+                    urlPattern: /^\/api\//,
                     httpMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
                 }
             ]
         },
         provideKeycloak({
             config: {
-                url:      environment.keycloak.url,
-                realm:    environment.keycloak.realm,
+                url: environment.keycloak.url,
+                realm: environment.keycloak.realm,
                 clientId: environment.keycloak.clientId
             },
             initOptions: {
-                onLoad:           'login-required',   // fuerza login al arrancar
-                pkceMethod:       'S256',              // PKCE con SHA-256
+                onLoad: 'login-required',   // fuerza login al arrancar
+                pkceMethod: 'S256',        // PKCE con SHA-256
                 checkLoginIframe: false
             },
             features: [
                 withAutoRefreshToken({
                     onInactivityTimeout: 'logout',
-                    sessionTimeout:      1800_000     // 30 min de inactividad
+                    sessionTimeout: 1800_000     // 30 min de inactividad
                 })
             ],
             providers: [AutoRefreshTokenService, UserActivityService]
         }),
         {
             provide: APP_INITIALIZER,
-            useFactory: (authApi: AuthApiClient, authService: AuthService, branding: BrandingService) =>
+            useFactory: (authApi: AuthApiClient, authService: AuthService, branding: BrandingService, kc: Keycloak, injector: Injector) =>
                 async () => {
-                    if (!authService.isLoggedIn()) return;
                     try {
-                        const perfil = await authApi.getPerfil();
-                        authService.setPerfilBackend(perfil);
-                        await branding.cargar();
+                        // Nuestro APP_INITIALIZER corre en paralelo con el de Keycloak.
+                        // Si el token aún no está listo, esperamos a AuthSuccess/Ready antes de consultar el perfil.
+                        if (!kc.authenticated) {
+                            const keycloakSignal = injector.get(KEYCLOAK_EVENT_SIGNAL);
+                            await firstValueFrom(
+                                toObservable(keycloakSignal, { injector }).pipe(
+                                    filter(e =>
+                                        e.type === KeycloakEventType.AuthSuccess ||
+                                        e.type === KeycloakEventType.AuthError ||
+                                        e.type === KeycloakEventType.Ready
+                                    )
+                                )
+                            );
+                        }
+
+                        if (kc.authenticated) {
+                            const codigoUsuario = authService.getCodigoUsuario();
+                            if (codigoUsuario) {
+                                const perfil = await authApi.getPerfilPorCodigo(codigoUsuario);
+                                authService.setPerfilBackend(perfil);
+                            }
+                        }
                     } catch {
-                        // Usuario autenticado en Keycloak pero sin perfil en BD todavía
+                        // Sin sesión activa o sin perfil en BD todavía
                     }
+                    await branding.cargar();
                 },
-            deps: [AuthApiClient, AuthService, BrandingService],
+            deps: [AuthApiClient, AuthService, BrandingService, Keycloak, Injector],
             multi: true
         },
         provideAnimationsAsync(),

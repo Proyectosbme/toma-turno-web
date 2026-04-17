@@ -9,11 +9,18 @@ export class AuthApiClient {
 
     private readonly BASE_URL = `${environment.apiUrl}/auth`;
 
-    constructor(private readonly http: HttpClient) {}
+    constructor(private readonly http: HttpClient) { }
 
     getPerfil(): Promise<UsuarioResponseDTO> {
         return firstValueFrom(
             this.http.get<UsuarioResponseDTO>(`${this.BASE_URL}/perfil`)
         );
     }
+
+    getPerfilPorCodigo(codigoUsuario: string): Promise<UsuarioResponseDTO> {
+        return firstValueFrom(
+            this.http.get<UsuarioResponseDTO>(`${this.BASE_URL}/perfil/coduser/${codigoUsuario}`)
+        );
+    }
+
 }

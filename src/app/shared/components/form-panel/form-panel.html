@@ -10,8 +10,8 @@
         <ng-container *ngIf="field.type === 'select'">
           <select [id]="field.name" class="form-select" [formControlName]="field.name"
                   [class.input-error]="form.get(field.name)?.invalid && form.get(field.name)?.touched">
-            <option value="">{{ field.placeholder || 'Selecciona una opción' }}</option>
-            <option *ngFor="let opt of field.options" [value]="opt.value">{{ opt.label }}</option>
+            <option [ngValue]="null">{{ field.placeholder || 'Selecciona una opción' }}</option>
+            <option *ngFor="let opt of field.options" [ngValue]="opt.value">{{ opt.label }}</option>
           </select>
         </ng-container>
 
