@@ -1,3 +1,15 @@
+/** Payload mínimo para registrar un nuevo usuario */
+export interface UsuarioRegistroRequestDTO {
+    idSucursal: number;
+    idPuesto: number | null;
+    correlativo: number | null;
+    nombres: string;
+    apellidos: string;
+    dui: string;
+    telefono: string;
+    perfil: string;
+}
+
 /** Datos que se ENVÍAN al backend para crear o modificar un usuario */
 export interface UsuarioRequestDTO {
     idSucursal: number;
@@ -11,7 +23,6 @@ export interface UsuarioRequestDTO {
     telefono: string;
     ip: string;
     perfil: string;
-    usuario: string;
     perfilCreador: string;
 }
 

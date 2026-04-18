@@ -112,7 +112,7 @@ export class AuthService {
 
     isLoggedIn(): boolean { return !!this.kc.authenticated; }
 
-    login(): Promise<void>  { return this.kc.login(); }
+    login(): Promise<void>  { return this.kc.login({ redirectUri: window.location.origin }); }
 
     logout(): Promise<void> {
         localStorage.removeItem(PERFIL_BACKEND_KEY);

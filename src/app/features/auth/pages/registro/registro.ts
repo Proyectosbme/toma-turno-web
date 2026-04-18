@@ -67,19 +67,14 @@ export class Registro implements OnInit {
         try {
             const v = this.form.value;
             const resp = await this.authApi.registrar({
-                nombres:              v.nombres!,
-                apellidos:            v.apellidos!,
-                dui:                  v.dui || '',
-                telefono:             v.telefono || '',
-                idSucursal:           v.idSucursal!,
-                idPuesto:             v.idPuesto!,
-                perfil:               'OPERADOR',
-                estado:               1,
-                correlativo:          v.correlativo ?? null,
-                atenderCasosEspeciales: null,
-                ip:                   '',
-                usuario:              '',
-                perfilCreador:        ''
+                nombres:     v.nombres!,
+                apellidos:   v.apellidos!,
+                dui:         v.dui || '',
+                telefono:    v.telefono || '',
+                idSucursal:  v.idSucursal!,
+                idPuesto:    v.idPuesto ?? null,
+                correlativo: v.correlativo ?? null,
+                perfil:      'OPERADOR'
             });
             this.codigoGenerado = resp.codigoUsuario;
             this.exitoso = true;

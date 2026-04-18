@@ -239,7 +239,6 @@ export class UsuarioPage implements OnInit {
             ip: datos.ip ?? '',
             perfil: datos.perfil ?? '',
             atenderCasosEspeciales: datos.atenderCasosEspeciales != null ? Number(datos.atenderCasosEspeciales) : null,
-            usuario: this.authService.getUsuario()?.codigoUsuario ?? '',
             perfilCreador: this.authService.getPerfil() ?? ''
         };
 
