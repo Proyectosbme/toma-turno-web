@@ -60,6 +60,7 @@ export class DetalleColaxPuestoPage implements OnInit {
 
     /** Puesto actualmente consultado (para habilitar el botón Asignar en el header) */
     puestoSeleccionado: { idPuesto: number; idSucursal: number } | null = null;
+    nombrePuestoSeleccionado = '';
 
     /* ── Dialog asignar ── */
     dialogoVisible = false;
@@ -154,6 +155,11 @@ export class DetalleColaxPuestoPage implements OnInit {
         this.advertencia = '';
         this.detalleSeleccionado = null;
         this.puestoSeleccionado = { idPuesto, idSucursal };
+
+        const campoPuesto = this.camposFiltro.find(f => f.name === 'idPuesto');
+        // eslint-disable-next-line eqeqeq
+        const opcionPuesto = campoPuesto?.options?.find(o => o.value == idPuesto);
+        this.nombrePuestoSeleccionado = opcionPuesto?.label ?? `Puesto #${idPuesto}`;
 
         try {
             this.cargando = true;

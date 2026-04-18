@@ -52,6 +52,15 @@
 
     <div class="dialog-form">
 
+        <!-- Puesto destino (solo lectura) -->
+        <div class="campo-form">
+            <span class="campo-label">Puesto</span>
+            <output class="campo-readonly">
+                <i class="pi pi-desktop"></i>
+                {{ nombrePuestoSeleccionado }}
+            </output>
+        </div>
+
         <!-- Cola (requerida) -->
         <div class="campo-form">
             <label for="selCola">Cola <span class="requerido">*</span></label>

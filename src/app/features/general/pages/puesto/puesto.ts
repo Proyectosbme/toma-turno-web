@@ -261,6 +261,11 @@ export class PuestoPage implements OnInit {
 
     limpiarBusqueda(): void {
         this.formularioBusqueda.reset();
+        if (this.authService.esSubAdmin()) {
+            const idFija = this.authService.idSucursalFija()!;
+            this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
+            this.formularioBusqueda.get('idSucursal')?.disable();
+        }
         this.advertenciaBusqueda = '';
         this.puestos = [];
         this.puestoSeleccionado = null;

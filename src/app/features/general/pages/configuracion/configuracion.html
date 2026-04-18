@@ -15,6 +15,7 @@
     <div page-content>
 
         <!-- Sección: Apariencia -->
+        @if (esAdminGlobal) {
         <app-section title="Apariencia de la Empresa">
             <div class="branding-form">
 
@@ -83,6 +84,7 @@
 
             </div>
         </app-section>
+        } <!-- fin @if esAdminGlobal -->
 
         <!-- Sección: Búsqueda -->
         <app-section id="sec-busqueda" title="Búsqueda por sucursal">

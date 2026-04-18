@@ -30,11 +30,24 @@
     flex-direction: column;
     gap: 0.35rem;
 
-    label {
+    label, .campo-label {
         font-size: 0.85rem;
         font-weight: 500;
         color: var(--text-color-secondary);
     }
+}
+
+.campo-readonly {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface-100);
+    border: 1px solid var(--surface-300);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
 }
 
 .requerido {

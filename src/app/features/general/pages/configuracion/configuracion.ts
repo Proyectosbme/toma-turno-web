@@ -50,6 +50,11 @@ export class ConfiguracionPage implements OnInit {
 
     readonly branding = inject(BrandingService);
 
+    get esAdminGlobal(): boolean {
+        return this.authService.getPerfil() === 'ADMIN'
+            && this.authService.getPerfilBackend()?.idSucursal === 1;
+    }
+
     /* ── Apariencia ── */
     nombreInput = '';
     guardandoNombre  = false;
@@ -292,6 +297,11 @@ export class ConfiguracionPage implements OnInit {
 
     limpiarBusqueda(): void {
         this.formularioBusqueda.reset();
+        if (this.authService.esSubAdmin()) {
+            const idFija = this.authService.idSucursalFija()!;
+            this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
+            this.formularioBusqueda.get('idSucursal')?.disable();
+        }
         this.advertenciaBusqueda = '';
         this.configuraciones = [];
         this.configSeleccionada = null;
