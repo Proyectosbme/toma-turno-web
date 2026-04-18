@@ -35,6 +35,7 @@ export class Registro implements OnInit {
     cargando = false;
     exitoso = false;
     codigoGenerado = '';
+    passwordTemporal = '';
     error = '';
 
     constructor(
@@ -77,6 +78,9 @@ export class Registro implements OnInit {
                 perfil:      'OPERADOR'
             });
             this.codigoGenerado = resp.codigoUsuario;
+            const primerNombre = v.nombres!.trim().charAt(0).toLowerCase();
+            const primerApellido = v.apellidos!.trim().split(/\s+/)[0].toLowerCase();
+            this.passwordTemporal = primerNombre + primerApellido;
             this.exitoso = true;
         } catch {
             this.error = 'Ocurrió un error al registrar. Intenta nuevamente.';

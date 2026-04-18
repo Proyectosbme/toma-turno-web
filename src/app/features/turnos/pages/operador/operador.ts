@@ -61,6 +61,10 @@ export class OperadorPage implements OnInit, OnDestroy {
         return this.idPuesto != null && this.idPuesto > 0;
     }
 
+    get atiendeEspeciales(): boolean {
+        return (this.authService.getUsuario()?.atenderCasosEspeciales ?? 0) === 1;
+    }
+
     /** Clave única por usuario para persistir su turno activo entre recargas */
     private get turnoActualKey(): string {
         return `op_turno_${this.authService.getUsuario()?.id ?? 0}`;
@@ -172,8 +176,16 @@ export class OperadorPage implements OnInit, OnDestroy {
         const idUsr = this.idUsuarioActual;
         this.turnosFinalizados = turnosFinalizados.filter(t => idUsr != null && t.idUsuario === idUsr);
 
-        // El backend ya devuelve los turnos ordenados por prioridad del puesto
-        this.turnosEnEspera = turnosEnEspera;
+        const idColasAsignadas = new Set(this.colasAsignadas.map(c => c.idCola));
+        const filtrados = turnosEnEspera.filter(t => idColasAsignadas.has(t.idCola));
+
+        if (this.atiendeEspeciales) {
+            const especiales = filtrados.filter(t => t.tipoCasoEspecial != null && t.tipoCasoEspecial > 0);
+            const normales   = filtrados.filter(t => !t.tipoCasoEspecial || t.tipoCasoEspecial === 0);
+            this.turnosEnEspera = [...especiales, ...normales];
+        } else {
+            this.turnosEnEspera = filtrados;
+        }
 
         // Cada operador rastrea SU turno activo por código (guardado en localStorage por user ID).
         // Así dos operadores con el mismo idPuesto son completamente independientes.

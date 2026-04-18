@@ -40,9 +40,9 @@ export class AppMenu implements OnInit {
         try {
             const perfil  = this.authService.getPerfil();
             const idSucursal = this.authService.getPerfilBackend()?.idSucursal;
-            const archivo = (perfil === 'ADMIN' && idSucursal === 1)
-                ? '/assets/menu/menu.json'
-                : '/assets/menu/menusubadmin.json';
+            const archivo = (perfil === 'ADMIN' && idSucursal !== 1)
+                ? '/assets/menu/menusubadmin.json'
+                : '/assets/menu/menu.json';
 
             const response = await fetch(archivo);
             const menu = (await response.json()) as MenuItem[];
