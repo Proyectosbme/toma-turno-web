@@ -36,9 +36,20 @@
           />
         </ng-container>
 
-        <small *ngIf="form.get(field.name)?.invalid && form.get(field.name)?.touched" class="field-error-msg">
-          {{ field.label }} es requerido.
-        </small>
+        <ng-container *ngIf="form.get(field.name)?.invalid && form.get(field.name)?.touched">
+          <small class="field-error-msg" *ngIf="form.get(field.name)?.hasError('required')">
+            {{ field.label }} es requerido.
+          </small>
+          <small class="field-error-msg" *ngIf="form.get(field.name)?.hasError('maxlength')">
+            {{ field.label }} excede el máximo de {{ form.get(field.name)?.getError('maxlength')?.requiredLength }} caracteres.
+          </small>
+          <small class="field-error-msg" *ngIf="form.get(field.name)?.hasError('email')">
+            {{ field.label }} no tiene un formato válido.
+          </small>
+          <small class="field-error-msg" *ngIf="form.get(field.name)?.hasError('pattern')">
+            {{ field.label }} contiene caracteres no permitidos.
+          </small>
+        </ng-container>
       </div>
     </ng-container>
   </form>

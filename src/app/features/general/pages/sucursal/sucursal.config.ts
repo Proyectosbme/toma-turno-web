@@ -24,7 +24,7 @@ export function crearFormularioSucursal(): FormGroup {
         nombre: new FormControl('', [Validators.required]),
         correo: new FormControl('', [Validators.required, Validators.maxLength(50)]),
         telefono: new FormControl('', [Validators.required, Validators.maxLength(15)]),
-        direccion: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+        direccion: new FormControl('', [Validators.required, Validators.maxLength(200)]),
         estado: new FormControl<number | null>(1, [Validators.required])
     });
 }

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/tomaturno-api/src/main/java/com/empresa/tomaturno/catalogos/dominio/entity/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/tomaturno-api/src/main/java/com/empresa/tomaturno/cola/dominio/entity/**)"
+    ]
+  }
+}
