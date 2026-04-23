@@ -13,7 +13,11 @@
       "Bash(grep -v \"^\\\\\"$\\\\|PATH\\\\|JAVA\\\\|LANG\\\\|HOME\")",
       "Bash(docker stop *)",
       "Bash(docker rm *)",
-      "Bash(docker run *)"
+      "Bash(docker run *)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/services/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/core/guards/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/api/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/api/**)"
     ]
   }
 }

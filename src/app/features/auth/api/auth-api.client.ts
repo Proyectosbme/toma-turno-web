@@ -19,7 +19,7 @@ export class AuthApiClient {
 
     getPerfilPorCodigo(codigoUsuario: string): Promise<UsuarioResponseDTO> {
         return firstValueFrom(
-            this.http.get<UsuarioResponseDTO>(`${this.BASE_URL}/perfil/coduser/${codigoUsuario}`)
+            this.http.get<UsuarioResponseDTO>(`${this.BASE_URL}/perfil2`, { params: { codigoUsuario } })
         );
     }
 

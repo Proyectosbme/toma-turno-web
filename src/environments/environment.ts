@@ -3,8 +3,8 @@ export const environment = {
     apiUrl: '/api',
     wsUrl: '',   // vacío = usa location.host con el proxy de desarrollo
     keycloak: {
-        url:      'https://sso-qa.coop1.com.sv',
-        realm:    'servicios-tomaturnos',
+        url:      'http://localhost:9095',
+        realm:    'tomaturno',
         clientId: 'angular-frontend'
     }
 };

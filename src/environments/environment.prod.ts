@@ -1,10 +1,10 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://192.168.1.132:8443',
-    wsUrl: 'wss://192.168.1.132:8443/turnos',
+    apiUrl: 'https://localhost:8085',
+    wsUrl: 'wss://localhost:8085/turnos',
     keycloak: {
-        url:      'https://sso-qa.coop1.com.sv',
-        realm:    'servicios-tomaturnos',
+        url:      'http://localhost:9095',
+        realm:    'tomaturno',
         clientId: 'angular-frontend'
     }
 };

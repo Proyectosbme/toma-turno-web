@@ -15,10 +15,7 @@ import {
     includeBearerTokenInterceptor,
     INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG
 } from 'keycloak-angular';
-import Keycloak from 'keycloak-js';
 import { environment } from './environments/environment';
-import { AuthApiClient } from '@auth/api/auth-api.client';
-import { AuthService } from '@auth/services/auth.service';
 import { BrandingService } from '@core/layout/service/branding.service';
 
 const TomaTurnoPreset = definePreset(Aura, {
@@ -83,22 +80,11 @@ export const appConfig: ApplicationConfig = {
         }),
         {
             provide: APP_INITIALIZER,
-            useFactory: (authApi: AuthApiClient, authService: AuthService, branding: BrandingService, kc: Keycloak) =>
+            useFactory: (branding: BrandingService) =>
                 async () => {
-                    try {
-                        if (kc.authenticated) {
-                            const codigoUsuario = authService.getCodigoUsuario();
-                            if (codigoUsuario) {
-                                const perfil = await authApi.getPerfil();
-                                authService.setPerfilBackend(perfil);
-                            }
-                        }
-                    } catch {
-                        // Sin perfil en BD todavía
-                    }
                     await branding.cargar();
                 },
-            deps: [AuthApiClient, AuthService, BrandingService, Keycloak],
+            deps: [BrandingService],
             multi: true
         },
         provideAnimationsAsync(),
