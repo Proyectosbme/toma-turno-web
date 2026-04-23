@@ -1,20 +1,21 @@
 {
     "/api": {
-        "target": "http://localhost:8085",
+        "target": "https://192.168.1.132:8443",
         "secure": false,
         "changeOrigin": true,
         "pathRewrite": { "^/api": "" }
     },
     "/notifications": {
-        "target": "http://localhost:8085",
+        "target": "https://192.168.1.132:8443",
         "ws": true,
         "secure": false,
         "changeOrigin": true
     },
     "/ws-turnos": {
-        "target": "http://localhost:8085",
+        "target": "https://192.168.1.132:8443",
         "ws": true,
         "secure": false,
+        "changeOrigin": true,
         "pathRewrite": { "^/ws-turnos": "/turnos" }
     }
 }

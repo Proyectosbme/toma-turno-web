@@ -1,6 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ApplicationConfig, Injector } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
 import { definePreset } from '@primeuix/themes';
@@ -14,11 +13,8 @@ import {
     AutoRefreshTokenService,
     UserActivityService,
     includeBearerTokenInterceptor,
-    INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
-    KEYCLOAK_EVENT_SIGNAL,
-    KeycloakEventType
+    INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG
 } from 'keycloak-angular';
-import { filter, firstValueFrom } from 'rxjs';
 import Keycloak from 'keycloak-js';
 import { environment } from './environments/environment';
 import { AuthApiClient } from '@auth/api/auth-api.client';
@@ -72,8 +68,9 @@ export const appConfig: ApplicationConfig = {
                 clientId: environment.keycloak.clientId
             },
             initOptions: {
-                onLoad: 'check-sso',        // SSO silencioso; authGuard fuerza login en rutas protegidas
-                pkceMethod: 'S256',        // PKCE con SHA-256
+                onLoad: 'login-required',
+                // S256 requiere crypto.subtle, solo disponible en localhost o HTTPS
+                pkceMethod: window.isSecureContext ? 'S256' : undefined,
                 checkLoginIframe: false
             },
             features: [
@@ -86,24 +83,9 @@ export const appConfig: ApplicationConfig = {
         }),
         {
             provide: APP_INITIALIZER,
-            useFactory: (authApi: AuthApiClient, authService: AuthService, branding: BrandingService, kc: Keycloak, injector: Injector) =>
+            useFactory: (authApi: AuthApiClient, authService: AuthService, branding: BrandingService, kc: Keycloak) =>
                 async () => {
                     try {
-                        // Nuestro APP_INITIALIZER corre en paralelo con el de Keycloak.
-                        // Si el token aún no está listo, esperamos a AuthSuccess/Ready antes de consultar el perfil.
-                        if (!kc.authenticated) {
-                            const keycloakSignal = injector.get(KEYCLOAK_EVENT_SIGNAL);
-                            await firstValueFrom(
-                                toObservable(keycloakSignal, { injector }).pipe(
-                                    filter(e =>
-                                        e.type === KeycloakEventType.AuthSuccess ||
-                                        e.type === KeycloakEventType.AuthError ||
-                                        e.type === KeycloakEventType.Ready
-                                    )
-                                )
-                            );
-                        }
-
                         if (kc.authenticated) {
                             const codigoUsuario = authService.getCodigoUsuario();
                             if (codigoUsuario) {
@@ -112,11 +94,11 @@ export const appConfig: ApplicationConfig = {
                             }
                         }
                     } catch {
-                        // Sin sesión activa o sin perfil en BD todavía
+                        // Sin perfil en BD todavía
                     }
                     await branding.cargar();
                 },
-            deps: [AuthApiClient, AuthService, BrandingService, Keycloak, Injector],
+            deps: [AuthApiClient, AuthService, BrandingService, Keycloak],
             multi: true
         },
         provideAnimationsAsync(),

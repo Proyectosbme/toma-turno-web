@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/tomaturno-api/src/main/java/com/empresa/tomaturno/catalogos/dominio/entity/**)",
-      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/tomaturno-api/src/main/java/com/empresa/tomaturno/cola/dominio/entity/**)"
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/tomaturno-api/src/main/java/com/empresa/tomaturno/cola/dominio/entity/**)",
+      "Bash(mkcert --version)",
+      "Bash(brew install *)",
+      "Bash(mkcert -install)",
+      "Bash(mkdir -p \"/Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma turnos/toma-turno/.ssl\")",
+      "Bash(mkcert 192.168.1.132 localhost 127.0.0.1)",
+      "Bash(mkcert -CAROOT)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma turnos/**)",
+      "Bash(grep -v \"^\\\\\"$\\\\|PATH\\\\|JAVA\\\\|LANG\\\\|HOME\")",
+      "Bash(docker stop *)",
+      "Bash(docker rm *)",
+      "Bash(docker run *)"
     ]
   }
 }
