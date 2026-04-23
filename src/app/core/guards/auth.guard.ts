@@ -14,11 +14,8 @@ export const authGuard: CanActivateFn = async () => {
 
     if (!auth.getPerfilBackend()) {
         try {
-            const codigoUsuario = auth.getCodigoUsuario();
-            if (codigoUsuario) {
-                const perfil = await authApi.getPerfilPorCodigo(codigoUsuario);
-                auth.setPerfilBackend(perfil);
-            }
+            const perfil = await authApi.getPerfil();
+            auth.setPerfilBackend(perfil);
         } catch {
             // Usuario no tiene perfil en BD
         }
