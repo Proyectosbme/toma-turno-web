@@ -17,7 +17,7 @@ export class TurnoWebSocketApi {
   connect(url?: string): void {
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) return;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const defaultUrl = environment.wsUrl || `${proto}//${location.host}/ws-turnos`;
+    const defaultUrl = environment.wsUrl || `${proto}//${location.host}/turnos`;
     this.wsUrl = url ?? defaultUrl;
     this.cerradoManualmente = false;
     this.abrir();
