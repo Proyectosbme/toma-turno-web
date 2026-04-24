@@ -54,7 +54,7 @@ export class ImpresoraService {
     }
 
     private imprimirConDialogo(html: string): void {
-        const win = window.open('', '_blank', 'width=210,height=500,toolbar=0,menubar=0,scrollbars=0');
+        const win = window.open('', '_blank', 'width=340,height=520,toolbar=0,menubar=0,scrollbars=0');
         if (!win) return;
         win.document.write(html);
         win.document.close();

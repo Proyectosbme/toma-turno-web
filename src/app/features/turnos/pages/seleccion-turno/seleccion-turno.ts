@@ -297,9 +297,10 @@ export class SeleccionTurnoPage implements OnInit, OnDestroy {
         const html = `<!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><title>Ticket</title>
 <style>
-  @page{size:72mm auto;margin:3mm 4mm}
+  @page{size:72mm auto;margin:0}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Courier New',monospace;font-size:10px;color:#000;width:100%}
+  body{font-family:'Courier New',monospace;font-size:10px;color:#000;background:#e8e8e8;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:16px}
+  .ticket{background:#fff;width:72mm;padding:4mm;box-shadow:0 2px 10px rgba(0,0,0,.25)}
   .centro{text-align:center}
   .titulo{font-size:13px;font-weight:bold;text-transform:uppercase;padding:4px 0 2px}
   .sep{font-size:9px;color:#555;padding:4px 0;text-align:center}
@@ -308,8 +309,10 @@ export class SeleccionTurnoPage implements OnInit, OnDestroy {
   td{padding:2px 1px;vertical-align:top;font-size:10px}
   .lbl{font-weight:bold;white-space:nowrap;padding-right:6px;width:38%}
   .pie{font-size:9px;font-style:italic;text-align:center;padding:6px 0 2px}
+  @media print{body{background:none;display:block;padding:0;min-height:unset}.ticket{box-shadow:none;width:100%;padding:3mm 4mm}}
 </style></head>
 <body>
+<div class="ticket">
   <div class="centro titulo">*** TICKET DE TURNO ***</div>
   <div class="sep">================================</div>
   <div class="codigo">${t.codigoTurno}</div>
@@ -323,6 +326,7 @@ export class SeleccionTurnoPage implements OnInit, OnDestroy {
   ${duiSeccion}
   <div class="sep">================================</div>
   <div class="pie">Por favor espere a ser llamado</div>
+</div>
 </body></html>`;
 
         this.impresoraService.imprimir(html);
