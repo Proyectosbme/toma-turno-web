@@ -1,7 +1,7 @@
 export const environment = {
     production: false,
     apiUrl: '/api',
-     wsUrl: '',   // vacío = usa location.host con el proxy de desarrollo
+    wsUrl: 'ws://192.168.1.132:8085/turnos',
     keycloak: {
         url:      'https://sso-qa.coop1.com.sv',
         realm:    'servicios-tomaturno',

@@ -78,12 +78,11 @@
                 <div class="destacado-wrapper">
                     <div class="destacado-card" [class.destacado-activo]="turnoDestacado">
                         <ng-container *ngIf="turnoDestacado; else sinDestacado">
-                            <div class="destacado-accion">PASAR</div>
+                            <div class="destacado-accion">
+                                {{ turnoDestacado.nombreLlamada ? 'PASAR A ' + turnoDestacado.nombreLlamada : 'PASAR' }}
+                            </div>
                             <div class="destacado-turno-etiqueta">Turno</div>
                             <div class="destacado-codigo">{{ turnoDestacado.codigoTurno }}</div>
-                            <div class="destacado-puesto" *ngIf="turnoDestacado.nombreLlamada">
-                                Pasa a <strong>{{ turnoDestacado.nombreLlamada }}</strong>
-                            </div>
                             <div class="destacado-hora">{{ hora(turnoDestacado.fechaLlamada ?? turnoDestacado.fechaCreacion) }}</div>
                         </ng-container>
                         <ng-template #sinDestacado>

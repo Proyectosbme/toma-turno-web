@@ -25,3 +25,9 @@ export interface TurnoResponseDTO {
     tipoCasoEspecial?: number;
     nombreLlamada?: string;
 }
+
+export interface WsTurnoEvent {
+    event: 'TURNO_LLAMADO' | 'TURNO_FINALIZADO' | 'TURNO_SIN_ATENDER' | 'TURNO_CREADO';
+    idSucursal: number;
+    turno?: TurnoResponseDTO;
+}

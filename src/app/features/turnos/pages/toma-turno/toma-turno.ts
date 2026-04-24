@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { TurnoApiClient } from '@turnos/api/turno-api.client';
 import { TurnoWebSocketApi } from '@turnos/api/turno-websocket.api';
-import { TurnoResponseDTO } from '@turnos/dto/turno.dto';
+import { TurnoResponseDTO, WsTurnoEvent } from '@turnos/dto/turno.dto';
 import { AuthService } from '@auth/services/auth.service';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
@@ -69,7 +69,67 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         this.refrescar();
         this.intervalo = setInterval(() => this.refrescar(), 30000);
         this.turnoWebSocket.connect();
-        this.wsSubscription = this.turnoWebSocket.mensajes.subscribe(() => this.refrescar());
+        this.wsSubscription = this.turnoWebSocket.mensajes.subscribe(e => this.aplicarEvento(e));
+    }
+
+    private aplicarEvento(evento: WsTurnoEvent): void {
+        if (evento.idSucursal !== this.idSucursalActual) return;
+        switch (evento.event) {
+            case 'TURNO_LLAMADO':
+                if (evento.turno) this.aplicarTurnoLlamado(evento.turno);
+                break;
+            case 'TURNO_FINALIZADO':
+                if (evento.turno) this.aplicarTurnoFinalizado(evento.turno);
+                break;
+            case 'TURNO_SIN_ATENDER':
+                if (evento.turno) this.aplicarTurnoSinAtender(evento.turno);
+                break;
+        }
+    }
+
+    private aplicarTurnoLlamado(turno: TurnoResponseDTO): void {
+        const clave = `${turno.codigoTurno}|${turno.fechaLlamada ?? turno.fechaCreacion}`;
+        const nuevaFila = {
+            codigoTurno: turno.codigoTurno,
+            estado: turno.estado,
+            hora: this.hora(turno.fechaLlamada ?? turno.fechaCreacion),
+            nombreLlamada: turno.nombreLlamada,
+        };
+        const sinEste = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
+        this.filas = [nuevaFila, ...sinEste.filter(f => f.estado === 2), ...sinEste.filter(f => f.estado === 4)];
+
+        if (!this.clavesAnunciadas.has(clave)) {
+            this.clavesAnunciadas.add(clave);
+            const [prefijo, numero] = turno.codigoTurno.split('-');
+            const codigoHablado = numero
+                ? `${prefijo} ${numero.split('').join(' ')}`
+                : turno.codigoTurno.split('').join(' ');
+            const destino = turno.nombreLlamada ? ` pasa a ${turno.nombreLlamada}` : '';
+            this.encolarAnuncio(`Turno ${codigoHablado}${destino}`, turno);
+        }
+
+        if (!this.isSpeaking && this.anuncioQueue.length === 0 && !this.postAnuncioTimer) {
+            this.turnoDestacado = turno;
+        }
+    }
+
+    private aplicarTurnoFinalizado(turno: TurnoResponseDTO): void {
+        const filaFinalizado = {
+            codigoTurno: turno.codigoTurno,
+            estado: turno.estado,
+            hora: this.hora(turno.fechaFinalizacion ?? turno.fechaCreacion),
+            nombreLlamada: turno.nombreLlamada,
+        };
+        const sinEste = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
+        const finalizados = [filaFinalizado, ...sinEste.filter(f => f.estado === 4)].slice(0, 20);
+        this.filas = [...sinEste.filter(f => f.estado === 2), ...finalizados];
+    }
+
+    private aplicarTurnoSinAtender(turno: TurnoResponseDTO): void {
+        this.filas = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
+        if (this.turnoDestacado?.codigoTurno === turno.codigoTurno) {
+            this.turnoDestacado = null;
+        }
     }
 
     /* ══════════════════════════════════════════
@@ -121,6 +181,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                 ? `${prefijo} ${numero.split('').join(' ')}`
                 : turno.codigoTurno.split('').join(' ');
             const destino = turno.nombreLlamada ? ` pasa a ${turno.nombreLlamada}` : '';
+            console.log('[TTS]', `Turno ${codigoHablado}${destino}`, '| nombreLlamada:', turno.nombreLlamada);
             this.encolarAnuncio(`Turno ${codigoHablado}${destino}`, turno);
         }
 
@@ -195,7 +256,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                 this.postAnuncioTimer = undefined;
                 this.volverAIdle();
                 this.procesarCola();
-            }, 2000);
+            }, 0);
             return;
         }
 
@@ -217,7 +278,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                     this.postAnuncioTimer = setTimeout(() => {
                         this.postAnuncioTimer = undefined;
                         this.volverAIdle();
-                    }, 2000);
+                    }, 0);
                 }
                 this.procesarCola();
             };

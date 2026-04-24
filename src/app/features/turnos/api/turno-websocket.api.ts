@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { WsTurnoEvent } from '@turnos/dto/turno.dto';
 
 @Injectable({ providedIn: 'root' })
 export class TurnoWebSocketApi {
   private ws?: WebSocket;
-  private mensajes$ = new Subject<string>();
+  private mensajes$ = new Subject<WsTurnoEvent>();
   private wsUrl = '';
   private reconnectTimer?: ReturnType<typeof setTimeout>;
   private cerradoManualmente = false;
 
-  get mensajes(): Observable<string> {
+  get mensajes(): Observable<WsTurnoEvent> {
     return this.mensajes$.asObservable();
   }
 
@@ -26,7 +27,9 @@ export class TurnoWebSocketApi {
   private abrir(): void {
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onopen = () => console.log('WebSocket conectado');
-    this.ws.onmessage = (event) => this.mensajes$.next(event.data);
+    this.ws.onmessage = (event) => {
+      try { this.mensajes$.next(JSON.parse(event.data)); } catch { /* ignorar mensajes malformados */ }
+    };
     this.ws.onclose = () => {
       if (!this.cerradoManualmente) {
         this.reconnectTimer = setTimeout(() => this.abrir(), 5000);
