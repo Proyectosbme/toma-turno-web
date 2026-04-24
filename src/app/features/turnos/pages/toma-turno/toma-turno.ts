@@ -102,10 +102,10 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     private async refrescar(): Promise<void> {
         const hoy = new Date().toLocaleDateString('en-CA');
 
-        const [llamados, finalizados] = await Promise.all([
-            this.turnoApi.buscar({ idSucursal: this.idSucursalActual, estado: 2, fecha: hoy }),
-            this.turnoApi.buscar({ idSucursal: this.idSucursalActual, estado: 4, fecha: hoy })
-        ]).catch(() => [[], []] as [TurnoResponseDTO[], TurnoResponseDTO[]]);
+        // Fetch llamados primero — ruta crítica para display y anuncio
+        const llamados = await this.turnoApi
+            .buscar({ idSucursal: this.idSucursalActual, estado: 2, fecha: hoy })
+            .catch(() => [] as TurnoResponseDTO[]);
 
         const ordenados = [...llamados].sort((a, b) =>
             (a.fechaLlamada ?? a.fechaCreacion).localeCompare(b.fechaLlamada ?? b.fechaCreacion)
@@ -128,7 +128,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             this.turnoDestacado = ordenados[ordenados.length - 1] ?? null;
         }
 
-        const filaLlamados: FilaTurno[] = llamados
+        const filaLlamados: FilaTurno[] = [...llamados]
             .sort((a, b) => (b.fechaLlamada ?? b.fechaCreacion).localeCompare(a.fechaLlamada ?? a.fechaCreacion))
             .map(t => ({
                 codigoTurno: t.codigoTurno,
@@ -137,17 +137,24 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                 nombreLlamada: t.nombreLlamada
             }));
 
-        const filaFinalizados: FilaTurno[] = finalizados
-            .sort((a, b) => (b.fechaFinalizacion ?? b.fechaCreacion).localeCompare(a.fechaFinalizacion ?? a.fechaCreacion))
-            .slice(0, 20)
-            .map(t => ({
-                codigoTurno: t.codigoTurno,
-                estado: t.estado,
-                hora: this.hora(t.fechaFinalizacion ?? t.fechaCreacion),
-                nombreLlamada: t.nombreLlamada
-            }));
+        // Actualizar filas con llamados ya disponibles; conservar finalizados actuales
+        this.filas = [...filaLlamados, ...this.filas.filter(f => f.estado === 4)];
 
-        this.filas = [...filaLlamados, ...filaFinalizados];
+        // Fetch finalizados en segundo plano — no bloquea el display ni el anuncio
+        this.turnoApi.buscar({ idSucursal: this.idSucursalActual, estado: 4, fecha: hoy })
+            .then(finalizados => {
+                const filaFinalizados: FilaTurno[] = finalizados
+                    .sort((a, b) => (b.fechaFinalizacion ?? b.fechaCreacion).localeCompare(a.fechaFinalizacion ?? a.fechaCreacion))
+                    .slice(0, 20)
+                    .map(t => ({
+                        codigoTurno: t.codigoTurno,
+                        estado: t.estado,
+                        hora: this.hora(t.fechaFinalizacion ?? t.fechaCreacion),
+                        nombreLlamada: t.nombreLlamada
+                    }));
+                this.filas = [...this.filas.filter(f => f.estado !== 4), ...filaFinalizados];
+            })
+            .catch(() => {});
     }
 
     hora(iso: string): string {
@@ -188,7 +195,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                 this.postAnuncioTimer = undefined;
                 this.volverAIdle();
                 this.procesarCola();
-            }, 4000);
+            }, 2000);
             return;
         }
 
@@ -210,7 +217,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                     this.postAnuncioTimer = setTimeout(() => {
                         this.postAnuncioTimer = undefined;
                         this.volverAIdle();
-                    }, 4000);
+                    }, 2000);
                 }
                 this.procesarCola();
             };

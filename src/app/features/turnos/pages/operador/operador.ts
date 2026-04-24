@@ -270,7 +270,6 @@ export class OperadorPage implements OnInit, OnDestroy {
             await this.turnoApi.sinAtender(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion);
             this.turnoActual = null;
             localStorage.removeItem(this.turnoActualKey);
-            await this.refrescarTurnos();
             this.messageService.add({
                 severity: 'warn', summary: 'Sin atender',
                 detail: `Turno ${turno.codigoTurno} marcado como sin atender`, life: 3000
@@ -282,6 +281,7 @@ export class OperadorPage implements OnInit, OnDestroy {
         } finally {
             this.cargando = false;
         }
+        this.refrescarTurnos().catch(() => {});
     }
 
     private async ejecutarLlamar(turno: TurnoResponseDTO): Promise<void> {
@@ -294,7 +294,7 @@ export class OperadorPage implements OnInit, OnDestroy {
             if (this.turnoActual) {
                 localStorage.setItem(this.turnoActualKey, this.turnoActual.codigoTurno);
             }
-            await this.refrescarTurnos();
+            this.turnosEnEspera = this.turnosEnEspera.filter(t => t.codigoTurno !== turno.codigoTurno);
             this.messageService.add({
                 severity: 'success', summary: 'Turno llamado',
                 detail: `Turno ${turno.codigoTurno}`, life: 3000
@@ -306,6 +306,7 @@ export class OperadorPage implements OnInit, OnDestroy {
         } finally {
             this.cargando = false;
         }
+        this.refrescarTurnos().catch(() => {});
     }
 
     private async ejecutarFinalizar(mensajeExito: string): Promise<void> {
@@ -316,7 +317,6 @@ export class OperadorPage implements OnInit, OnDestroy {
             await this.turnoApi.finalizar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion);
             this.turnoActual = null;
             localStorage.removeItem(this.turnoActualKey);
-            await this.refrescarTurnos();
             this.messageService.add({
                 severity: 'success', summary: mensajeExito,
                 detail: `Turno ${turno.codigoTurno}`, life: 3000
@@ -328,6 +328,7 @@ export class OperadorPage implements OnInit, OnDestroy {
         } finally {
             this.cargando = false;
         }
+        this.refrescarTurnos().catch(() => {});
     }
 
     async abrirRetomar(): Promise<void> {
