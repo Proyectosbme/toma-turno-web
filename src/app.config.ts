@@ -65,7 +65,7 @@ export const appConfig: ApplicationConfig = {
                 clientId: environment.keycloak.clientId
             },
             initOptions: {
-                onLoad: 'login-required',
+                onLoad: 'check-sso',
                 // S256 requiere crypto.subtle, solo disponible en localhost o HTTPS
                 pkceMethod: window.isSecureContext ? 'S256' : undefined,
                 checkLoginIframe: false

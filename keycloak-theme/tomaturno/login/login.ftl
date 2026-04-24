@@ -5,68 +5,55 @@
 
     <#if section = "form">
     <div class="tt-wrapper">
-        <div class="tt-gradient-border">
-            <div class="tt-card">
+        <div class="tt-card">
 
-                <!-- Logo / ícono -->
-                <div class="tt-header">
-                    <#if realm.displayNameHtml??>
-                        <div class="tt-icon">&#xE91C;</div>
-                    </#if>
-                    <div class="tt-title">${(realm.displayName)!'TOMATURNO'}</div>
-                    <div class="tt-subtitle">Inicie sesión para continuar</div>
+            <div class="tt-header">
+                <div class="tt-brand-icon">&#x1F4C5;</div>
+                <div class="tt-title">Iniciar Sesión</div>
+                <div class="tt-subtitle">Ingrese sus credenciales para continuar</div>
+            </div>
+
+            <form action="${url.loginAction}" method="post">
+
+                <div class="tt-field">
+                    <label for="username" class="tt-label">Usuario</label>
+                    <input id="username"
+                           name="username"
+                           type="text"
+                           class="tt-input"
+                           placeholder="Código de usuario"
+                           value="${(login.username)!''}"
+                           autofocus
+                           autocomplete="off" />
                 </div>
 
-                <!-- Formulario -->
-                <form action="${url.loginAction}" method="post">
-
-                    <!-- Usuario -->
-                    <div class="tt-field">
-                        <label for="username" class="tt-label">Usuario</label>
-                        <input id="username"
-                               name="username"
-                               type="text"
+                <div class="tt-field">
+                    <label for="password" class="tt-label">Contraseña</label>
+                    <div class="tt-input-wrap">
+                        <input id="password"
+                               name="password"
+                               type="password"
                                class="tt-input"
-                               placeholder="Código de usuario"
-                               value="${(login.username)!''}"
-                               autofocus
-                               autocomplete="off" />
+                               placeholder="Contraseña"
+                               autocomplete="current-password" />
+                        <span class="tt-eye" onclick="togglePassword()">&#xE946;</span>
                     </div>
+                </div>
 
-                    <!-- Contraseña -->
-                    <div class="tt-field">
-                        <label for="password" class="tt-label">Contraseña</label>
-                        <div class="tt-input-wrap">
-                            <input id="password"
-                                   name="password"
-                                   type="password"
-                                   class="tt-input"
-                                   placeholder="Contraseña"
-                                   autocomplete="current-password" />
-                            <span class="tt-eye" onclick="togglePassword()">&#xE946;</span>
-                        </div>
-                    </div>
+                <#if message?has_content && message.type = 'error'>
+                <div class="tt-error">
+                    ${kcSanitize(message.summary)?no_esc}
+                </div>
+                </#if>
 
-                    <!-- Error -->
-                    <#if message?has_content && message.type = 'error'>
-                    <div class="tt-error">
-                        ${kcSanitize(message.summary)?no_esc}
-                    </div>
-                    </#if>
+                <button type="submit" class="tt-btn">Iniciar Sesión</button>
 
-                    <!-- Botón -->
-                    <button type="submit" class="tt-btn">
-                        Iniciar Sesión
-                    </button>
+                <div class="tt-register-link">
+                    <span>¿Eres nuevo?</span>
+                    <a href="${properties.registroUrl!'http://localhost:4200/auth/registro'}">Regístrate aquí</a>
+                </div>
 
-                    <!-- Registro -->
-                    <div class="tt-register-link">
-                        <span>¿Eres nuevo?</span>
-                        <a href="${properties.registroUrl!'http://localhost:4200/auth/registro'}">Regístrate aquí</a>
-                    </div>
-
-                </form>
-            </div>
+            </form>
         </div>
     </div>
 
