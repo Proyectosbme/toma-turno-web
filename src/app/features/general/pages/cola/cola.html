@@ -40,13 +40,20 @@
                     <i class="pi pi-list"></i>
                     Cola: <strong>{{ colaSeleccionada['nombre'] }}</strong>
                 </span>
-                <button pButton icon="pi pi-plus" label="Agregar Detalle" class="p-button-sm"
-                    [disabled]="!colaSeleccionada" pTooltip="Seleccione una cola primero" (click)="abrirNuevoDetalle()">
-                </button>
+                <div class="detalle-acciones">
+                    <button pButton icon="pi pi-plus" label="Agregar Detalle" class="p-button-sm"
+                        [disabled]="!colaSeleccionada" pTooltip="Seleccione una cola primero" (click)="abrirNuevoDetalle()">
+                    </button>
+                    <button pButton icon="pi pi-pencil" label="Editar Detalle" class="p-button-sm p-button-secondary p-button-outlined"
+                        [disabled]="!detalleSeleccionado" pTooltip="Seleccione un detalle para editar" (click)="abrirEditarDetalle()">
+                    </button>
+                </div>
             </div>
 
             <app-table [items]="detalles" [columns]="columnasDetalle" [isLoading]="cargandoDetalles"
-                emptyTitle="Sin detalles" emptySubtitle="Seleccione una cola para ver sus detalles.">
+                [selectedItem]="detalleSeleccionado"
+                emptyTitle="Sin detalles" emptySubtitle="Seleccione una cola para ver sus detalles."
+                (rowSelect)="detalleSeleccionado = $event">
             </app-table>
 
         </app-section>
@@ -73,8 +80,8 @@
 </p-dialog>
 
 
-<!-- ═══ DIALOG: Crear Detalle ═══ -->
-<p-dialog header="Nuevo Detalle" [(visible)]="dialogoDetalleVisible" [modal]="true" [closable]="true"
+<!-- ═══ DIALOG: Crear / Editar Detalle ═══ -->
+<p-dialog [header]="dialogoDetalleTitulo" [(visible)]="dialogoDetalleVisible" [modal]="true" [closable]="true"
     [draggable]="false" [style]="{ width: '32rem' }">
 
     <!-- ── Cola padre — solo lectura ── -->

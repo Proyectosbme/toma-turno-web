@@ -34,4 +34,8 @@ export class ColaServicio {
     async guardarDetalle(idCola: number, idSucursal: number, dto: DetalleRequestDTO): Promise<ColaResponseDTO> {
         return this.colaApi.crearDetalle(idCola, idSucursal, dto);
     }
+
+    async editarDetalle(idCola: number, idSucursal: number, idDetalle: number, dto: DetalleRequestDTO): Promise<ColaResponseDTO> {
+        return this.colaApi.modificarDetalle(idCola, idSucursal, idDetalle, dto);
+    }
 }

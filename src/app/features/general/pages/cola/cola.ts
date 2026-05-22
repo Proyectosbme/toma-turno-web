@@ -51,7 +51,9 @@ export class ColaPage implements OnInit {
     formularioDetalle = crearFormularioDetalle();
     camposFormularioDetalle = CAMPOS_FORMULARIO_DETALLE;
     dialogoDetalleVisible = false;
+    dialogoDetalleTitulo = 'Nuevo Detalle';
     cargandoDetalle = false;
+    detalleSeleccionado: TableItem | null = null;
 
     /* ── Formulario de creación / edición ── */
     formularioCola = crearFormularioCola();
@@ -163,12 +165,26 @@ export class ColaPage implements OnInit {
     ══════════════════════════════════════════ */
     abrirNuevoDetalle(): void {
         if (!this.colaSeleccionada) return;
+        this.detalleSeleccionado = null;
+        this.dialogoDetalleTitulo = 'Nuevo Detalle';
         this.formularioDetalle.reset({ estado: 1 });
+        this.dialogoDetalleVisible = true;
+    }
+
+    abrirEditarDetalle(): void {
+        if (!this.detalleSeleccionado) return;
+        this.dialogoDetalleTitulo = 'Editar Detalle';
+        this.formularioDetalle.patchValue({
+            nombre: this.detalleSeleccionado['nombre'],
+            codigo: this.detalleSeleccionado['codigo'],
+            estado: this.detalleSeleccionado['estado']
+        });
         this.dialogoDetalleVisible = true;
     }
 
     cerrarDialogoDetalle(): void {
         this.dialogoDetalleVisible = false;
+        this.detalleSeleccionado = null;
         this.formularioDetalle.reset({ estado: 1 });
     }
 
@@ -234,18 +250,23 @@ export class ColaPage implements OnInit {
             usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
 
+        const idCola     = this.colaSeleccionada!['id'] as number;
+        const idSucursal = this.colaSeleccionada!['idSucursal'] as number;
+        const esEdicion  = this.detalleSeleccionado != null;
+
         try {
             this.cargandoDetalle = true;
-            const colaActualizada = await this.colaServicio.guardarDetalle(
-                this.colaSeleccionada!['id'] as number,
-                this.colaSeleccionada!['idSucursal'] as number,
-                dto
-            );
 
-            this.notificacion.exito('Detalle creado', `El detalle "${dto.nombre}" fue creado correctamente`);
+            const colaActualizada = esEdicion
+                ? await this.colaServicio.editarDetalle(idCola, idSucursal, this.detalleSeleccionado!['idDetalle'] as number, dto)
+                : await this.colaServicio.guardarDetalle(idCola, idSucursal, dto);
+
+            this.notificacion.exito(
+                esEdicion ? 'Detalle modificado' : 'Detalle creado',
+                `El detalle "${dto.nombre}" fue ${esEdicion ? 'actualizado' : 'creado'} correctamente`
+            );
             this.cerrarDialogoDetalle();
 
-            // Refresca la tabla de detalles con la respuesta del backend
             this.detalles = (colaActualizada.detalles ?? []).map(d => ({
                 idDetalle: d.idDetalle,
                 nombre: d.nombre,
@@ -325,6 +346,7 @@ export class ColaPage implements OnInit {
     async seleccionarCola(item: TableItem): Promise<void> {
         this.colaSeleccionada = item;
         this.detalles = [];
+        this.detalleSeleccionado = null;
         this.cargandoDetalles = true;
 
         try {

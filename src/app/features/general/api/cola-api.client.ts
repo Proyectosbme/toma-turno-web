@@ -58,6 +58,15 @@ export class ColaApiClient {
         );
     }
 
+    modificarDetalle(idCola: number, idSucursal: number, idDetalle: number, dto: DetalleRequestDTO): Promise<ColaResponseDTO> {
+        return firstValueFrom(
+            this.http.put<ColaResponseDTO>(
+                `${this.BASE_URL}/${idCola}/sucursal/${idSucursal}/detalles/${idDetalle}`,
+                dto
+            )
+        );
+    }
+
     replicar(idOrigen: number, idDestino: number): Promise<ReplicarResponseDTO> {
         const params = new HttpParams()
             .set('idOrigen', idOrigen)
