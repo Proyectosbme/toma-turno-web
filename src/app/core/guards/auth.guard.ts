@@ -1,25 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
-import { AuthService } from '@auth/services/auth.service';
-import { AuthApiClient } from '@auth/api/auth-api.client';
+import Keycloak from 'keycloak-js';
 
-export const authGuard: CanActivateFn = async () => {
-    const auth    = inject(AuthService);
-    const authApi = inject(AuthApiClient);
-
-    if (!auth.isLoggedIn()) {
-        await auth.login();
-        return false;
-    }
-
-    if (!auth.getPerfilBackend()) {
-        try {
-            const perfil = await authApi.getPerfil();
-            auth.setPerfilBackend(perfil);
-        } catch {
-            // Usuario no tiene perfil en BD
-        }
-    }
-
-    return true;
+export const authGuard: CanActivateFn = () => {
+    const kc = inject(Keycloak);
+    return !!kc.authenticated;
 };

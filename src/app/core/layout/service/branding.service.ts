@@ -16,15 +16,23 @@ export class BrandingService {
     bannerUrl     = signal<string | null>(null);
     cargando      = signal<boolean>(false);
 
+    private _cargado = false;
+
     constructor() {
         effect(() => this.titleService.setTitle(this.nombreEmpresa()));
         effect(() => this.actualizarFavicon(this.logoUrl()));
-        this.cargar();
     }
 
     async cargar(): Promise<void> {
+        if (this._cargado) return;
+        this._cargado = true;
         try {
-            const empresa = await this.empresaApi.obtener();
+            const empresa = await Promise.race([
+                this.empresaApi.obtener(),
+                new Promise<never>((_, reject) =>
+                    setTimeout(() => reject(new Error('timeout')), 3000)
+                )
+            ]);
             this.aplicarDesdeDTO(empresa);
         } catch { /* usa defaults */ }
     }

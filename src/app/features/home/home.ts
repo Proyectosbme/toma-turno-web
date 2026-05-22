@@ -1,19 +1,17 @@
-import { Component, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { BrandingService } from '@core/layout/service/branding.service';
 import { AuthService } from '@auth/services/auth.service';
+import { BrandingService } from '@core/layout/service/branding.service';
 
 @Component({
-    selector: 'app-home',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule],
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    styleUrl: './home.component.scss'
 })
 export class Home {
-
-    readonly branding = inject(BrandingService);
-    readonly auth     = inject(AuthService);
+    constructor(
+        public auth: AuthService,
+        public branding: BrandingService
+    ) {}
 }

@@ -247,9 +247,9 @@
 
     <!-- Botón configurar impresora (esquina inferior izquierda) -->
     <button class="btn-impresora-corner" (click)="abrirModalImpresora()"
-        [title]="impresoraGuardada ? 'Impresora: ' + impresoraGuardada : 'Configurar impresora'">
+        [title]="impresoraConfigurada ? 'Impresora configurada' : 'Configurar impresora'">
         <i class="pi pi-print"></i>
-        <span class="impresora-badge" *ngIf="impresoraGuardada">●</span>
+        <span class="impresora-badge" *ngIf="impresoraConfigurada">●</span>
     </button>
 
 </div>
@@ -260,55 +260,52 @@
     [(visible)]="modalImpresoraVisible"
     [modal]="true"
     [draggable]="false"
-    [style]="{ width: '26rem' }">
+    [closable]="impresoraConfigurada"
+    [style]="{ width: '28rem' }">
 
     <div class="impresora-modal-body">
 
-        <p class="impresora-info">
-            <i class="pi pi-info-circle"></i>
-            La impresora se guarda en este navegador/PC. Al imprimir un ticket
-            se usará sin mostrar el diálogo. Si no hay impresora configurada
-            o QZ Tray no está activo, se abrirá el diálogo del navegador.
-        </p>
-
-        <div *ngIf="cargandoImpresoras" class="impresora-spinner">
-            <p-progressSpinner strokeWidth="4" [style]="{ width: '32px', height: '32px' }" />
-            <span>Cargando impresoras...</span>
+        <div class="impresora-setup-icon">
+            <i class="pi pi-print"></i>
         </div>
 
-        <ng-container *ngIf="!cargandoImpresoras">
-
-            <div *ngIf="impresoras.length === 0" class="impresora-warning">
-                <i class="pi pi-exclamation-triangle"></i>
-                QZ Tray no disponible. Se usará el diálogo del navegador.
-            </div>
-
-            <div *ngIf="impresoras.length > 0" class="impresora-select-wrap">
-                <label for="selectImpresora">Selecciona la impresora</label>
-                <p-select
-                    inputId="selectImpresora"
-                    [options]="impresoras"
-                    [(ngModel)]="impresoraSeleccionada"
-                    placeholder="Sin impresora (usar diálogo)"
-                    [showClear]="true"
-                    appendTo="body"
-                    styleClass="w-full" />
-            </div>
-
-            <div class="impresora-actual" *ngIf="impresoraGuardada">
-                <i class="pi pi-check-circle"></i>
-                Guardada: <strong>{{ impresoraGuardada }}</strong>
-            </div>
-
+        <ng-container *ngIf="!impresoraConfigurada">
+            <h3 class="impresora-setup-titulo">Configuración inicial</h3>
+            <p class="impresora-info">
+                Al imprimir el primer ticket se abrirá el diálogo del navegador.
+                <strong>Selecciona tu impresora de tickets</strong> y el navegador
+                la recordará para todas las impresiones siguientes.
+            </p>
+            <ol class="impresora-pasos">
+                <li>Haz clic en <strong>Confirmar</strong></li>
+                <li>En el diálogo que aparece, elige tu impresora</li>
+                <li>Listo — las próximas impresiones serán automáticas</li>
+            </ol>
         </ng-container>
+
+        <ng-container *ngIf="impresoraConfigurada">
+            <div class="impresora-ok">
+                <i class="pi pi-check-circle"></i>
+                <span>Impresora configurada correctamente</span>
+            </div>
+            <p class="impresora-info">
+                Los tickets se imprimen directamente sin preguntar.
+                Puedes restablecer la configuración si cambias de impresora.
+            </p>
+        </ng-container>
+
     </div>
 
     <ng-template #footer>
-        <button pButton label="Cancelar" class="p-button-text p-button-sm"
-            (click)="modalImpresoraVisible = false"></button>
-        <button pButton label="Guardar" class="p-button-sm"
-            [disabled]="cargandoImpresoras"
-            (click)="guardarImpresora()"></button>
+        <ng-container *ngIf="!impresoraConfigurada">
+            <button pButton label="Confirmar" class="p-button-sm" (click)="confirmarConfiguracion()"></button>
+        </ng-container>
+        <ng-container *ngIf="impresoraConfigurada">
+            <button pButton label="Restablecer" class="p-button-text p-button-sm p-button-danger"
+                (click)="limpiarConfiguracion()"></button>
+            <button pButton label="Cerrar" class="p-button-sm"
+                (click)="modalImpresoraVisible = false"></button>
+        </ng-container>
     </ng-template>
 
 </p-dialog>

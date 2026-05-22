@@ -24,7 +24,14 @@
       "Bash(docker info *)",
       "Read(//Users/auxiliardeinformatica/.docker/**)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('auths',{}\\).keys\\(\\)\\)\")",
-      "Bash(npx ng *)"
+      "Bash(npx ng *)",
+      "Bash(openssl version *)",
+      "Read(//Applications/**)",
+      "Read(//Applications/QZ Tray.app/Contents/Resources/**)",
+      "Bash(ls \"/Library/Application Support/qz/ssl/\" 2>/dev/null)",
+      "Read(//Library/Application Support/qz/ssl/**)",
+      "Bash(ls \"/Users/auxiliardeinformatica/Library/Application Support/mkcert/\")",
+      "Read(//Users/auxiliardeinformatica/Library/Application Support/mkcert/**)"
     ]
   }
 }

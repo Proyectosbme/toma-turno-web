@@ -5,7 +5,6 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
-import { SelectModule } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { ColaApiClient } from '@general/api/cola-api.client';
 import { PersonaApiClient } from '@general/api/persona-api.client';
@@ -30,7 +29,7 @@ export interface DuiData {
 @Component({
     selector: 'app-seleccion-turno',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, ProgressSpinnerModule, ToastModule, DialogModule, SelectModule],
+    imports: [CommonModule, FormsModule, ButtonModule, ProgressSpinnerModule, ToastModule, DialogModule],
     providers: [MessageService],
     templateUrl: './seleccion-turno.html',
     styleUrl: './seleccion-turno.scss'
@@ -74,12 +73,9 @@ export class SeleccionTurnoPage implements OnInit, OnDestroy {
 
     /* ── Impresora ── */
     modalImpresoraVisible = false;
-    impresoras: string[] = [];
-    cargandoImpresoras = false;
-    impresoraSeleccionada: string | null = null;
 
-    get impresoraGuardada(): string | null {
-        return this.impresoraService.getImpresoraPreferida();
+    get impresoraConfigurada(): boolean {
+        return this.impresoraService.estaConfigurada();
     }
 
     constructor(
@@ -91,7 +87,12 @@ export class SeleccionTurnoPage implements OnInit, OnDestroy {
         readonly impresoraService:              ImpresoraService,
     ) {}
 
-    ngOnInit(): void { this.cargarConfigEscaneo(); }
+    ngOnInit(): void {
+        this.cargarConfigEscaneo();
+        if (!this.impresoraService.estaConfigurada()) {
+            this.modalImpresoraVisible = true;
+        }
+    }
 
     ngOnDestroy(): void { this.cancelarAutoReset(); }
 
@@ -335,39 +336,22 @@ export class SeleccionTurnoPage implements OnInit, OnDestroy {
     /* ══════════════════════════════════════════
        Configuración de impresora
     ══════════════════════════════════════════ */
-    async abrirModalImpresora(): Promise<void> {
-        this.impresoraSeleccionada = this.impresoraService.getImpresoraPreferida();
+    abrirModalImpresora(): void {
         this.modalImpresoraVisible = true;
-        this.impresoras = [];
-        this.cargandoImpresoras = true;
-        try {
-            this.impresoras = await this.impresoraService.obtenerImpresoras();
-        } catch {
-            this.messageService.add({
-                severity: 'warn', summary: 'QZ Tray no disponible',
-                detail: 'No se pudo conectar a QZ Tray. Asegúrate de que esté instalado y corriendo.',
-                life: 5000
-            });
-        } finally {
-            this.cargandoImpresoras = false;
-        }
     }
 
-    guardarImpresora(): void {
-        if (this.impresoraSeleccionada) {
-            this.impresoraService.setImpresoraPreferida(this.impresoraSeleccionada);
-            this.messageService.add({
-                severity: 'success', summary: 'Impresora guardada',
-                detail: `Se usará "${this.impresoraSeleccionada}" para imprimir tickets`, life: 3000
-            });
-        } else {
-            this.impresoraService.limpiarImpresora();
-            this.messageService.add({
-                severity: 'info', summary: 'Sin impresora',
-                detail: 'Se usará el diálogo del navegador al imprimir', life: 3000
-            });
-        }
+    confirmarConfiguracion(): void {
+        this.impresoraService.marcarComoConfigurada();
         this.modalImpresoraVisible = false;
+    }
+
+    limpiarConfiguracion(): void {
+        this.impresoraService.limpiarConfiguracion();
+        this.modalImpresoraVisible = false;
+        this.messageService.add({
+            severity: 'info', summary: 'Configuración eliminada',
+            detail: 'La próxima impresión mostrará la guía de configuración', life: 3000
+        });
     }
 
     private iniciarAutoReset(): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TreeNode } from 'primeng/api';
@@ -14,7 +14,7 @@ import { AuthService } from '@auth/services/auth.service';
     imports: [CommonModule, Tree],
     templateUrl: './app.menu.component.html'
 })
-export class AppMenu implements OnInit {
+export class AppMenu {
 
     treeNodes: TreeNode[] = [];
     selectedNode: TreeNode | null = null;
@@ -23,10 +23,12 @@ export class AppMenu implements OnInit {
         private readonly menuStateService: MenuStateService,
         private readonly router: Router,
         private readonly authService: AuthService
-    ) {}
-
-    ngOnInit(): void {
-        this.loadMenuFromJson();
+    ) {
+        effect(() => {
+            if (this.authService.perfilListo()) {
+                this.loadMenuFromJson();
+            }
+        });
     }
 
     onNodeSelect(event: TreeNodeSelectEvent): void {
@@ -38,17 +40,17 @@ export class AppMenu implements OnInit {
 
     private async loadMenuFromJson(): Promise<void> {
         try {
-            const perfil  = this.authService.getPerfil();
+            const perfil     = this.authService.getPerfil();
             const idSucursal = this.authService.getPerfilBackend()?.idSucursal;
-            const archivo = (perfil === 'ADMIN' && idSucursal !== 1)
+            const archivo    = (perfil === 'ADMIN' && idSucursal !== 1)
                 ? '/assets/menu/menusubadmin.json'
                 : '/assets/menu/menu.json';
 
-            const response = await fetch(archivo);
-            const menu = (await response.json()) as MenuItem[];
-            const menuFiltrado = this.filtrarPorPerfil(menu, perfil);
-            this.treeNodes = this.mapMenuToTreeNodes(menuFiltrado);
-            this.menuStateService.setMenu(menuFiltrado);
+            const response   = await fetch(archivo);
+            const all        = (await response.json()) as MenuItem[];
+            const filtrado   = this.filtrarPorPerfil(all, perfil);
+            this.treeNodes   = this.mapMenuToTreeNodes(filtrado);
+            this.menuStateService.setMenu(filtrado);
         } catch {
             this.treeNodes = [];
             this.menuStateService.setMenu([]);

@@ -73,6 +73,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     private aplicarEvento(evento: WsTurnoEvent): void {
+        console.log('[WS] Evento recibido:', evento);
         if (evento.idSucursal !== this.idSucursalActual) return;
         switch (evento.event) {
             case 'TURNO_LLAMADO':
@@ -166,6 +167,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         const llamados = await this.turnoApi
             .buscar({ idSucursal: this.idSucursalActual, estado: 2, fecha: hoy })
             .catch(() => [] as TurnoResponseDTO[]);
+        console.log('[HTTP] Turnos llamados (estado 2):', llamados);
 
         const ordenados = [...llamados].sort((a, b) =>
             (a.fechaLlamada ?? a.fechaCreacion).localeCompare(b.fechaLlamada ?? b.fechaCreacion)
@@ -204,6 +206,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         // Fetch finalizados en segundo plano — no bloquea el display ni el anuncio
         this.turnoApi.buscar({ idSucursal: this.idSucursalActual, estado: 4, fecha: hoy })
             .then(finalizados => {
+                console.log('[HTTP] Turnos finalizados (estado 4):', finalizados);
                 const filaFinalizados: FilaTurno[] = finalizados
                     .sort((a, b) => (b.fechaFinalizacion ?? b.fechaCreacion).localeCompare(a.fechaFinalizacion ?? a.fechaCreacion))
                     .slice(0, 20)
@@ -272,7 +275,15 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
 
             this.isSpeaking = true;
 
+            // Chrome en HTTPS corta el TTS después de ~15s; pausar/resumir cada 2s lo previene
+            const anticorte = setInterval(() => {
+                if (!window.speechSynthesis.speaking) { clearInterval(anticorte); return; }
+                window.speechSynthesis.pause();
+                window.speechSynthesis.resume();
+            }, 2000);
+
             const siguiente = () => {
+                clearInterval(anticorte);
                 this.isSpeaking = false;
                 if (this.anuncioQueue.length === 0) {
                     this.postAnuncioTimer = setTimeout(() => {

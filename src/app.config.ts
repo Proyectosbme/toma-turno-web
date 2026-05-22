@@ -1,5 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
 import { definePreset } from '@primeuix/themes';
@@ -16,7 +16,6 @@ import {
     INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG
 } from 'keycloak-angular';
 import { environment } from './environments/environment';
-import { BrandingService } from '@core/layout/service/branding.service';
 
 const TomaTurnoPreset = definePreset(Aura, {
     semantic: {
@@ -52,8 +51,8 @@ export const appConfig: ApplicationConfig = {
             provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
             useValue: [
                 {
-                    // Adjunta el token a cualquier llamada que empiece con /api
-                    urlPattern: /^\/api\//,
+                    // Adjunta el token a cualquier URL que contenga /api/
+                    urlPattern: /\/api\//,
                     httpMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
                 }
             ]
@@ -65,10 +64,10 @@ export const appConfig: ApplicationConfig = {
                 clientId: environment.keycloak.clientId
             },
             initOptions: {
-                onLoad: 'check-sso',
-                // S256 requiere crypto.subtle, solo disponible en localhost o HTTPS
-                pkceMethod: window.isSecureContext ? 'S256' : undefined,
-                checkLoginIframe: false
+                onLoad: 'login-required',
+                pkceMethod: 'S256',
+                checkLoginIframe: false,
+                locale: 'es'
             },
             features: [
                 withAutoRefreshToken({
@@ -78,15 +77,6 @@ export const appConfig: ApplicationConfig = {
             ],
             providers: [AutoRefreshTokenService, UserActivityService]
         }),
-        {
-            provide: APP_INITIALIZER,
-            useFactory: (branding: BrandingService) =>
-                async () => {
-                    await branding.cargar();
-                },
-            deps: [BrandingService],
-            multi: true
-        },
         provideAnimationsAsync(),
         providePrimeNG({ theme: { preset: TomaTurnoPreset, options: { darkModeSelector: '.app-dark' } } })
     ]

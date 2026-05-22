@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -36,21 +36,27 @@ export class UserMenuComponent implements OnInit {
         private readonly router: Router,
         private readonly usuarioApi: UsuarioApiClient,
         private readonly messageService: MessageService
-    ) {}
+    ) {
+        effect(() => {
+            if (this.authService.perfilListo()) {
+                this.aplicarPerfil();
+            }
+        });
+    }
 
-    ngOnInit() {
+    ngOnInit() {}
+
+    private aplicarPerfil(): void {
         const nombres   = this.authService.getNombres();
         const apellidos = this.authService.getApellidos();
         this.nombreCompleto  = this.authService.getNombreCompleto();
-        this.nombreSucursal  = this.authService.getPerfilBackend()?.nombreSucursal ?? 'bme';
+        this.nombreSucursal  = this.authService.getPerfilBackend()?.nombreSucursal ?? '';
         this.idUsuario  = this.authService.getPerfilBackend()?.id ?? 0;
         this.idSucursal = this.authService.getPerfilBackend()?.idSucursal ?? 0;
         this.iniciales = [nombres, apellidos]
             .filter(Boolean)
             .map(s => s.charAt(0).toUpperCase())
             .join('');
-
-        this.cargarFoto();
 
         this.items = [
             {
@@ -64,6 +70,8 @@ export class UserMenuComponent implements OnInit {
                 ]
             }
         ];
+
+        this.cargarFoto();
     }
 
     private async cargarFoto(): Promise<void> {

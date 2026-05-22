@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import Keycloak from 'keycloak-js';
 
 // ── Claims del JWT emitido por Keycloak ─────────────────────────────────────
@@ -47,6 +47,8 @@ const PERFIL_BACKEND_KEY = 'perfil_backend';
 export class AuthService {
 
     private readonly kc = inject(Keycloak);
+
+    readonly perfilListo = signal(false);
 
     // ── Claims del JWT ──────────────────────────────────────────────────────
 
@@ -112,11 +114,11 @@ export class AuthService {
 
     isLoggedIn(): boolean { return !!this.kc.authenticated; }
 
-    login(): Promise<void>  { return this.kc.login({ redirectUri: window.location.origin }); }
+    login(): Promise<void>  { return this.kc.login({ redirectUri: window.location.origin + '' }); }
 
     logout(): Promise<void> {
         localStorage.removeItem(PERFIL_BACKEND_KEY);
-        return this.kc.logout({ redirectUri: window.location.origin });
+        return this.kc.logout({ redirectUri: window.location.origin + '/' });
     }
 
     // ── Helpers de negocio ──────────────────────────────────────────────────
