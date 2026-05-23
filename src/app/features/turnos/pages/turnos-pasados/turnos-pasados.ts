@@ -88,7 +88,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
 
         this.cargando = true;
         try {
-            const hoy = new Date().toISOString().substring(0, 10);
+            const hoy = new Date().toLocaleDateString('en-CA');
             const idSucursalCola = this.colasAsignadas[0].idSucursalCola;
             const colasUnicas = [...new Map(this.colasAsignadas.map(c => [c.idCola, c])).values()];
 
