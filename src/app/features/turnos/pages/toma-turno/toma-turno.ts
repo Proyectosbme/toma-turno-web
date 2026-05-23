@@ -105,7 +105,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             const codigoHablado = numero
                 ? `${prefijo} ${numero.split('').join(' ')}`
                 : turno.codigoTurno.split('').join(' ');
-            const destino = turno.nombreLlamada ? ` pasa a ${turno.nombreLlamada}` : '';
+            const destino = turno.nombreLlamada ? `, pasa a ${turno.nombreLlamada}` : '';
             this.encolarAnuncio(`Turno ${codigoHablado}${destino}`, turno);
         }
 
@@ -263,24 +263,33 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             return;
         }
 
-        const utterance = new SpeechSynthesisUtterance(item.text);
-        utterance.lang = 'es-ES';
+        // Silencio al final para que el anticorte no corte la última sílaba real
+        const utterance = new SpeechSynthesisUtterance(item.text + ' .');
+        utterance.lang = 'es-MX';
         utterance.rate = 0.9;
         utterance.volume = 1;
 
         const hablar = () => {
             const voices = window.speechSynthesis.getVoices();
-            const voz = voices.find(v => v.lang.startsWith('es')) ?? voices[0];
+            const esFemenina = (v: SpeechSynthesisVoice) =>
+                /female|mujer|paulina|sabina|monica|esperanza|angelica/i.test(v.name);
+            const voz =
+                voices.find(v => v.lang === 'es-MX' && esFemenina(v)) ??
+                voices.find(v => v.lang.startsWith('es') && esFemenina(v)) ??
+                voices.find(v => v.lang === 'es-MX') ??
+                voices.find(v => v.lang.startsWith('es')) ??
+                voices[0];
             if (voz) utterance.voice = voz;
 
             this.isSpeaking = true;
 
-            // Chrome en HTTPS corta el TTS después de ~15s; pausar/resumir cada 2s lo previene
+            // Chrome en HTTPS corta el TTS después de ~15s; pausar/resumir cada 10s lo previene
+            // Intervalo largo para no cortar sílabas en anuncios cortos
             const anticorte = setInterval(() => {
                 if (!window.speechSynthesis.speaking) { clearInterval(anticorte); return; }
                 window.speechSynthesis.pause();
                 window.speechSynthesis.resume();
-            }, 2000);
+            }, 10000);
 
             const siguiente = () => {
                 clearInterval(anticorte);
