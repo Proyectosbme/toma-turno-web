@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker save *)",
+      "Bash(gzip)",
+      "Read(//Users/auxiliardeinformatica/Desktop/**)"
+    ],
+    "additionalDirectories": [
+      "/Users/auxiliardeinformatica/Desktop"
+    ]
+  }
+}

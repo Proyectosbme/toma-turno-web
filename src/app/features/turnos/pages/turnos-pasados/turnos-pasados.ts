@@ -10,7 +10,7 @@ import { AuthService } from '@auth/services/auth.service';
 import { TurnoApiClient } from '@turnos/api/turno-api.client';
 import { TurnoWebSocketApi } from '@turnos/api/turno-websocket.api';
 import { DetalleColaxPuestoApiClient } from '@general/api/detallecolaxpuesto-api.client';
-import { TurnoResponseDTO } from '@turnos/dto/turno.dto';
+import { TurnoResponseDTO, EstadoTurno } from '@turnos/dto/turno.dto';
 import { DetalleColaxPuestoResponseDTO } from '@general/dto/detallecolaxpuesto.dto';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
@@ -98,10 +98,10 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
                 )
             );
 
-            // FINALIZADO (4), TRASLADO (3) y SIN_ATENDER (5) — LLAMADO y CREADO no son "pasados"
+            const estadosPasados = [EstadoTurno.TRASLADO, EstadoTurno.FINALIZADO, EstadoTurno.SIN_ATENDER];
             this.turnos = resultados
                 .flat()
-                .filter(t => t.estado === 3 || t.estado === 4 || t.estado === 5)
+                .filter(t => estadosPasados.includes(t.estado))
                 .sort((a, b) => {
                     const da = a.fechaLlamada ?? a.fechaCreacion;
                     const db = b.fechaLlamada ?? b.fechaCreacion;
@@ -119,9 +119,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         this.llamandoId = turno.id;
         const dto = { idPuesto: this.idPuesto, idSucursalPuesto: this.idSucursalActual, idUsuario: this.idUsuarioActual };
         try {
-            // Estado 5 (SIN_ATENDER): usar /llamar porque el turno volvió a estado pendiente
-            // Resto (LLAMADO, FINALIZADO, TRASLADO): usar /re-llamar
-            if (turno.estado === 5) {
+            if (turno.estado === EstadoTurno.SIN_ATENDER) {
                 await this.turnoApi.llamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
             } else {
                 await this.turnoApi.rellamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
@@ -139,18 +137,18 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
 
     etiquetaEstado(estado: number): string {
         switch (estado) {
-            case 3: return 'Trasladado';
-            case 4: return 'Finalizado';
-            case 5: return 'Sin atender';
+            case EstadoTurno.TRASLADO:    return 'Trasladado';
+            case EstadoTurno.FINALIZADO:  return 'Finalizado';
+            case EstadoTurno.SIN_ATENDER: return 'Sin atender';
             default: return '';
         }
     }
 
     severidadEstado(estado: number): 'warn' | 'success' | 'secondary' | 'danger' {
         switch (estado) {
-            case 3: return 'warn';
-            case 4: return 'success';
-            case 5: return 'danger';
+            case EstadoTurno.TRASLADO:    return 'warn';
+            case EstadoTurno.FINALIZADO:  return 'success';
+            case EstadoTurno.SIN_ATENDER: return 'danger';
             default: return 'secondary';
         }
     }

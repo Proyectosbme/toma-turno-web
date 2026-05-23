@@ -14,7 +14,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { TurnoApiClient } from '@turnos/api/turno-api.client';
 import { TurnoWebSocketApi } from '@turnos/api/turno-websocket.api';
 import { DetalleColaxPuestoApiClient } from '@general/api/detallecolaxpuesto-api.client';
-import { TurnoResponseDTO } from '@turnos/dto/turno.dto';
+import { TurnoResponseDTO, EstadoTurno } from '@turnos/dto/turno.dto';
 import { DetalleColaxPuestoResponseDTO } from '@general/dto/detallecolaxpuesto.dto';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { AuthService } from '@auth/services/auth.service';
@@ -162,11 +162,11 @@ export class OperadorPage implements OnInit, OnDestroy {
         const idPuesto        = this.idPuesto ?? undefined;
 
         const [turnosLlamados, turnosFinalizados, turnosEnEspera] = await Promise.all([
-            this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: 2, fecha: hoy }),
-            this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: 4, fecha: hoy }),
+            this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: EstadoTurno.LLAMADO, fecha: hoy }),
+            this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: EstadoTurno.FINALIZADO, fecha: hoy }),
             this.turnoApi.buscar({
                 idSucursal: idSucursalColas,
-                estado: 1,
+                estado: EstadoTurno.CREADO,
                 fecha: hoy,
                 idPuesto,
                 idSucursalPuesto: idPuesto != null ? this.idSucursalActual : undefined
@@ -338,7 +338,7 @@ export class OperadorPage implements OnInit, OnDestroy {
             const idSucursalColas = this.colasAsignadas[0]?.idSucursalCola ?? this.idSucursalActual;
             this.turnosSinAtender = await this.turnoApi.buscar({
                 idSucursal: idSucursalColas,
-                estado: 5,
+                estado: EstadoTurno.SIN_ATENDER,
                 fecha: hoy
             });
             this.mostrarDialogoRetomar = true;

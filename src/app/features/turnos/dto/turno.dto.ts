@@ -1,3 +1,11 @@
+export enum EstadoTurno {
+    CREADO   = 1,
+    LLAMADO  = 2,
+    TRASLADO = 3,
+    FINALIZADO  = 4,
+    SIN_ATENDER = 5,
+}
+
 export interface CrearTurnoRequestDTO {
     idSucursal: number;
     idCola: number;
