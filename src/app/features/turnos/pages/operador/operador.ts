@@ -365,9 +365,9 @@ export class OperadorPage implements OnInit, OnDestroy {
             this.cargandoReasignar = true;
             const colasUnicas = [...new Map(this.colasAsignadas.map(c => [c.idCola, c])).values()];
             const idSucursalColas = colasUnicas[0]?.idSucursalCola ?? this.idSucursalActual;
-            const todasLasColas = await this.colaApi.buscar({ idSucursal: idSucursalColas });
+            const todasLasColas = await this.colaApi.buscarColasConDetalle(idSucursalColas);
             this.colasReasignar = todasLasColas
-                .filter(c => c.estado === 1)
+                .filter(c => c.estado === 1 && (c.detalles ?? []).some(d => d.estado === 1))
                 .sort((a, b) => a.prioridad - b.prioridad);
             this.mostrarDialogoReasignar = true;
         } catch (err) {
@@ -379,15 +379,10 @@ export class OperadorPage implements OnInit, OnDestroy {
         }
     }
 
-    async seleccionarColaReasignar(cola: ColaResponseDTO): Promise<void> {
+    seleccionarColaReasignar(cola: ColaResponseDTO): void {
         this.colaReasignarSeleccionada = cola;
         this.detalleReasignarSeleccionado = null;
-        try {
-            const colaConDetalles = await this.colaApi.buscarConDetalles(cola.id, cola.idSucursal);
-            this.detallesReasignar = (colaConDetalles.detalles ?? []).filter(d => d.estado === 1);
-        } catch {
-            this.detallesReasignar = [];
-        }
+        this.detallesReasignar = (cola.detalles ?? []).filter(d => d.estado === 1);
     }
 
     async confirmarReasignar(): Promise<void> {

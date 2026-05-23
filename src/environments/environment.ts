@@ -3,8 +3,8 @@ export const environment = {
     apiUrl: '/api',
     wsUrl: 'ws://localhost:8085/turnos',
     keycloak: {
-        url:      'https://sso-tomaturnos.coop1.com.sv',
-        realm:    'servicios-tomaturno',
+        url:      'http://localhost:9095',
+        realm:    'tomaturno',
         clientId: 'angular-frontend'
     }
 };
