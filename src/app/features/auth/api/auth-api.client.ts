@@ -17,15 +17,9 @@ export class AuthApiClient {
         );
     }
 
-    getPerfilPorCodigo(codigoUsuario: string): Promise<UsuarioResponseDTO> {
-        return firstValueFrom(
-            this.http.get<UsuarioResponseDTO>(`${this.BASE_URL}/perfil2`, { params: { codigoUsuario } })
-        );
-    }
-
     registrar(dto: UsuarioRegistroRequestDTO): Promise<UsuarioResponseDTO> {
         return firstValueFrom(
-            this.http.post<UsuarioResponseDTO>(`${this.BASE_URL}/crear`, dto)
+            this.http.post<UsuarioResponseDTO>(`${this.BASE_URL}/registrar`, dto)
         );
     }
 

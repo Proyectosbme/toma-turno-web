@@ -64,7 +64,7 @@ export const appConfig: ApplicationConfig = {
                 clientId: environment.keycloak.clientId
             },
             initOptions: {
-                onLoad: 'login-required',
+                onLoad: window.location.pathname.startsWith('/auth/') ? 'check-sso' : 'login-required',
                 pkceMethod: 'S256',
                 checkLoginIframe: false,
                 locale: 'es'

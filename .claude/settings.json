@@ -3,7 +3,8 @@
     "allow": [
       "Bash(docker save *)",
       "Bash(gzip)",
-      "Read(//Users/auxiliardeinformatica/Desktop/**)"
+      "Read(//Users/auxiliardeinformatica/Desktop/**)",
+      "Bash(zip -r ~/Desktop/tomaturno-theme.zip tomaturno/)"
     ],
     "additionalDirectories": [
       "/Users/auxiliardeinformatica/Desktop"

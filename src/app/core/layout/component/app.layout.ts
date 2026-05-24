@@ -53,8 +53,7 @@ export class AppLayout implements OnInit {
     async ngOnInit(): Promise<void> {
         if (!this.auth.getPerfilBackend()) {
             try {
-                const codigo = this.auth.getCodigoUsuario();
-                const perfil = await this.authApi.getPerfilPorCodigo(codigo);
+                const perfil = await this.authApi.getPerfil();
                 this.auth.setPerfilBackend(perfil);
             } catch (e) {
                 console.error('[AppLayout] No se pudo obtener el perfil:', e);

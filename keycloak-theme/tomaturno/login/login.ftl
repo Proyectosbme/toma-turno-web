@@ -48,9 +48,13 @@
 
                 <button type="submit" class="tt-btn">Iniciar Sesión</button>
 
+                <div class="tt-forgot">
+                    <a href="${url.loginResetCredentialsUrl}">¿Olvidaste tu contraseña?</a>
+                </div>
+
                 <div class="tt-register-link">
                     <span>¿Eres nuevo?</span>
-                    <a href="${properties.registroUrl!'http://localhost:4200/auth/registro'}">Regístrate aquí</a>
+                    <a href="${properties.registroUrl!'https://tomaturnos.coop1.com.sv/auth/registro'}">Regístrate aquí</a>
                 </div>
 
             </form>

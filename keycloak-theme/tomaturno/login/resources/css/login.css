@@ -1,100 +1,77 @@
-/* ── Reset del chrome de Keycloak ────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body,
-.login-pf,
-.login-pf body,
-#kc-container,
-#kc-container-wrapper,
-.container-fluid,
-.row,
-.col-xs-12,
-.col-sm-12 {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    min-height: 100vh !important;
-    background: #ffffff !important;
-    box-shadow: none !important;
-    border: none !important;
-}
-
 html, body {
-    height: 100%;
-}
-
-body {
-    background-color: #ffffff !important;
+    background: #f1f5f9 !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding: 0;
 }
 
-#kc-header, .login-pf-header, #kc-info-message,
-#kc-page-title { display: none !important; }
+/* Ocultar header y footer de Keycloak */
+#kc-header, .login-pf-header, #kc-info-message, #kc-page-title { display: none !important; }
 
-/* ── Wrapper full screen centrado ────────────────────────────────────────── */
+/* ── Wrapper: centra el card en pantalla ──────────────────────────────────── */
 .tt-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    width: 100%;
-    background: #ffffff;
+    min-height: 80vh;
     padding: 2rem 1rem;
 }
 
-/* ── Card centrada con ancho máximo ──────────────────────────────────────── */
+/* ── Card ────────────────────────────────────────────────────────────────── */
 .tt-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+    padding: 2.5rem 2rem;
     width: 100%;
-    max-width: 440px;
+    max-width: 420px;
 }
 
 /* ── Cabecera ────────────────────────────────────────────────────────────── */
 .tt-header {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
 }
 
 .tt-brand-icon {
-    font-size: 3.5rem;
+    font-size: 3rem;
     display: block;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .tt-title {
-    font-size: 1.875rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: #14532d;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.3rem;
 }
 
 .tt-subtitle {
     color: #475569;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 /* ── Campos ──────────────────────────────────────────────────────────────── */
 .tt-field {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .tt-label {
     display: block;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: #1e293b;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .tt-input {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 0.7rem 1rem;
     border: 1.5px solid #d1fae5;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #1e293b;
     background: #f0fdf4;
     outline: none;
@@ -132,7 +109,7 @@ body {
 /* ── Error ───────────────────────────────────────────────────────────────── */
 .tt-error {
     margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
+    padding: 0.7rem 1rem;
     background: #fef2f2;
     border: 1px solid #fecaca;
     border-radius: 8px;
@@ -143,7 +120,7 @@ body {
 /* ── Botón ───────────────────────────────────────────────────────────────── */
 .tt-btn {
     width: 100%;
-    padding: 0.9rem;
+    padding: 0.85rem;
     margin-top: 0.5rem;
     background: #15803d;
     color: #ffffff;
@@ -155,15 +132,34 @@ body {
     transition: background 0.2s;
 }
 
-.tt-btn:hover  { background: #15803d; }
+.tt-btn:hover  { background: #16a34a; }
 .tt-btn:active { background: #166534; }
+
+/* ── Olvidé contraseña ───────────────────────────────────────────────────── */
+.tt-forgot {
+    margin-top: 0.75rem;
+    text-align: right;
+    font-size: 0.875rem;
+}
+
+.tt-forgot a {
+    color: #15803d;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.tt-forgot a:hover {
+    text-decoration: underline;
+}
 
 /* ── Link de registro ────────────────────────────────────────────────────── */
 .tt-register-link {
     margin-top: 1.25rem;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: #475569;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1.25rem;
 }
 
 .tt-register-link a {
