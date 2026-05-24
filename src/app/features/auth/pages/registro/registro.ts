@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
@@ -42,7 +41,6 @@ export class Registro implements OnInit {
         private sucursalApi: SucursalApiClient,
         private puestoApi: PuestoApiClient,
         private authApi: AuthApiClient,
-        private router: Router
     ) {}
 
     async ngOnInit(): Promise<void> {
@@ -90,6 +88,6 @@ export class Registro implements OnInit {
     }
 
     irALogin(): void {
-        this.router.navigate(['/']);
+        window.location.href = '/';
     }
 }
