@@ -239,7 +239,8 @@ export class UsuarioPage implements OnInit {
             ip: datos.ip ?? '',
             perfil: datos.perfil ?? '',
             atenderCasosEspeciales: datos.atenderCasosEspeciales != null ? Number(datos.atenderCasosEspeciales) : null,
-            perfilCreador: this.authService.getPerfil() ?? ''
+            perfilCreador: this.authService.getPerfil() ?? '',
+            correo: datos.correo || undefined
         };
 
         try {

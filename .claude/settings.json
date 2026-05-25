@@ -4,7 +4,12 @@
       "Bash(docker save *)",
       "Bash(gzip)",
       "Read(//Users/auxiliardeinformatica/Desktop/**)",
-      "Bash(zip -r ~/Desktop/tomaturno-theme.zip tomaturno/)"
+      "Bash(zip -r ~/Desktop/tomaturno-theme.zip tomaturno/)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/pages/registro/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/api/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/services/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/pages/usuario/**)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/api/**)"
     ],
     "additionalDirectories": [
       "/Users/auxiliardeinformatica/Desktop"

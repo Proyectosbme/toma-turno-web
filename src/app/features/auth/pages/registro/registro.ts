@@ -24,6 +24,7 @@ export class Registro implements OnInit {
         apellidos:  new FormControl('', [Validators.required, Validators.maxLength(100)]),
         dui:        new FormControl('', [Validators.maxLength(20)]),
         telefono:   new FormControl('', [Validators.maxLength(20)]),
+        correo:     new FormControl('', [Validators.required, Validators.email, Validators.maxLength(150)]),
         idSucursal:  new FormControl<number | null>(null, [Validators.required]),
         idPuesto:    new FormControl<number | null>(null, [Validators.required]),
         correlativo: new FormControl<number | null>(null, [Validators.required, Validators.min(1)])
@@ -70,6 +71,7 @@ export class Registro implements OnInit {
                 apellidos:   v.apellidos!,
                 dui:         v.dui || '',
                 telefono:    v.telefono || '',
+                correo:      v.correo!,
                 idSucursal:  v.idSucursal!,
                 idPuesto:    v.idPuesto ?? null,
                 correlativo: v.correlativo ?? null,

@@ -36,7 +36,8 @@ export function crearFormularioUsuario(esEdicion = false): FormGroup {
         estado:                 new FormControl<number | null>(1, [Validators.required]),
         telefono:               new FormControl('', [Validators.maxLength(20)]),
         ip:                     new FormControl('', [Validators.maxLength(50)]),
-        atenderCasosEspeciales: new FormControl<number | null>(0)
+        atenderCasosEspeciales: new FormControl<number | null>(0),
+        correo:        new FormControl('', [Validators.email, Validators.maxLength(150)])
     });
 }
 
@@ -58,6 +59,7 @@ export const CAMPOS_FORMULARIO_CREAR: FormFieldConfig[] = [
     },
     { name: 'nombres',       label: 'Nombres',             placeholder: 'Ej: Juan Carlos',    type: 'text'     },
     { name: 'apellidos',     label: 'Apellidos',           placeholder: 'Ej: Pérez López',    type: 'text'     },
+    { name: 'correo',        label: 'Correo electrónico',  placeholder: 'Ej: juan@correo.com', type: 'text'    },
     { name: 'dui',           label: 'DUI',                                                    type: 'text', mask: '99999999-9' },
     { name: 'telefono',      label: 'Teléfono',            placeholder: 'Ej: 7777-8888',      type: 'text'     },
     { name: 'ip',            label: 'IP',                  placeholder: 'Ej: 192.168.1.10',   type: 'text'     },
@@ -87,6 +89,7 @@ export const CAMPOS_FORMULARIO_EDITAR: FormFieldConfig[] = [
     },
     { name: 'nombres',       label: 'Nombres',                        placeholder: 'Ej: Juan Carlos',                  type: 'text'     },
     { name: 'apellidos',     label: 'Apellidos',                      placeholder: 'Ej: Pérez López',                  type: 'text'     },
+    { name: 'correo',        label: 'Correo electrónico',             placeholder: 'Dejar vacío para no modificar',    type: 'text'     },
     { name: 'dui',           label: 'DUI',                                                                             type: 'text', mask: '99999999-9' },
     { name: 'telefono',      label: 'Teléfono',                       placeholder: 'Ej: 7777-8888',                    type: 'text'     },
     { name: 'ip',            label: 'IP',                             placeholder: 'Ej: 192.168.1.10',                 type: 'text'     },

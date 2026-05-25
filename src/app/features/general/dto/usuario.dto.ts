@@ -8,6 +8,7 @@ export interface UsuarioRegistroRequestDTO {
     dui: string;
     telefono: string;
     perfil: string;
+    correo: string;
 }
 
 /** Datos que se ENVÍAN al backend para crear o modificar un usuario */
@@ -24,6 +25,7 @@ export interface UsuarioRequestDTO {
     ip: string;
     perfil: string;
     perfilCreador: string;
+    correo?: string;
 }
 
 /** Datos que RESPONDE el backend al consultar usuarios */

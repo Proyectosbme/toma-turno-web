@@ -100,6 +100,15 @@
                             }
                         </div>
 
+                        <!-- Correo electrónico -->
+                        <div class="flex flex-col gap-1">
+                            <label for="correo" class="text-surface-700 dark:text-surface-200 font-medium text-sm">Correo electrónico *</label>
+                            <input id="correo" pInputText type="email" formControlName="correo" placeholder="Ej: juan@correo.com" class="w-full" />
+                            @if (form.get('correo')?.invalid && form.get('correo')?.touched) {
+                                <small class="text-red-500">Ingresa un correo válido</small>
+                            }
+                        </div>
+
                         <!-- DUI y Teléfono -->
                         <div class="grid grid-cols-2 gap-4">
                             <div class="flex flex-col gap-1">
