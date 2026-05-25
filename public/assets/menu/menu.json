@@ -4,7 +4,7 @@
     "icon": "pi pi-fw pi-building",
     "label": "General",
     "orden": 1,
-    "perfiles": ["ADMIN"],
+    "perfiles": ["ADMIN", "SUBADMIN"],
     "items": [
       {
         "codigo": 2,
@@ -19,7 +19,7 @@
         "icon": "pi pi-fw pi-sort-amount-down",
         "label": "Cola",
         "orden": 2,
-        "perfiles": ["ADMIN"],
+        "perfiles": ["ADMIN", "SUBADMIN"],
         "routerLink": ["general/cola"]
       },
       {
@@ -27,7 +27,7 @@
         "icon": "pi pi-fw pi-desktop",
         "label": "Puesto",
         "orden": 3,
-        "perfiles": ["ADMIN"],
+        "perfiles": ["ADMIN", "SUBADMIN"],
         "routerLink": ["general/puesto"]
       },
       {
@@ -35,7 +35,7 @@
         "icon": "pi pi-fw pi-link",
         "label": "Asignación Puesto-Cola",
         "orden": 4,
-        "perfiles": ["ADMIN"],
+        "perfiles": ["ADMIN", "SUBADMIN"],
         "routerLink": ["general/detallecolaxpuesto"]
       },
       {
@@ -43,7 +43,7 @@
         "icon": "pi pi-fw pi-users",
         "label": "Usuarios",
         "orden": 5,
-        "perfiles": ["ADMIN"],
+        "perfiles": ["ADMIN", "SUBADMIN"],
         "routerLink": ["general/usuario"]
       },
       {
@@ -51,7 +51,7 @@
         "icon": "pi pi-fw pi-sliders-h",
         "label": "Configuraciones",
         "orden": 6,
-        "perfiles": ["ADMIN"],
+        "perfiles": ["ADMIN", "SUBADMIN"],
         "routerLink": ["general/configuracion"]
       }
     ]

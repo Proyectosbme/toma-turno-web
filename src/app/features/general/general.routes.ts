@@ -7,13 +7,14 @@ import { UsuarioPage } from './pages/usuario/usuario';
 import { ConfiguracionPage } from './pages/configuracion/configuracion';
 import { perfilGuard } from '@core/guards/perfil.guard';
 
-const SOLO_ADMIN = { perfiles: ['ADMIN'] };
+const SOLO_ADMIN        = { perfiles: ['ADMIN'] };
+const ADMIN_Y_SUBADMIN  = { perfiles: ['ADMIN', 'SUBADMIN'] };
 
 export const GENERAL_ROUTES: Routes = [
-    { path: 'cola',               component: ColaPage,               canActivate: [perfilGuard], data: SOLO_ADMIN },
     { path: 'sucursal',           component: Sucursal,               canActivate: [perfilGuard], data: SOLO_ADMIN },
-    { path: 'puesto',             component: PuestoPage,             canActivate: [perfilGuard], data: SOLO_ADMIN },
-    { path: 'detallecolaxpuesto', component: DetalleColaxPuestoPage, canActivate: [perfilGuard], data: SOLO_ADMIN },
-    { path: 'usuario',            component: UsuarioPage,            canActivate: [perfilGuard], data: SOLO_ADMIN },
-    { path: 'configuracion',      component: ConfiguracionPage,      canActivate: [perfilGuard], data: SOLO_ADMIN }
+    { path: 'cola',               component: ColaPage,               canActivate: [perfilGuard], data: ADMIN_Y_SUBADMIN },
+    { path: 'puesto',             component: PuestoPage,             canActivate: [perfilGuard], data: ADMIN_Y_SUBADMIN },
+    { path: 'detallecolaxpuesto', component: DetalleColaxPuestoPage, canActivate: [perfilGuard], data: ADMIN_Y_SUBADMIN },
+    { path: 'usuario',            component: UsuarioPage,            canActivate: [perfilGuard], data: ADMIN_Y_SUBADMIN },
+    { path: 'configuracion',      component: ConfiguracionPage,      canActivate: [perfilGuard], data: ADMIN_Y_SUBADMIN }
 ];

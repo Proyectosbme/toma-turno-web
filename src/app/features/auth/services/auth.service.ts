@@ -4,43 +4,43 @@ import Keycloak from 'keycloak-js';
 // ── Claims del JWT emitido por Keycloak ─────────────────────────────────────
 
 interface TokenClaims {
-    given_name?:         string;
-    family_name?:        string;
+    given_name?: string;
+    family_name?: string;
     preferred_username?: string;
-    realm_access?:       { roles: string[] };
+    realm_access?: { roles: string[] };
 }
 
 // ── Datos que siguen viniendo del backend (no están en el JWT) ──────────────
 
 export interface PerfilBackend {
-    id:                     number;
-    idSucursal:             number;
-    idPuesto:               number | null;
-    correlativo:            number | null;
-    nombreSucursal:         string;
-    nombrePuesto:           string;
-    codigoUsuario:          string;
-    perfil:                 string;
+    id: number;
+    idSucursal: number;
+    idPuesto: number | null;
+    correlativo: number | null;
+    nombreSucursal: string;
+    nombrePuesto: string;
+    codigoUsuario: string;
+    perfil: string;
     atenderCasosEspeciales?: number | null;
-    estado:                 number;
-    dui:                    string;
-    ip:                     string;
-    usuarioCreacion:        string;
-    fechaCreacion:          string;
-    usuarioModificacion:    string;
-    fechaModificacion:      string;
+    estado: number;
+    dui: string;
+    ip: string;
+    usuarioCreacion: string;
+    fechaCreacion: string;
+    usuarioModificacion: string;
+    fechaModificacion: string;
 }
 
 /** Forma que devuelve getUsuario(), mezclando JWT + perfil backend */
 export type UsuarioSesion = PerfilBackend & {
-    nombres:   string;
+    nombres: string;
     apellidos: string;
-    telefono:  string;   // ya no viene del backend — si lo necesitas, léelo del JWT
+    telefono: string;   // ya no viene del backend — si lo necesitas, léelo del JWT
 };
 
 // ────────────────────────────────────────────────────────────────────────────
 
-const ROLES_NEGOCIO = ['ADMIN', 'OPERADOR', 'MONITOR', 'PUBLICO'] as const;
+const ROLES_NEGOCIO = ['ADMIN', 'SUBADMIN', 'OPERADOR', 'MONITOR', 'PUBLICO'] as const;
 const PERFIL_BACKEND_KEY = 'perfil_backend';
 
 @Injectable({ providedIn: 'root' })
@@ -56,8 +56,8 @@ export class AuthService {
         return (this.kc.tokenParsed ?? {}) as TokenClaims;
     }
 
-    getNombres(): string    { return this.claims.given_name  ?? ''; }
-    getApellidos(): string  { return this.claims.family_name ?? ''; }
+    getNombres(): string { return this.claims.given_name ?? ''; }
+    getApellidos(): string { return this.claims.family_name ?? ''; }
     getCodigoUsuario(): string { return this.claims.preferred_username ?? ''; }
 
     getNombreCompleto(): string {
@@ -104,9 +104,9 @@ export class AuthService {
         if (!backend) return null;
         return {
             ...backend,
-            nombres:   this.getNombres(),
+            nombres: this.getNombres(),
             apellidos: this.getApellidos(),
-            telefono:  ''   // ya no viaja en la respuesta del backend
+            telefono: ''   // ya no viaja en la respuesta del backend
         };
     }
 
@@ -114,7 +114,7 @@ export class AuthService {
 
     isLoggedIn(): boolean { return !!this.kc.authenticated; }
 
-    login(): Promise<void>  { return this.kc.login({ redirectUri: window.location.origin + '' }); }
+    login(): Promise<void> { return this.kc.login({ redirectUri: window.location.origin + '' }); }
 
     logout(): Promise<void> {
         localStorage.removeItem(PERFIL_BACKEND_KEY);
@@ -124,8 +124,7 @@ export class AuthService {
     // ── Helpers de negocio ──────────────────────────────────────────────────
 
     esSubAdmin(): boolean {
-        const idSucursal = this.getPerfilBackend()?.idSucursal;
-        return this.tieneRol('ADMIN') && idSucursal !== 1;
+        return this.tieneRol('SUBADMIN');
     }
 
     idSucursalFija(): number | null {

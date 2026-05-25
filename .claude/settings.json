@@ -9,7 +9,8 @@
       "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/api/**)",
       "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/services/**)",
       "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/pages/usuario/**)",
-      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/api/**)"
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/api/**)",
+      "Bash(ps -p 55333,56055 -o pid,command)"
     ],
     "additionalDirectories": [
       "/Users/auxiliardeinformatica/Desktop"
