@@ -105,7 +105,7 @@ export class ColaPage implements OnInit {
         try {
             let opciones = await this.sucursalServicio.obtenerOpciones();
 
-            if (this.authService.esSubAdmin()) {
+            if (this.authService.idSucursalFija() !== null) {
                 const idFija = this.authService.idSucursalFija()!;
                 opciones = opciones.filter(o => o.value === idFija);
 
@@ -119,7 +119,7 @@ export class ColaPage implements OnInit {
             const campoBusqueda = this.camposBusqueda.find(f => f.name === 'idSucursal');
             if (campoBusqueda) campoBusqueda.options = opciones;
 
-            if (this.authService.esSubAdmin()) this.buscar();
+            if (this.authService.idSucursalFija() !== null) this.buscar();
         } catch (err) {
             this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
         }
@@ -131,7 +131,7 @@ export class ColaPage implements OnInit {
     abrirNuevo(): void {
         this.colaSeleccionada = null;
         this.formularioCola.reset({ estado: 1 });
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             this.formularioCola.get('idSucursal')?.setValue(this.authService.idSucursalFija());
             this.formularioCola.get('idSucursal')?.disable();
         } else {
@@ -148,7 +148,6 @@ export class ColaPage implements OnInit {
             idSucursal: this.colaSeleccionada['idSucursal'] as number,
             nombre: this.colaSeleccionada['nombre'] as string,
             codigo: this.colaSeleccionada['codigo'] as string,
-            prioridad: this.colaSeleccionada['prioridad'] as number,
             estado: this.colaSeleccionada['estado'] as number
         });
         this.formularioCola.get('idSucursal')?.disable();
@@ -203,7 +202,6 @@ export class ColaPage implements OnInit {
             idSucursal: Number(datos.idSucursal),
             nombre: datos.nombre ?? '',
             codigo: datos.codigo ?? '',
-            prioridad: Number(datos.prioridad),
             estado: Number(datos.estado),
             usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
@@ -309,7 +307,6 @@ export class ColaPage implements OnInit {
                 id: cola.id,
                 codigo: cola.codigo,
                 nombre: cola.nombre,
-                prioridad: cola.prioridad,
                 estado: cola.estado,
                 idSucursal: cola.idSucursal,
                 nombreSucursal: cola.nombreSucursal
@@ -329,7 +326,7 @@ export class ColaPage implements OnInit {
 
     limpiarBusqueda(): void {
         this.formularioBusqueda.reset();
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             const idFija = this.authService.idSucursalFija()!;
             this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
             this.formularioBusqueda.get('idSucursal')?.disable();

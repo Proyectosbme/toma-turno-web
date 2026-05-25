@@ -123,12 +123,12 @@ export class AuthService {
 
     // ── Helpers de negocio ──────────────────────────────────────────────────
 
-    esSubAdmin(): boolean {
-        return this.tieneRol('SUBADMIN');
+    esAdmin(): boolean {
+        return this.tieneRol('ADMIN');
     }
 
     idSucursalFija(): number | null {
-        if (!this.esSubAdmin()) return null;
+        if (this.esAdmin()) return null;
         return this.getPerfilBackend()?.idSucursal ?? null;
     }
 }

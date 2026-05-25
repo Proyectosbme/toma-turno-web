@@ -5,7 +5,6 @@ export interface ColaRequestDTO {
     idSucursal: number;
     nombre: string;
     codigo: string;
-    prioridad: number;
     estado: number;
     usuario: string;
 }
@@ -16,7 +15,6 @@ export interface ColaResponseDTO {
     idSucursal: number;
     nombre: string;
     codigo: string;
-    prioridad: number;
     usuarioCreacion: string;
     fechaCreacion: string;
     usuarioModificacion: string;

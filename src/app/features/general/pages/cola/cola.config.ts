@@ -11,7 +11,6 @@ export function crearFormularioCola(): FormGroup {
         idSucursal: new FormControl<number | null>(null, [Validators.required]),
         nombre: new FormControl('', [Validators.required]),
         codigo: new FormControl('', [Validators.required, Validators.maxLength(10)]),
-        prioridad: new FormControl<number | null>(null, [Validators.required]),
         estado: new FormControl<number | null>(1, [Validators.required])
     });
 }
@@ -30,7 +29,6 @@ export const CAMPOS_FORMULARIO: FormFieldConfig[] = [
     { name: 'idSucursal', label: 'Sucursal', type: 'select', options: [] },
     { name: 'nombre', label: 'Nombre', placeholder: 'Ej: Caja General', type: 'text' },
     { name: 'codigo', label: 'Código', placeholder: 'Ej: CG-001', type: 'text' },
-    { name: 'prioridad', label: 'Prioridad', placeholder: 'Ej: 1', type: 'number' },
     {
         name: 'estado', label: 'Estado', type: 'select',
         options: [
@@ -55,7 +53,6 @@ export const COLUMNAS_TABLA: TableColumn[] = [
     { field: 'id', header: 'ID', width: '80px', sortable: true },
     { field: 'nombre', header: 'Nombre', sortable: true },
     { field: 'codigo', header: 'Código', width: '120px' },
-    { field: 'prioridad', header: 'Prioridad', width: '100px', type: 'number' },
     { field: 'estado', header: 'Estado', width: '100px', type: 'status' },
     { field: 'nombreSucursal', header: 'Nombre Sucursal', sortable: true }
 ];

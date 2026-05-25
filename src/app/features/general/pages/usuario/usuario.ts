@@ -88,7 +88,7 @@ export class UsuarioPage implements OnInit {
         try {
             let opciones = await this.sucursalServicio.obtenerOpciones();
 
-            if (this.authService.esSubAdmin()) {
+            if (this.authService.idSucursalFija() !== null) {
                 const idFija = this.authService.idSucursalFija()!;
                 opciones = opciones.filter(o => o.value === idFija);
 
@@ -102,7 +102,7 @@ export class UsuarioPage implements OnInit {
             const campoBusquedaSucursal = this.camposBusqueda.find(f => f.name === 'idSucursal');
             if (campoBusquedaSucursal) campoBusquedaSucursal.options = opciones;
 
-            if (this.authService.esSubAdmin()) this.buscar();
+            if (this.authService.idSucursalFija() !== null) this.buscar();
         } catch {
             this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
         }
@@ -142,7 +142,7 @@ export class UsuarioPage implements OnInit {
         this.formularioUsuario = crearFormularioUsuario(false);
         this.camposFormulario = CAMPOS_FORMULARIO_CREAR.map(c => ({ ...c }));
         this.cargarSucursales();
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             this.formularioUsuario.get('idSucursal')?.setValue(this.authService.idSucursalFija());
             this.formularioUsuario.get('idSucursal')?.disable();
             this.cargarPuestos(this.authService.idSucursalFija()!);
@@ -323,7 +323,7 @@ export class UsuarioPage implements OnInit {
 
     limpiarBusqueda(): void {
         this.formularioBusqueda.reset();
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             const idFija = this.authService.idSucursalFija()!;
             this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
             this.formularioBusqueda.get('idSucursal')?.disable();

@@ -51,8 +51,7 @@ export class ConfiguracionPage implements OnInit {
     readonly branding = inject(BrandingService);
 
     get esAdminGlobal(): boolean {
-        return this.authService.getPerfil() === 'ADMIN'
-            && this.authService.getPerfilBackend()?.idSucursal === 1;
+        return this.authService.getPerfil() === 'ADMIN';
     }
 
     /* ── Apariencia ── */
@@ -145,7 +144,7 @@ export class ConfiguracionPage implements OnInit {
         try {
             let opciones = await this.sucursalServicio.obtenerOpciones();
 
-            if (this.authService.esSubAdmin()) {
+            if (this.authService.idSucursalFija() !== null) {
                 const idFija = this.authService.idSucursalFija()!;
                 opciones = opciones.filter(o => o.value === idFija);
 
@@ -159,7 +158,7 @@ export class ConfiguracionPage implements OnInit {
             const campoBusqueda = this.camposBusqueda.find(f => f.name === 'idSucursal');
             if (campoBusqueda) campoBusqueda.options = opciones;
 
-            if (this.authService.esSubAdmin()) this.buscar();
+            if (this.authService.idSucursalFija() !== null) this.buscar();
         } catch {
             this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
         }
@@ -174,7 +173,7 @@ export class ConfiguracionPage implements OnInit {
         this.formularioConfig = crearFormularioConfiguracion(false);
         this.camposFormulario = CAMPOS_FORMULARIO.map(c => ({ ...c }));
         this.cargarSucursales();
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             this.formularioConfig.get('idSucursal')?.setValue(this.authService.idSucursalFija());
             this.formularioConfig.get('idSucursal')?.disable();
         } else {
@@ -297,7 +296,7 @@ export class ConfiguracionPage implements OnInit {
 
     limpiarBusqueda(): void {
         this.formularioBusqueda.reset();
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             const idFija = this.authService.idSucursalFija()!;
             this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
             this.formularioBusqueda.get('idSucursal')?.disable();

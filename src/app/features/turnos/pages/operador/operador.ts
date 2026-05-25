@@ -367,8 +367,7 @@ export class OperadorPage implements OnInit, OnDestroy {
             const idSucursalColas = colasUnicas[0]?.idSucursalCola ?? this.idSucursalActual;
             const todasLasColas = await this.colaApi.buscarColasConDetalle(idSucursalColas);
             this.colasReasignar = todasLasColas
-                .filter(c => c.estado === 1 && (c.detalles ?? []).some(d => d.estado === 1))
-                .sort((a, b) => a.prioridad - b.prioridad);
+                .filter(c => c.estado === 1 && (c.detalles ?? []).some(d => d.estado === 1));
             this.mostrarDialogoReasignar = true;
         } catch (err) {
             this.messageService.add({

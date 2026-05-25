@@ -194,9 +194,7 @@ export class SeleccionTurnoPage implements OnInit, OnDestroy {
         try {
             this.cargandoColas = true;
             const resultado = await this.colaApi.buscarColasConDetalle(this.idSucursalActual);
-            this.colas = resultado
-                .filter(c => c.estado === 1)
-                .sort((a, b) => a.prioridad - b.prioridad);
+            this.colas = resultado.filter(c => c.estado === 1);
         } catch (err) {
             this.messageService.add({
                 severity: 'error', summary: 'Error',

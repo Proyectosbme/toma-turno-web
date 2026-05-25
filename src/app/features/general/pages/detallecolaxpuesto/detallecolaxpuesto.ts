@@ -97,7 +97,7 @@ export class DetalleColaxPuestoPage implements OnInit {
         try {
             let opciones = await this.sucursalServicio.obtenerOpciones();
 
-            if (this.authService.esSubAdmin()) {
+            if (this.authService.idSucursalFija() !== null) {
                 const idFija = this.authService.idSucursalFija()!;
                 opciones = opciones.filter(o => o.value === idFija);
                 // Disparar el valueChanges para que cargue los puestos automáticamente

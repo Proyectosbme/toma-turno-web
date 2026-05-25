@@ -116,7 +116,7 @@ export class PuestoPage implements OnInit {
         try {
             let opciones = await this.sucursalServicio.obtenerOpciones();
 
-            if (this.authService.esSubAdmin()) {
+            if (this.authService.idSucursalFija() !== null) {
                 const idFija = this.authService.idSucursalFija()!;
                 opciones = opciones.filter(o => o.value === idFija);
 
@@ -130,7 +130,7 @@ export class PuestoPage implements OnInit {
             const campoBusqueda = this.camposBusqueda.find(f => f.name === 'idSucursal');
             if (campoBusqueda) campoBusqueda.options = opciones;
 
-            if (this.authService.esSubAdmin()) this.buscar();
+            if (this.authService.idSucursalFija() !== null) this.buscar();
         } catch {
             this.notificacion.error('Error', 'No se pudieron cargar las sucursales');
         }
@@ -143,7 +143,7 @@ export class PuestoPage implements OnInit {
         this.puestoSeleccionado = null;
         this.limpiarSeccionColas();
         this.formularioPuesto.reset({ estado: 1 });
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             this.formularioPuesto.get('idSucursal')?.setValue(this.authService.idSucursalFija());
             this.formularioPuesto.get('idSucursal')?.disable();
         } else {
@@ -261,7 +261,7 @@ export class PuestoPage implements OnInit {
 
     limpiarBusqueda(): void {
         this.formularioBusqueda.reset();
-        if (this.authService.esSubAdmin()) {
+        if (this.authService.idSucursalFija() !== null) {
             const idFija = this.authService.idSucursalFija()!;
             this.formularioBusqueda.get('idSucursal')?.setValue(idFija);
             this.formularioBusqueda.get('idSucursal')?.disable();
