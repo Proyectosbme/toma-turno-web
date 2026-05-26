@@ -2,10 +2,7 @@
 export interface ConfiguracionRequestDTO {
     idSucursal: number;
     nombre: string;
-    /** Valor numérico: 0/1 para flags booleanos, número para correlativos */
     parametro: number | null;
-    /** Valor de texto: prefijos, formatos (ej: "C-", "P-") */
-    valorTexto: string;
     descripcion: string;
     estado: number;
     usuario: string;
@@ -18,7 +15,6 @@ export interface ConfiguracionResponseDTO {
     nombreSucursal: string;
     nombre: string;
     parametro: number | null;
-    valorTexto: string;
     descripcion: string;
     estado: number;
     userCreacion: string;

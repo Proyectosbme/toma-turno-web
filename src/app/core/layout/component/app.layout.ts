@@ -8,12 +8,15 @@ import { LayoutService } from '../service/layout.service';
 import { AppFooter } from './footer/app.footer';
 import { AuthService } from '@auth/services/auth.service';
 import { AuthApiClient } from '@auth/api/auth-api.client';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter],
-    templateUrl: './app.layout.component.html'
+    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter, ToastModule],
+    templateUrl: './app.layout.component.html',
+    providers: [MessageService]
 })
 export class AppLayout implements OnInit {
     overlayMenuOpenSubscription: Subscription;
@@ -29,7 +32,8 @@ export class AppLayout implements OnInit {
         public renderer: Renderer2,
         public router: Router,
         private auth: AuthService,
-        private authApi: AuthApiClient
+        private authApi: AuthApiClient,
+        private messageService: MessageService
     ) {
         this.overlayMenuOpenSubscription = this.layoutService.overlayOpen$.subscribe(() => {
             if (!this.menuOutsideClickListener) {
@@ -55,7 +59,20 @@ export class AppLayout implements OnInit {
             try {
                 const perfil = await this.authApi.getPerfil();
                 this.auth.setPerfilBackend(perfil);
-            } catch (e) {
+            } catch (e: any) {
+                if (e?.status === 403) {
+                    const mensaje = e?.error?.error ?? 'No tiene acceso al sistema';
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Acceso denegado',
+                        detail: mensaje,
+                        life: 5000
+                    });
+                    if (mensaje.includes('IP')) {
+                        setTimeout(() => this.auth.logout(), 3000);
+                        return;
+                    }
+                }
                 console.error('[AppLayout] No se pudo obtener el perfil:', e);
             }
         }

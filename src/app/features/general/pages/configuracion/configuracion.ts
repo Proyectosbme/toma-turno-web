@@ -126,8 +126,6 @@ export class ConfiguracionPage implements OnInit {
 
     /* ── Dialog ── */
     dialogoVisible = false;
-    dialogoTitulo = 'Nueva Configuración';
-    esEdicion = false;
     advertenciaBusqueda = '';
 
     constructor(
@@ -167,25 +165,8 @@ export class ConfiguracionPage implements OnInit {
     /* ══════════════════════════════════════════
        Dialog
     ══════════════════════════════════════════ */
-    abrirNuevo(): void {
-        this.esEdicion = false;
-        this.configSeleccionada = null;
-        this.formularioConfig = crearFormularioConfiguracion(false);
-        this.camposFormulario = CAMPOS_FORMULARIO.map(c => ({ ...c }));
-        this.cargarSucursales();
-        if (this.authService.idSucursalFija() !== null) {
-            this.formularioConfig.get('idSucursal')?.setValue(this.authService.idSucursalFija());
-            this.formularioConfig.get('idSucursal')?.disable();
-        } else {
-            this.formularioConfig.get('idSucursal')?.enable();
-        }
-        this.dialogoTitulo = 'Nueva Configuración';
-        this.dialogoVisible = true;
-    }
-
     abrirEditar(): void {
         if (!this.configSeleccionada) return;
-        this.esEdicion = true;
         this.formularioConfig = crearFormularioConfiguracion(true);
         this.camposFormulario = CAMPOS_FORMULARIO.map(c => ({ ...c }));
         this.cargarSucursales();
@@ -194,13 +175,12 @@ export class ConfiguracionPage implements OnInit {
             idSucursal: this.configSeleccionada['idSucursal'] as number,
             nombre: this.configSeleccionada['nombre'] as string,
             parametro: this.configSeleccionada['parametro'] as number,
-            valorTexto: this.configSeleccionada['valorTexto'] as string,
             descripcion: this.configSeleccionada['descripcion'] as string,
             estado: this.configSeleccionada['estado'] as number
         });
 
         this.formularioConfig.get('idSucursal')?.disable();
-        this.dialogoTitulo = 'Editar Configuración';
+        this.formularioConfig.get('nombre')?.disable();
         this.dialogoVisible = true;
     }
 
@@ -224,7 +204,6 @@ export class ConfiguracionPage implements OnInit {
             idSucursal: Number(datos.idSucursal),
             nombre: datos.nombre ?? '',
             parametro: datos.parametro != null ? Number(datos.parametro) : null,
-            valorTexto: datos.valorTexto ?? '',
             descripcion: datos.descripcion ?? '',
             estado: Number(datos.estado),
             usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
@@ -232,15 +211,15 @@ export class ConfiguracionPage implements OnInit {
 
         try {
             this.cargando = true;
-            const idExistente = this.esEdicion && this.configSeleccionada
+            const idExistente = this.configSeleccionada
                 ? this.configSeleccionada['idConfiguracion'] as number
                 : undefined;
 
             await this.configServicio.guardar(dto, idExistente);
 
             this.notificacion.exito(
-                this.esEdicion ? 'Configuración modificada' : 'Configuración creada',
-                `La configuración "${dto.nombre}" fue ${this.esEdicion ? 'actualizada' : 'creada'} correctamente`
+                'Configuración modificada',
+                `La configuración "${dto.nombre}" fue actualizada correctamente`
             );
 
             this.cerrarDialogo();
@@ -278,7 +257,6 @@ export class ConfiguracionPage implements OnInit {
                 nombreSucursal: c.nombreSucursal,
                 nombre: c.nombre,
                 parametro: c.parametro,
-                valorTexto: c.valorTexto,
                 descripcion: c.descripcion,
                 estado: c.estado
             }));

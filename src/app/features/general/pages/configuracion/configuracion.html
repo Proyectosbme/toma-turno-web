@@ -4,8 +4,6 @@
     <!-- ═══ HEADER ═══ -->
     <app-page-title title="Configuraciones del Sistema" page-header-title></app-page-title>
     <ng-container page-header-actions>
-        <button pButton icon="pi pi-plus" label="Agregar" (click)="abrirNuevo()"
-            pTooltip="Crear nueva configuración"></button>
         <button pButton icon="pi pi-pencil" label="Editar" class="p-button-secondary p-button-outlined"
             [disabled]="!configSeleccionada" (click)="abrirEditar()"
             pTooltip="Editar configuración seleccionada"></button>
@@ -112,7 +110,7 @@
 </app-page-layout>
 
 <!-- ═══ DIALOG: Crear / Editar ═══ -->
-<p-dialog [header]="dialogoTitulo" [(visible)]="dialogoVisible" [modal]="true" [closable]="true" [draggable]="false"
+<p-dialog header="Editar Configuración" [(visible)]="dialogoVisible" [modal]="true" [closable]="true" [draggable]="false"
     [style]="{ width: '42rem' }">
 
     <app-form-panel [form]="formularioConfig" [fields]="camposFormulario" [columns]="2"></app-form-panel>
