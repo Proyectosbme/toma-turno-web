@@ -96,5 +96,28 @@
         "routerLink": ["turnos/turnos-pasados"]
       }
     ]
+  },{
+    "codigo": 10,
+    "icon": "pi pi-fw pi-clock",
+    "label": "Reportes",
+    "orden": 3,
+    "perfiles": ["ADMIN", "SUBADMIN"],
+    "items": [
+      {
+        "codigo": 100,
+        "icon": "pi pi-fw pi-ticket",
+        "label": "Turnos del dia",
+        "orden": 1,
+        "perfiles": ["ADMIN", "MONITOR"],
+        "routerLink": ["turnos/toma-turno"]
+      },  {
+        "codigo": 100,
+        "icon": "pi pi-fw pi-ticket",
+        "label": "Turnos del historico",
+        "orden": 1,
+        "perfiles": ["ADMIN", "MONITOR"],
+        "routerLink": ["turnos/toma-turno"]
+      }
+    ]
   }
 ]
