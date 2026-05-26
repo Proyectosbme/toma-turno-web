@@ -17,8 +17,9 @@ export function crearFormularioCola(): FormGroup {
 
 export function crearFormularioBusqueda(): FormGroup {
     return new FormGroup({
-        nombre: new FormControl(''),
-        idSucursal: new FormControl<number | null>(null)
+        idSucursal: new FormControl<number | null>(null),
+        nombre: new FormControl('')
+        
     });
 }
 
@@ -27,8 +28,8 @@ export function crearFormularioBusqueda(): FormGroup {
    ══════════════════════════════════════════ */
 export const CAMPOS_FORMULARIO: FormFieldConfig[] = [
     { name: 'idSucursal', label: 'Sucursal', type: 'select', options: [] },
-    { name: 'nombre', label: 'Nombre', placeholder: 'Ej: Caja General', type: 'text' },
-    { name: 'codigo', label: 'Código', placeholder: 'Ej: CG-001', type: 'text' },
+    { name: 'nombre', label: 'Nombre', placeholder: 'Ej: CAJA', type: 'text' },
+    { name: 'codigo', label: 'Código', placeholder: 'Ej: CG', type: 'text' },
     {
         name: 'estado', label: 'Estado', type: 'select',
         options: [
@@ -42,8 +43,9 @@ export const CAMPOS_FORMULARIO: FormFieldConfig[] = [
    Configuración de campos de búsqueda
    ══════════════════════════════════════════ */
 export const CAMPOS_BUSQUEDA: SearchFieldConfig[] = [
-    { name: 'nombre', label: 'Nombre', placeholder: 'Buscar por nombre' },
-    { name: 'idSucursal', label: 'Sucursal', type: 'select', options: [] }
+    { name: 'idSucursal', label: 'Sucursal', type: 'select', options: [] },
+    { name: 'nombre', label: 'Nombre', placeholder: 'Buscar por nombre' }
+    
 ];
 
 /* ══════════════════════════════════════════
@@ -61,7 +63,7 @@ export const COLUMNAS_TABLA: TableColumn[] = [
    Configuración de columnas de la tabla detalle
    ══════════════════════════════════════════ */
 export const COLUMNAS_TABLA_DETALLE: TableColumn[] = [
-    { field: 'idDetalle', header: 'ID',  sortable: true },
+    { field: 'idDetalle', header: 'ID', sortable: true },
     { field: 'nombre', header: 'Nombre', sortable: true },
     { field: 'codigo', header: 'Código' },
     { field: 'estado', header: 'Estado', type: 'status' }
@@ -77,10 +79,10 @@ export function crearFormularioDetalle(): FormGroup {
 }
 
 export const CAMPOS_FORMULARIO_DETALLE: FormFieldConfig[] = [
-    { name: 'nombre', label: 'Nombre', placeholder: 'Ej: Ventanilla 1', type: 'text' },
-    { name: 'codigo', label: 'Código', placeholder: 'Ej: V-001', type: 'text' },
+    { name: 'nombre', label: 'Nombre', placeholder: 'Ej: WESTER ', type: 'text' },
+    { name: 'codigo', label: 'Código', placeholder: 'Ej: WT', type: 'text' },
     {
-        name: 'estado', label: 'Estado', type: 'select',
+    name: 'estado', label: 'Estado', type: 'select',
         options: [
             { label: 'Activo', value: 1 },
             { label: 'Inactivo', value: 0 }

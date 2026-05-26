@@ -8,7 +8,7 @@
         <div class="tt-card">
 
             <div class="tt-header">
-                <div class="tt-brand-icon">&#x1F4C5;</div>
+                <div class="tt-brand-icon">&#x1F512;</div>
                 <div class="tt-title">Iniciar Sesión</div>
                 <div class="tt-subtitle">Ingrese sus credenciales para continuar</div>
             </div>

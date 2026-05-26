@@ -36,7 +36,7 @@ export function crearFormularioSucursal(): FormGroup {
 export const CAMPOS_FORMULARIO: FormFieldConfig[] = [
     { name: 'nombre', label: 'Nombre', placeholder: 'Ej: Caja General', type: 'text' },
     { name: 'correo', label: 'Correo', placeholder: 'Ej: correo@ejemplo.com', type: 'email' },
-    { name: 'telefono', label: 'Teléfono', placeholder: 'Ej: 123456789', type: 'text' },
+    { name: 'telefono', label: 'Teléfono', placeholder: '9999-9999', type: 'text', mask: '9999-9999' },
     { name: 'direccion', label: 'Dirección', placeholder: 'Ej: Calle Falsa 123', type: 'text' },
     {
         name: 'estado', label: 'Estado', type: 'select',

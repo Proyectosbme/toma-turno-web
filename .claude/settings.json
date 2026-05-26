@@ -10,7 +10,16 @@
       "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/auth/services/**)",
       "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/pages/usuario/**)",
       "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma\\\\ turnos/toma-turno/src/app/features/general/api/**)",
-      "Bash(ps -p 55333,56055 -o pid,command)"
+      "Bash(ps -p 55333,56055 -o pid,command)",
+      "Bash(find \"/Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma turnos\" -name \"docker-compose*\" -o -name \"Dockerfile*\" -o -name \"*.realm.json\" -o -name \"realm*.json\" 2>/dev/null | grep -v node_modules | grep -v \".git\" | sort)",
+      "Read(//Users/auxiliardeinformatica/Documents/Programacion/Desarrollo/Proyectos/Toma turnos/**)",
+      "Bash(docker cp *)",
+      "Bash(docker restart *)",
+      "Bash(docker exec *)",
+      "Bash(xargs -I{} sh -c 'jar tf {} 2>/dev/null | grep \"theme/keycloak/login/template.ftl\" && echo \"Found in: {}\"')",
+      "Read(//private/tmp/**)",
+      "Bash(unzip -o kc-themes.jar \"theme/keycloak/login/login.ftl\" \"theme/keycloak/login/template.ftl\" -d /tmp/kc-theme)",
+      "Bash(python3 -c ' *)"
     ],
     "additionalDirectories": [
       "/Users/auxiliardeinformatica/Desktop"

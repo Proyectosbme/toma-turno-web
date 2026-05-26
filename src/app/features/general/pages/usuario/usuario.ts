@@ -19,7 +19,8 @@ import { PuestoServicio } from '@general/services/puesto.servicio';
 import {
     CAMPOS_FORMULARIO_CREAR, CAMPOS_FORMULARIO_EDITAR,
     CAMPOS_BUSQUEDA, COLUMNAS_TABLA,
-    crearFormularioUsuario, crearFormularioBusqueda
+    crearFormularioUsuario, crearFormularioBusqueda,
+    OPCIONES_PERFIL_SUBADMIN
 } from './usuario.config';
 import { NotificacionServicio } from '@shared/services/notificacion.servicio';
 import { extraerMensajeError } from '@shared/utils/error.util';
@@ -118,6 +119,13 @@ export class UsuarioPage implements OnInit {
         }
     }
 
+    private aplicarOpcionesPerfilSegunRol(): void {
+        const campoPerfil = this.camposFormulario.find(f => f.name === 'perfil');
+        if (campoPerfil && this.authService.getPerfil() === 'SUBADMIN') {
+            campoPerfil.options = OPCIONES_PERFIL_SUBADMIN;
+        }
+    }
+
     private configurarValidacionPerfil(): void {
         const aplicar = (perfil: string | null) => {
             const ctrl = this.formularioUsuario.get('correlativo');
@@ -141,6 +149,7 @@ export class UsuarioPage implements OnInit {
         this.usuarioSeleccionado = null;
         this.formularioUsuario = crearFormularioUsuario(false);
         this.camposFormulario = CAMPOS_FORMULARIO_CREAR.map(c => ({ ...c }));
+        this.aplicarOpcionesPerfilSegunRol();
         this.cargarSucursales();
         if (this.authService.idSucursalFija() !== null) {
             this.formularioUsuario.get('idSucursal')?.setValue(this.authService.idSucursalFija());
@@ -173,6 +182,7 @@ export class UsuarioPage implements OnInit {
         this.esEdicion = true;
         this.formularioUsuario = crearFormularioUsuario(true);
         this.camposFormulario = CAMPOS_FORMULARIO_EDITAR.map(c => ({ ...c }));
+        this.aplicarOpcionesPerfilSegunRol();
         await this.cargarSucursales();
 
         const idSucursal = usuario['idSucursal'] as number;

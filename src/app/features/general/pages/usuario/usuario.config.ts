@@ -19,9 +19,16 @@ export const COLUMNAS_TABLA: TableColumn[] = [
 /** Opciones de perfil disponibles en el sistema */
 export const OPCIONES_PERFIL = [
     { label: 'Administrador',  value: 'ADMIN'    },
+    { label: 'Sub administrador',  value: 'SUBADMIN'    },
     { label: 'Monitor',        value: 'MONITOR'  },
     { label: 'Público',        value: 'PUBLICO'  },
     { label: 'Operador',       value: 'OPERADOR' }
+];
+
+/** Opciones de perfil que puede asignar un SUBADMIN */
+export const OPCIONES_PERFIL_SUBADMIN = [
+    { label: 'Público',  value: 'PUBLICO'  },
+    { label: 'Operador', value: 'OPERADOR' }
 ];
 
 export function crearFormularioUsuario(esEdicion = false): FormGroup {
