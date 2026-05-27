@@ -1,4 +1,3 @@
-<p-toast position="top-right"></p-toast>
 <app-page-layout>
 
     <!-- ═══ HEADER ═══ -->
@@ -7,6 +6,9 @@
         <button pButton icon="pi pi-link" label="Asignar" (click)="abrirAsignar()"
             [disabled]="!puestoSeleccionado"
             pTooltip="Asignar detalle de cola al puesto seleccionado"></button>
+        <button pButton icon="pi pi-pencil" label="Modificar Prioridad" class="p-button-warning p-button-outlined"
+            [disabled]="!detalleSeleccionado" (click)="abrirModificarPrioridad()"
+            pTooltip="Modificar la prioridad del detalle seleccionado"></button>
         <button pButton icon="pi pi-trash" label="Desasignar" class="p-button-danger p-button-outlined"
             [disabled]="!detalleSeleccionado" (click)="desasignar()"
             pTooltip="Quitar la asignación seleccionada"></button>
@@ -45,6 +47,64 @@
     </div>
 
 </app-page-layout>
+
+<!-- ═══ DIALOG: Modificar Prioridad ═══ -->
+<p-dialog header="Modificar Prioridad" [(visible)]="dialogoPrioridadVisible" [modal]="true"
+    [closable]="true" [draggable]="false" [style]="{ width: '28rem' }">
+
+    <div class="dialog-form">
+
+        <!-- Cola (solo lectura) -->
+        <div class="campo-form">
+            <span class="campo-label">Cola</span>
+            <output class="campo-readonly">
+                <i class="pi pi-list"></i>
+                {{ detalleSeleccionado?.['nombreCola'] }}
+            </output>
+        </div>
+
+        <!-- Detalle (solo lectura) -->
+        <div class="campo-form">
+            <span class="campo-label">Detalle</span>
+            <output class="campo-readonly">
+                <i class="pi pi-tag"></i>
+                {{ detalleSeleccionado?.['nombreDetalle'] }}
+            </output>
+        </div>
+
+        <!-- Prioridad (editable) -->
+        <div class="campo-form">
+            <label for="numPrioridadEdit">Prioridad <span class="requerido">*</span></label>
+            <p-inputnumber
+                inputId="numPrioridadEdit"
+                [formControl]="formularioPrioridad.controls.prioridad"
+                [min]="1"
+                [max]="50"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                decrementButtonIcon="pi pi-minus"
+                incrementButtonIcon="pi pi-plus"
+                [style]="{ width: '100%' }">
+            </p-inputnumber>
+            @if (formularioPrioridad.controls.prioridad.invalid && formularioPrioridad.controls.prioridad.touched) {
+                <small class="error-campo">La prioridad debe ser entre 1 y 50</small>
+            }
+        </div>
+
+    </div>
+
+    <ng-template #footer>
+        <div class="dialog-footer">
+            <button pButton icon="pi pi-times" label="Cancelar" class="p-button-sm p-button-text"
+                (click)="cerrarDialogoPrioridad()"></button>
+            <button pButton icon="pi pi-check" label="Guardar" class="p-button-sm p-button-warning"
+                (click)="modificarPrioridad()"
+                [loading]="cargandoPrioridad">
+            </button>
+        </div>
+    </ng-template>
+
+</p-dialog>
 
 <!-- ═══ DIALOG: Asignar ═══ -->
 <p-dialog header="Asignar detalle de cola" [(visible)]="dialogoVisible" [modal]="true"

@@ -1,0 +1,60 @@
+<p-toast></p-toast>
+
+<app-page-layout>
+
+    <app-page-title title="Reportes" page-header-title></app-page-title>
+
+    <ng-container page-header-actions>
+        <button pButton
+            icon="pi pi-file-pdf"
+            label="Generar reporte"
+            [loading]="generando"
+            [disabled]="form.invalid"
+            (click)="generarReporte()">
+        </button>
+    </ng-container>
+
+    <div page-content>
+        <app-section title="Parámetros del reporte">
+
+            <form [formGroup]="form" class="reporte-form">
+
+                <div class="field">
+                    <label for="tipoReporte">Tipo de reporte</label>
+                    <p-select
+                        inputId="tipoReporte"
+                        formControlName="tipoReporte"
+                        [options]="tiposReporte"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Seleccione un reporte">
+                    </p-select>
+                </div>
+
+                <div class="field">
+                    <label for="sucursal">Sucursal</label>
+                    @if (esAdmin) {
+                        <p-select
+                            inputId="sucursal"
+                            formControlName="sucursal"
+                            [options]="opcionesSucursales"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Seleccione una sucursal"
+                            [filter]="true"
+                            filterPlaceholder="Buscar sucursal">
+                        </p-select>
+                    } @else {
+                        <div class="sucursal-fija">
+                            <i class="pi pi-map-marker"></i>
+                            <span>{{ nombreSucursalFija }}</span>
+                        </div>
+                    }
+                </div>
+
+            </form>
+
+        </app-section>
+    </div>
+
+</app-page-layout>

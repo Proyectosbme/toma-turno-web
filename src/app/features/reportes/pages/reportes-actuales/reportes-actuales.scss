@@ -1,0 +1,39 @@
+.reporte-form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem 1.5rem;
+    padding: 0.5rem 0;
+    align-items: end;
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-color-secondary);
+        }
+
+        p-select {
+            width: 100%;
+        }
+
+        .sucursal-fija {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--surface-100);
+            border: 1px solid var(--surface-300);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            height: 2.5rem;
+
+            i { color: var(--text-color-secondary); }
+        }
+    }
+
+}

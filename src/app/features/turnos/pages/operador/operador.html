@@ -193,6 +193,18 @@
                         <span class="espera-numero">{{ i + 1 }}</span>
                         <span class="espera-codigo">{{ turno.codigoTurno }}</span>
                         <span class="espera-cola">{{ nombreColaPorId(turno.idCola) }}</span>
+                        <p-tag
+                            *ngIf="turno.tipoCasoEspecial != null && turno.tipoCasoEspecial > 0"
+                            value="CASO ESPECIAL"
+                            severity="danger"
+                            styleClass="tag-caso-especial"
+                        />
+                        <p-tag
+                            *ngIf="!turno.tipoCasoEspecial || turno.tipoCasoEspecial === 0"
+                            value="NORMAL"
+                            severity="secondary"
+                            styleClass="tag-caso-normal"
+                        />
                         <div class="espera-tiempo">
                             <span class="espera-hora">{{ horaDesde(turno.fechaCreacion) }}</span>
                             <span class="espera-espera"

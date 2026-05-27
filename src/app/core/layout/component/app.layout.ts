@@ -16,8 +16,8 @@ import { ToastModule } from 'primeng/toast';
     standalone: true,
     imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter, ToastModule],
     templateUrl: './app.layout.component.html',
-    providers: [MessageService]
 })
+
 export class AppLayout implements OnInit {
     overlayMenuOpenSubscription: Subscription;
 

@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputMaskModule } from 'primeng/inputmask';
 import { SucursalApiClient } from '@general/api/sucursal-api.client';
 import { PuestoApiClient } from '@general/api/puesto-api.client';
 import { AuthApiClient } from '@auth/api/auth-api.client';
@@ -14,7 +15,7 @@ interface Opcion { label: string; value: number; }
 @Component({
     selector: 'app-registro',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, ButtonModule, SelectModule, InputTextModule, AppFloatingConfigurator],
+    imports: [CommonModule, ReactiveFormsModule, ButtonModule, SelectModule, InputTextModule, InputMaskModule, AppFloatingConfigurator],
     templateUrl: './registro.component.html'
 })
 export class Registro implements OnInit {

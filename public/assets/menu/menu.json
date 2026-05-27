@@ -97,26 +97,26 @@
       }
     ]
   },{
-    "codigo": 10,
-    "icon": "pi pi-fw pi-clock",
+    "codigo": 20,
+    "icon": "pi pi-fw pi-chart-bar",
     "label": "Reportes",
     "orden": 3,
     "perfiles": ["ADMIN", "SUBADMIN"],
     "items": [
       {
-        "codigo": 100,
+        "codigo": 1,
         "icon": "pi pi-fw pi-ticket",
         "label": "Turnos del dia",
         "orden": 1,
-        "perfiles": ["ADMIN", "MONITOR"],
-        "routerLink": ["turnos/toma-turno"]
+        "perfiles": ["ADMIN", "SUBADMIN"],
+        "routerLink": ["reportes/reportes-actuales"]
       },  {
-        "codigo": 100,
+        "codigo": 2,
         "icon": "pi pi-fw pi-ticket",
         "label": "Turnos del historico",
         "orden": 1,
-        "perfiles": ["ADMIN", "MONITOR"],
-        "routerLink": ["turnos/toma-turno"]
+        "perfiles": ["ADMIN", "SUBADMIN"],
+        "routerLink": ["reportes/reportes-historico"]
       }
     ]
   }

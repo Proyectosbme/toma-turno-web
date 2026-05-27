@@ -202,7 +202,6 @@ export class ConfiguracionPage implements OnInit {
         const datos = this.formularioConfig.getRawValue();
         const dto: ConfiguracionRequestDTO = {
             idSucursal: Number(datos.idSucursal),
-            nombre: datos.nombre ?? '',
             parametro: datos.parametro != null ? Number(datos.parametro) : null,
             descripcion: datos.descripcion ?? '',
             estado: Number(datos.estado),
@@ -219,7 +218,7 @@ export class ConfiguracionPage implements OnInit {
 
             this.notificacion.exito(
                 'Configuración modificada',
-                `La configuración "${dto.nombre}" fue actualizada correctamente`
+                `La configuración fue actualizada correctamente`
             );
 
             this.cerrarDialogo();

@@ -73,9 +73,9 @@
                         icon="pi pi-volume-up"
                         label="Llamar"
                         class="p-button-sm p-button-outlined"
-                        [pTooltip]="'Volver a llamar este turno'"
+                        [pTooltip]="t.estado !== 5 ? 'Solo se pueden llamar turnos sin atender' : 'Volver a llamar este turno'"
                         [loading]="llamandoId === t.id"
-                        [disabled]="llamandoId !== null"
+                        [disabled]="llamandoId !== null || t.estado !== 5"
                         (click)="rellamar(t)">
                     </button>
                 </span>

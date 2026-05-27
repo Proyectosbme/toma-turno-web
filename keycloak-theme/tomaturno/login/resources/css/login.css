@@ -117,6 +117,22 @@ html, body {
     font-size: 0.875rem;
 }
 
+.tt-input-error {
+    border-color: #fca5a5 !important;
+    background: #fff5f5 !important;
+}
+
+.tt-input-error:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18) !important;
+}
+
+.tt-field-error {
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    color: #b91c1c;
+}
+
 /* ── Botón ───────────────────────────────────────────────────────────────── */
 .tt-btn {
     width: 100%;

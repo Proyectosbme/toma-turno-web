@@ -17,6 +17,10 @@ export const appRoutes: Routes = [
             {
                 path: 'turnos',
                 loadChildren: () => import('./app/features/turnos/turnos.routes').then(m => m.TURNOS_ROUTES)
+            },
+            {
+                path: 'reportes',
+                loadChildren: () => import('./app/features/reportes/reportes.routes').then(m => m.REPORTES_ROUTES)
             }
         ]
     },

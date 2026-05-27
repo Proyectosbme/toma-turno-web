@@ -36,6 +36,7 @@
       "@home/*": ["app/features/home/*"],
       "@general/*": ["app/features/general/*"],
       "@turnos/*": ["app/features/turnos/*"],
+      "@reportes/*": ["app/features/reportes/*"],
       "@shared/*": ["app/shared/*"]
     }
   },

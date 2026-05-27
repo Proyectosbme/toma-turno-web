@@ -34,4 +34,17 @@ export class DetalleColaxPuestoApiClient {
             )
         );
     }
+
+    modificarPrioridad(idPuesto: number, idSucursalPuesto: number,
+                       idCola: number, idDetalle: number, idSucursalCola: number,
+                       prioridad: number): Promise<DetalleColaxPuestoResponseDTO> {
+        const params = new HttpParams().set('prioridad', prioridad);
+        return firstValueFrom(
+            this.http.patch<DetalleColaxPuestoResponseDTO>(
+                `${this.BASE_URL}/${idPuesto}/${idSucursalPuesto}/${idCola}/${idDetalle}/${idSucursalCola}/prioridad`,
+                null,
+                { params }
+            )
+        );
+    }
 }

@@ -45,6 +45,7 @@ export interface UsuarioResponseDTO {
     telefono: string;
     ip: string;
     perfil: string;
+    correo?: string;
     usuarioCreacion: string;
     fechaCreacion: string;
     usuarioModificacion: string;

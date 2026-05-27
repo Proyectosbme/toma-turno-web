@@ -23,6 +23,7 @@ import { PageTitleComponent } from '@shared/components/page-title/page-title';
 import { ColaApiClient } from '@general/api/cola-api.client';
 import { ColaResponseDTO } from '@general/dto/cola.dto';
 import { DetalleResponseDTO } from '@general/dto/detalle.dto';
+import { ConfiguracionServicio } from '@general/services/configuracion.servicio';
 
 @Component({
     selector: 'app-operador',
@@ -94,6 +95,7 @@ export class OperadorPage implements OnInit, OnDestroy {
     turnosSinAtender: TurnoResponseDTO[] = [];
     cargandoRetomar = false;
 
+    casosEspecialesActivados = false;
     cargando = false;
     cargandoInicial = false;
     ahora = Date.now();
@@ -108,6 +110,7 @@ export class OperadorPage implements OnInit, OnDestroy {
         private readonly confirmationService: ConfirmationService,
         private readonly turnoWebSocket: TurnoWebSocketApi,
         private readonly colaApi: ColaApiClient,
+        private readonly configuracionServicio: ConfiguracionServicio,
     ) {}
 
     ngOnInit(): void {
@@ -141,9 +144,13 @@ export class OperadorPage implements OnInit, OnDestroy {
             const base = usuario?.nombrePuesto ?? 'Puesto';
             const corr = usuario?.correlativo != null ? ` ${usuario.correlativo}` : '';
             this.nombrePuesto = base + corr;
-            this.colasAsignadas = await this.detalleColaxPuestoApi.listarPorPuesto(
-                this.idPuesto!, this.idSucursalActual
-            );
+            const [colasAsignadas, configs] = await Promise.all([
+                this.detalleColaxPuestoApi.listarPorPuesto(this.idPuesto!, this.idSucursalActual),
+                this.configuracionServicio.buscarPorSucursal(this.idSucursalActual)
+            ]);
+            this.colasAsignadas = colasAsignadas;
+            const cfgEspecial = configs.find(c => c.nombre === 'CASOS_ESPECIALES');
+            this.casosEspecialesActivados = cfgEspecial?.estado === 1 && cfgEspecial?.parametro === 1;
             await this.refrescarTurnos();
         } catch (err) {
             this.messageService.add({
@@ -179,12 +186,15 @@ export class OperadorPage implements OnInit, OnDestroy {
         const idColasAsignadas = new Set(this.colasAsignadas.map(c => c.idCola));
         const filtrados = turnosEnEspera.filter(t => idColasAsignadas.has(t.idCola));
 
-        if (this.atiendeEspeciales) {
-            const especiales = filtrados.filter(t => t.tipoCasoEspecial != null && t.tipoCasoEspecial > 0);
-            const normales   = filtrados.filter(t => !t.tipoCasoEspecial || t.tipoCasoEspecial === 0);
+        const porFecha = (a: TurnoResponseDTO, b: TurnoResponseDTO) =>
+            new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+
+        if (this.atiendeEspeciales && this.casosEspecialesActivados) {
+            const especiales = filtrados.filter(t => t.tipoCasoEspecial != null && t.tipoCasoEspecial > 0).sort(porFecha);
+            const normales   = filtrados.filter(t => !t.tipoCasoEspecial || t.tipoCasoEspecial === 0).sort(porFecha);
             this.turnosEnEspera = [...especiales, ...normales];
         } else {
-            this.turnosEnEspera = filtrados;
+            this.turnosEnEspera = filtrados.sort(porFecha);
         }
 
         // Cada operador rastrea SU turno activo por código (guardado en localStorage por user ID).

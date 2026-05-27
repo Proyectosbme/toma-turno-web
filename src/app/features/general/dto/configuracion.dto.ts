@@ -1,7 +1,6 @@
 /** Datos que se ENVÍAN al backend para crear o modificar una configuración */
 export interface ConfiguracionRequestDTO {
     idSucursal: number;
-    nombre: string;
     parametro: number | null;
     descripcion: string;
     estado: number;

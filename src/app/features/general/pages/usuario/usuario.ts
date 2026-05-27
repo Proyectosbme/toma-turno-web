@@ -200,6 +200,7 @@ export class UsuarioPage implements OnInit {
             ip: usuario['ip'] as string,
             estado: usuario['estado'] as number,
             perfil: usuario['perfil'] as string ?? '',
+            correo: usuario['correo'] as string ?? '',
             atenderCasosEspeciales: usuario['atenderCasosEspeciales'] as number ?? 0
         });
 
@@ -307,7 +308,7 @@ export class UsuarioPage implements OnInit {
                 id: u.id,
                 idSucursal: u.idSucursal,
                 idPuesto: u.idPuesto,
-                correlativo: u.nombrePuesto ? u.correlativo : null,
+                correlativo: u.correlativo,
                 codigoUsuario: u.codigoUsuario,
                 nombres: u.nombres,
                 apellidos: u.apellidos,
@@ -316,6 +317,8 @@ export class UsuarioPage implements OnInit {
                 telefono: u.telefono,
                 ip: u.ip,
                 perfil: u.perfil,
+                correo: u.correo,
+                atenderCasosEspeciales: u.atenderCasosEspeciales,
                 nombreSucursal: u.nombreSucursal,
                 nombrePuesto: u.nombrePuesto
             }));

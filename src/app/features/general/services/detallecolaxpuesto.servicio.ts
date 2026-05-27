@@ -19,4 +19,10 @@ export class DetalleColaxPuestoServicio {
                idCola: number, idDetalle: number, idSucursalCola: number): Promise<void> {
         return this.api.desasignar(idPuesto, idSucursalPuesto, idCola, idDetalle, idSucursalCola);
     }
+
+    modificarPrioridad(idPuesto: number, idSucursalPuesto: number,
+                       idCola: number, idDetalle: number, idSucursalCola: number,
+                       prioridad: number): Promise<DetalleColaxPuestoResponseDTO> {
+        return this.api.modificarPrioridad(idPuesto, idSucursalPuesto, idCola, idDetalle, idSucursalCola, prioridad);
+    }
 }

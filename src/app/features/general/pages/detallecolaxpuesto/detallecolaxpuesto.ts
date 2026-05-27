@@ -65,6 +65,13 @@ export class DetalleColaxPuestoPage implements OnInit {
     /* ── Dialog asignar ── */
     dialogoVisible = false;
     cargandoDialog = false;
+
+    /* ── Dialog modificar prioridad ── */
+    dialogoPrioridadVisible = false;
+    cargandoPrioridad = false;
+    formularioPrioridad = new FormGroup({
+        prioridad: new FormControl<number>(1, [Validators.required, Validators.min(1), Validators.max(50)])
+    });
     opcionesDetalles: OpcionSelect[] = [];
     opcionesColas: OpcionSelect[] = [];
     colaSeleccionada: ColaResponseDTO | null = null;
@@ -306,6 +313,50 @@ export class DetalleColaxPuestoPage implements OnInit {
             this.notificacion.error('Error al asignar', extraerMensajeError(err));
         } finally {
             this.cargandoDialog = false;
+        }
+    }
+
+    /* ══════════════════════════════════════════
+       Dialog — Modificar Prioridad
+    ══════════════════════════════════════════ */
+    abrirModificarPrioridad(): void {
+        if (!this.detalleSeleccionado) return;
+        this.formularioPrioridad.reset({ prioridad: this.detalleSeleccionado['prioridad'] ?? 1 });
+        this.dialogoPrioridadVisible = true;
+    }
+
+    cerrarDialogoPrioridad(): void {
+        this.dialogoPrioridadVisible = false;
+        this.formularioPrioridad.reset({ prioridad: 1 });
+    }
+
+    async modificarPrioridad(): Promise<void> {
+        if (this.formularioPrioridad.invalid) {
+            this.formularioPrioridad.markAllAsTouched();
+            return;
+        }
+        if (!this.detalleSeleccionado) return;
+
+        const d = this.detalleSeleccionado;
+        const { prioridad } = this.formularioPrioridad.getRawValue();
+
+        try {
+            this.cargandoPrioridad = true;
+            await this.detalleServicio.modificarPrioridad(
+                d['idPuesto'] as number,
+                d['idSucursalPuesto'] as number,
+                d['idCola'] as number,
+                d['idDetalle'] as number,
+                d['idSucursalCola'] as number,
+                prioridad!
+            );
+            this.cerrarDialogoPrioridad();
+            await this.listar();
+            this.notificacion.exito('Actualizado', 'La prioridad fue modificada correctamente');
+        } catch (err) {
+            this.notificacion.error('Error al modificar', extraerMensajeError(err));
+        } finally {
+            this.cargandoPrioridad = false;
         }
     }
 
