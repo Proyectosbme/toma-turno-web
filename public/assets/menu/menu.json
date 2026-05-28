@@ -116,7 +116,7 @@
         "label": "Turnos del historico",
         "orden": 1,
         "perfiles": ["ADMIN", "SUBADMIN"],
-        "routerLink": ["reportes/reportes-historico"]
+        "routerLink": ["reportes/reportes-historicos"]
       }
     ]
   }

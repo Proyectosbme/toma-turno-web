@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
+import { DatePickerModule } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@auth/services/auth.service';
 import { SucursalApiClient } from '@general/api/sucursal-api.client';
@@ -14,22 +15,23 @@ import { PageTitleComponent } from '@shared/components/page-title/page-title';
 import { SectionComponent } from '@shared/components/section/section.component';
 
 @Component({
-    selector: 'app-reportes-actuales',
+    selector: 'app-reportes-historicos',
     standalone: true,
     imports: [
         ReactiveFormsModule,
         ButtonModule,
         SelectModule,
         ToastModule,
+        DatePickerModule,
         PageLayoutComponent,
         PageTitleComponent,
         SectionComponent
     ],
     providers: [MessageService],
-    templateUrl: './reportes-actuales.html',
-    styleUrl: './reportes-actuales.scss'
+    templateUrl: './reportes-historicos.html',
+    styleUrl: './reportes-historicos.scss'
 })
-export class ReportesActualesPage implements OnInit {
+export class ReportesHistoricosPage implements OnInit {
 
     private readonly authService = inject(AuthService);
     private readonly reporteApi = inject(ReporteApiClient);
@@ -39,7 +41,9 @@ export class ReportesActualesPage implements OnInit {
 
     form: FormGroup = this.fb.group({
         tipoReporte: [null, Validators.required],
-        sucursal:    [null, Validators.required]
+        sucursal:    [null, Validators.required],
+        fechaini:    [null, Validators.required],
+        fechafin:    [null, Validators.required]
     });
 
     tiposReporte = [
@@ -78,12 +82,30 @@ export class ReportesActualesPage implements OnInit {
     async generarReporte(): Promise<void> {
         const idSucursal = this.form.get('sucursal')!.value as number;
         const tipoReporte = this.form.get('tipoReporte')!.value as string;
+        const fechaIniRaw = this.form.get('fechaini')!.value as Date;
+        const fechaFinRaw = this.form.get('fechafin')!.value as Date;
+
+        const limiteMinimo = new Date();
+        limiteMinimo.setMonth(limiteMinimo.getMonth() - 3);
+        limiteMinimo.setHours(0, 0, 0, 0);
+
+        if (fechaIniRaw < limiteMinimo) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Rango no permitido',
+                detail: 'La fecha de inicio no puede ser mayor a 3 meses atrás'
+            });
+            return;
+        }
+
+        const fechaini = this.formatearFecha(fechaIniRaw);
+        const fechafin = this.formatearFecha(fechaFinRaw);
 
         this.generando = true;
         try {
             const blob = tipoReporte === 'usuario'
-                ? await this.reporteApi.generarReporteActualPorUsuario(idSucursal)
-                : await this.reporteApi.generarReporteActual(idSucursal);
+                ? await this.reporteApi.generarReporteHistoricoPorUsuario(idSucursal, fechaini, fechafin)
+                : await this.reporteApi.generarReporteHistorico(idSucursal, fechaini, fechafin);
             const url = URL.createObjectURL(blob);
             window.open(url, '_blank');
             setTimeout(() => URL.revokeObjectURL(url), 10000);
@@ -92,5 +114,12 @@ export class ReportesActualesPage implements OnInit {
         } finally {
             this.generando = false;
         }
+    }
+
+    private formatearFecha(fecha: Date): string {
+        const y = fecha.getFullYear();
+        const m = String(fecha.getMonth() + 1).padStart(2, '0');
+        const d = String(fecha.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
     }
 }
