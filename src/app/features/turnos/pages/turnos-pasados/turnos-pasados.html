@@ -45,6 +45,7 @@
         <!-- Tabla de turnos -->
         <div *ngIf="turnos.length > 0" class="turnos-tabla">
             <div class="tabla-header">
+                <span>ID</span>
                 <span>Turno</span>
                 <span>Cola</span>
                 <span>Hora llamada</span>
@@ -53,6 +54,8 @@
             </div>
 
             <div *ngFor="let t of turnos" class="tabla-fila" [class.fila-traslado]="t.estado === 3">
+                <span class="turno-id">#{{ t.id }}</span>
+
                 <span class="codigo-turno">{{ t.codigoTurno }}</span>
 
                 <span class="nombre-cola">{{ nombreCola(t.idCola) }}</span>

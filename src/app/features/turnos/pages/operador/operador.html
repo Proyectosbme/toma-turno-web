@@ -200,10 +200,26 @@
                             styleClass="tag-caso-especial"
                         />
                         <p-tag
-                            *ngIf="!turno.tipoCasoEspecial || turno.tipoCasoEspecial === 0"
+                            *ngIf="turno.idTurnoRelacionado != null"
+                            value="TRASLADADO"
+                            severity="warn"
+                            styleClass="tag-trasladado"
+                        />
+                        <p-tag
+                            *ngIf="(!turno.tipoCasoEspecial || turno.tipoCasoEspecial === 0) && turno.idTurnoRelacionado == null"
                             value="NORMAL"
                             severity="secondary"
                             styleClass="tag-caso-normal"
+                        />
+                        <p-button
+                            *ngIf="turno.idTurnoRelacionado != null"
+                            label="Llamar"
+                            icon="pi pi-phone"
+                            severity="warn"
+                            size="small"
+                            [outlined]="true"
+                            [disabled]="cargando"
+                            (onClick)="llamarDirecto(turno)"
                         />
                         <div class="espera-tiempo">
                             <span class="espera-hora">{{ horaDesde(turno.fechaCreacion) }}</span>
@@ -301,7 +317,7 @@
         <!-- Info: priority notice -->
         <div class="reasignar-aviso" *ngIf="colaReasignarSeleccionada">
             <i class="pi pi-info-circle"></i>
-            El turno se insertará con prioridad al inicio de la cola destino.
+            El turno se agregará al final de la cola destino.
         </div>
     </div>
 

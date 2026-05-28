@@ -116,8 +116,8 @@ export class OperadorPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.cargarInicial();
         this.turnoWebSocket.connect();
-        this.wsSubscription = this.turnoWebSocket.mensajes.subscribe(() => {
-            if (!this.cargandoInicial) this.refrescarTurnos();
+        this.wsSubscription = this.turnoWebSocket.mensajes.subscribe((evento) => {
+            if (!this.cargandoInicial && evento.idSucursal === this.idSucursalActual) this.refrescarTurnos();
         });
         this.timerInterval = setInterval(() => { this.ahora = Date.now(); }, 1000);
     }
@@ -366,6 +366,10 @@ export class OperadorPage implements OnInit, OnDestroy {
         await this.ejecutarLlamar(turno);
     }
 
+    llamarDirecto(turno: TurnoResponseDTO): void {
+        this.ejecutarLlamar(turno);
+    }
+
     async abrirReasignar(): Promise<void> {
         if (!this.turnoActual) return;
         this.colaReasignarSeleccionada = null;
@@ -415,7 +419,7 @@ export class OperadorPage implements OnInit, OnDestroy {
             await this.refrescarTurnos();
             this.messageService.add({
                 severity: 'success', summary: 'Turno reasignado',
-                detail: `Turno ${turno.codigoTurno} enviado a ${cola.nombre} con prioridad`, life: 4000
+                detail: `Turno ${turno.codigoTurno} enviado a ${cola.nombre}`, life: 4000
             });
         } catch (err) {
             this.messageService.add({

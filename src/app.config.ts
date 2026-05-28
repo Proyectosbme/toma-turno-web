@@ -59,7 +59,7 @@ export const appConfig: ApplicationConfig = {
         },
         provideKeycloak({
             config: {
-                url: environment.keycloak.url,
+                url: `http://${window.location.hostname}:9095`,
                 realm: environment.keycloak.realm,
                 clientId: environment.keycloak.clientId
             },
