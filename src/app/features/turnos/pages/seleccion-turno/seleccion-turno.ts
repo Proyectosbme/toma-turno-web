@@ -16,6 +16,7 @@ import { extraerMensajeError } from '@shared/utils/error.util';
 import { AuthService } from '@auth/services/auth.service';
 import { ConfiguracionServicio } from '@general/services/configuracion.servicio';
 import { LayoutService } from '@core/layout/service/layout.service';
+import { BrandingService } from '@core/layout/service/branding.service';
 import { ImpresoraService } from '@shared/services/impresora.service';
 import { TicketService } from '@shared/services/ticket.service';
 
@@ -38,6 +39,7 @@ export interface DuiData {
 export class SeleccionTurnoPage implements OnInit, OnDestroy {
 
     readonly layoutService = inject(LayoutService);
+    readonly branding      = inject(BrandingService);
 
     private readonly authService = inject(AuthService);
 

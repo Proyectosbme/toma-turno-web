@@ -3,15 +3,96 @@
     height: 100%;
 }
 
+/* ═══════════════════════════════════════════════
+   WRAPPER raíz flex-column
+═══════════════════════════════════════════════ */
+.monitor-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* app-page-layout ocupa el espacio restante dentro del flex column */
+.monitor-root app-page-layout {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER con color primario, sin gaps
+═══════════════════════════════════════════════ */
+:host ::ng-deep .page-header {
+    background: var(--p-primary-500, var(--primary-color)) !important;
+    border-left: none !important;
+    border-color: transparent !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.22) !important;
+    border-radius: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Título "Monitor de Turnos" → blanco */
+:host ::ng-deep .page-header .page-heading {
+    color: #fff !important;
+}
+
+/* Sin padding en el wrapper y el contenido */
+:host ::ng-deep .page-layout-wrapper {
+    padding-right: 0 !important;
+}
+
+:host ::ng-deep .page-main-content {
+    padding: 0 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   BANNER INFERIOR (en flujo, no fixed)
+═══════════════════════════════════════════════ */
+.monitor-banner-bottom {
+    flex-shrink: 0;
+    background: var(--p-primary-500, var(--primary-color));
+    color: #fff;
+    overflow: hidden;
+    padding: 1.5rem 0;
+    box-shadow: 0 -2px 14px rgba(0, 0, 0, 0.18);
+}
+
+.monitor-banner-track {
+    display: flex;
+    white-space: nowrap;
+    animation: monitorBannerScroll 22s linear infinite;
+}
+
+.monitor-banner-msg {
+    display: inline-block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.monitor-banner-circle {
+    display: inline-block;
+    font-size: 0.65rem;
+    opacity: 0.6;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+@keyframes monitorBannerScroll {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+}
+
 .monitor-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #22c55e;
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: 2rem;
     padding: 0.25rem 0.75rem;
     letter-spacing: 0.03rem;
@@ -23,17 +104,17 @@
     gap: 0.4rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #f59e0b;
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 2rem;
     padding: 0.3rem 0.85rem;
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
 
     &:hover {
-        background: rgba(245, 158, 11, 0.2);
-        border-color: rgba(245, 158, 11, 0.7);
+        background: rgba(255, 255, 255, 0.28);
+        border-color: rgba(255, 255, 255, 0.7);
     }
 
     i { font-size: 0.75rem; }
@@ -45,9 +126,9 @@
     gap: 0.4rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #6366f1;
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 2rem;
     padding: 0.25rem 0.75rem;
 
@@ -61,15 +142,14 @@
     width: 2rem;
     height: 2rem;
     border-radius: 6px;
-    border: 1px solid var(--surface-border);
-    background: transparent;
-    color: var(--text-color-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s;
 
     &:hover {
-        background: var(--surface-hover);
-        color: var(--text-color);
+        background: rgba(255, 255, 255, 0.28);
     }
 
     i { font-size: 0.85rem; }
@@ -115,8 +195,8 @@ body.layout-fullscreen .btn-fullscreen-float {
     background: var(--surface-ground);
     color: var(--text-color);
     overflow: hidden;
-    border-radius: 0.75rem;
-    border: 1px solid var(--surface-border);
+    border-radius: 0;
+    border: none;
 }
 
 /* ═══════════════════════════
@@ -131,15 +211,15 @@ body.layout-fullscreen .btn-fullscreen-float {
 
 .lista-header {
     padding: 1rem 1.25rem;
-    background: var(--surface-card);
-    border-bottom: 1px solid var(--surface-border);
+    background: color-mix(in srgb, var(--primary-color) 8%, var(--surface-card));
+    border-bottom: 2px solid color-mix(in srgb, var(--primary-color) 30%, transparent);
 
     .lista-titulo {
         font-size: 1.1rem;
         font-weight: 700;
         letter-spacing: 0.1rem;
         text-transform: uppercase;
-        color: var(--text-color-secondary);
+        color: var(--p-primary-600, var(--primary-color));
     }
 }
 
@@ -147,15 +227,15 @@ body.layout-fullscreen .btn-fullscreen-float {
     display: grid;
     grid-template-columns: 140px 1fr 90px;
     padding: 0.65rem 1.25rem;
-    background: var(--surface-card);
+    background: color-mix(in srgb, var(--primary-color) 5%, var(--surface-card));
     border-bottom: 2px solid var(--surface-border);
     font-size: 0.95rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08rem;
-    color: var(--text-color-secondary);
+    color: var(--p-primary-500, var(--primary-color));
 
-    span { color: var(--text-color-secondary); }
+    span { color: var(--p-primary-500, var(--primary-color)); }
 }
 
 .lista-body {
@@ -174,8 +254,8 @@ body.layout-fullscreen .btn-fullscreen-float {
     &:hover { background: var(--surface-hover); }
 
     &.fila-llamado {
-        background: rgba(99, 102, 241, 0.12);
-        border-left: 5px solid #6366f1;
+        background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+        border-left: 5px solid var(--primary-color);
         animation: pulseRow 2s ease-in-out infinite;
     }
 
@@ -218,9 +298,9 @@ body.layout-fullscreen .btn-fullscreen-float {
     letter-spacing: 0.05rem;
 
     &.badge-llamado {
-        background: rgba(99, 102, 241, 0.35);
-        color: #c7d2fe;
-        border: 1px solid rgba(99, 102, 241, 0.5);
+        background: color-mix(in srgb, var(--primary-color) 35%, transparent);
+        color: color-mix(in srgb, var(--primary-color) 20%, #fff);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 50%, transparent);
     }
 
     &.badge-finalizado {
@@ -252,17 +332,17 @@ body.layout-fullscreen .btn-fullscreen-float {
     gap: 0.4rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #7c3aed;
-    background: rgba(124, 58, 237, 0.12);
-    border: 1px solid rgba(124, 58, 237, 0.4);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 2rem;
     padding: 0.3rem 0.85rem;
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
 
     &:hover {
-        background: rgba(124, 58, 237, 0.22);
-        border-color: rgba(124, 58, 237, 0.7);
+        background: rgba(255, 255, 255, 0.28);
+        border-color: rgba(255, 255, 255, 0.7);
     }
 
     i { font-size: 0.75rem; }
@@ -459,8 +539,8 @@ body.layout-fullscreen .btn-fullscreen-float {
    Animaciones
 ═══════════════════════════ */
 @keyframes pulseRow {
-    0%, 100% { background: rgba(99, 102, 241, 0.12); }
-    50%       { background: rgba(99, 102, 241, 0.2); }
+    0%, 100% { background: color-mix(in srgb, var(--primary-color) 12%, transparent); }
+    50%       { background: color-mix(in srgb, var(--primary-color) 22%, transparent); }
 }
 
 @keyframes glowPulse {

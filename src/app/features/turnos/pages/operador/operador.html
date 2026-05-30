@@ -8,7 +8,7 @@
     <app-page-title title="Operador" page-header-title></app-page-title>
     <ng-container page-header-actions>
         <div class="header-puesto-info">
-            <span class="puesto-label">{{ nombrePuesto || 'Puesto ' + idPuesto }}</span>
+            <span class="puesto-label"> {{ nombrePuesto || (idPuesto == null ? 'Sin puesto' : 'Puesto ' + idPuesto) }}</span>
             <span class="colas-titulo">Colas asignadas:</span>
             <p-tag
                 *ngFor="let cola of colasAsignadas"

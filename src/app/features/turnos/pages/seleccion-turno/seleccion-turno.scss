@@ -16,13 +16,71 @@
 .seleccion-turno {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    height: 100%;
+    overflow: hidden;
+    gap: 0;
+    padding: 0;
+    background: linear-gradient(160deg, var(--primary-50, #eff6ff) 0%, var(--surface-ground) 60%);
+}
+
+/* ═══════════════════════════════════════════════
+   BANNER DESLIZANTE
+═══════════════════════════════════════════════ */
+.banner-bienvenida {
+    width: 100%;
+    background: var(--p-primary-500, var(--primary-color));
+    color: #fff;
+    overflow: hidden;
+    padding: 1.5rem 0;
+    flex-shrink: 0;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.18);
+
+    &--bottom {
+        box-shadow: 0 -2px 14px rgba(0, 0, 0, 0.18);
+    }
+}
+
+.banner-track {
+    display: flex;
+    white-space: nowrap;
+    animation: bannerScroll 22s linear infinite;
+
+    &--rtl {
+        animation-name: bannerScrollRtl;
+    }
+}
+
+.banner-msg {
+    display: inline-block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.banner-circle {
+    display: inline-block;
+    font-size: 0.65rem;
+    opacity: 0.6;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   CONTENIDO CENTRAL (debajo del banner)
+═══════════════════════════════════════════════ */
+.contenido-turno {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    flex: 1;
     overflow: hidden;
     gap: 2rem;
     padding: 2rem 1.5rem;
-    background: linear-gradient(160deg, var(--primary-50, #eff6ff) 0%, var(--surface-ground) 60%);
+    width: 100%;
 }
 
 /* ═══════════════════════════════════════════════
@@ -50,15 +108,16 @@
         font-size: 2.6rem;
         font-weight: 800;
         margin: 0 0 0.5rem;
-        color: var(--text-color);
+        color: var(--p-primary-500, var(--primary-color));
         letter-spacing: -0.02em;
         line-height: 1.1;
     }
 
     p {
         font-size: 1.15rem;
-        color: var(--text-color-secondary);
+        color: var(--p-primary-400, var(--primary-color));
         margin: 0;
+        opacity: 0.85;
     }
 
     &.subtitulo {
@@ -67,7 +126,8 @@
         p {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--text-color);
+            color: var(--p-primary-500, var(--primary-color));
+            opacity: 1;
         }
     }
 }
@@ -112,6 +172,7 @@
         font-size: 1.2rem;
         font-weight: 700;
         border-radius: var(--st-radius) !important;
+        border-width: 2.5px !important;
         box-shadow: var(--st-shadow);
         transition: transform 0.15s ease, box-shadow 0.15s ease !important;
         letter-spacing: 0.01em;
@@ -143,6 +204,7 @@
         font-size: 1rem;
         font-weight: 600;
         border-radius: var(--st-radius) !important;
+        border-width: 2px !important;
         box-shadow: var(--st-shadow);
         transition: transform 0.15s ease, box-shadow 0.15s ease !important;
 
@@ -517,6 +579,16 @@
 /* ═══════════════════════════════════════════════
    ANIMACIONES
 ═══════════════════════════════════════════════ */
+@keyframes bannerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+@keyframes bannerScrollRtl {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+}
+
 @keyframes ticketIn {
     from { opacity: 0; transform: translateY(24px) scale(0.96); }
     to   { opacity: 1; transform: translateY(0)    scale(1); }
@@ -642,6 +714,15 @@
 :host-context(.app-dark) {
     .seleccion-turno {
         background: linear-gradient(160deg, #0e2a50 0%, var(--surface-ground) 60%);
+    }
+
+    .banner-bienvenida {
+        background: var(--p-primary-700, var(--primary-color));
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+
+        &--bottom {
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.35);
+        }
     }
 
     .dui-badge {

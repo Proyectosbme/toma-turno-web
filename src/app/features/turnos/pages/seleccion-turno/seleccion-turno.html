@@ -3,6 +3,15 @@
 <div class="seleccion-turno">
 
     <!-- ═══════════════════════════════════
+         BANNER DESLIZANTE SUPERIOR
+    ════════════════════════════════════════ -->
+    <div class="banner-bienvenida">
+        <div class="banner-track"><span class="banner-msg">Bienvenido a {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Gracias por preferir {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;<span class="banner-circle">●</span>&nbsp;&nbsp;&nbsp;</span><span class="banner-msg" aria-hidden="true">Bienvenido a {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Gracias por preferir {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;<span class="banner-circle">●</span>&nbsp;&nbsp;&nbsp;</span></div>
+    </div>
+
+    <div class="contenido-turno">
+
+    <!-- ═══════════════════════════════════
          SPINNER: cargando configuración
     ════════════════════════════════════════ -->
     <div *ngIf="cargandoConfig" class="spinner-container">
@@ -130,7 +139,8 @@
                     <p-button
                         *ngFor="let cola of colas"
                         [label]="cola.nombre"
-                        [severity]="colaSeleccionada?.id === cola.id && colaSeleccionada?.idSucursal === cola.idSucursal ? 'primary' : 'secondary'"
+                        severity="primary"
+                        [outlined]="!(colaSeleccionada?.id === cola.id && colaSeleccionada?.idSucursal === cola.idSucursal)"
                         size="large"
                         (onClick)="seleccionarCola(cola)"
                         [disabled]="cargandoDetalles || cargandoTurno"
@@ -156,7 +166,8 @@
                         <p-button
                             *ngFor="let detalle of detalles"
                             [label]="detalle.nombre"
-                            [severity]="detalleSeleccionado?.idDetalle === detalle.idDetalle ? 'primary' : 'secondary'"
+                            severity="primary"
+                            [outlined]="detalleSeleccionado?.idDetalle !== detalle.idDetalle"
                             (onClick)="seleccionarDetalle(detalle)"
                             [disabled]="cargandoTurno"
                             styleClass="detalle-btn"
@@ -238,6 +249,15 @@
         </ng-container>
 
     </ng-container>
+
+    </div><!-- /contenido-turno -->
+
+    <!-- ═══════════════════════════════════
+         BANNER DESLIZANTE INFERIOR
+    ════════════════════════════════════════ -->
+    <div class="banner-bienvenida banner-bienvenida--bottom">
+        <div class="banner-track banner-track--rtl"><span class="banner-msg">Bienvenido a {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Gracias por preferir {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;<span class="banner-circle">●</span>&nbsp;&nbsp;&nbsp;</span><span class="banner-msg" aria-hidden="true">Bienvenido a {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;Gracias por preferir {{ branding.nombreEmpresa() }}&nbsp;&nbsp;&nbsp;<span class="banner-circle">●</span>&nbsp;&nbsp;&nbsp;</span></div>
+    </div>
 
     <!-- Botón pantalla completa (esquina inferior derecha, siempre visible) -->
     <button class="btn-fullscreen-corner" (click)="layoutService.toggleFullscreen()"
