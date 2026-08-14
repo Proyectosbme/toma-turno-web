@@ -183,8 +183,8 @@ export class OperadorPage implements OnInit, OnDestroy {
         const idUsr = this.idUsuarioActual;
         this.turnosFinalizados = turnosFinalizados.filter(t => idUsr != null && t.idUsuario === idUsr);
 
-        const idColasAsignadas = new Set(this.colasAsignadas.map(c => c.idCola));
-        const filtrados = turnosEnEspera.filter(t => idColasAsignadas.has(t.idCola));
+        const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}`));
+        const filtrados = turnosEnEspera.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}`));
 
         const porFecha = (a: TurnoResponseDTO, b: TurnoResponseDTO) =>
             new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
@@ -346,11 +346,13 @@ export class OperadorPage implements OnInit, OnDestroy {
             this.cargandoRetomar = true;
             const hoy = new Date().toLocaleDateString('en-CA');
             const idSucursalColas = this.colasAsignadas[0]?.idSucursalCola ?? this.idSucursalActual;
-            this.turnosSinAtender = await this.turnoApi.buscar({
+            const sinAtender = await this.turnoApi.buscar({
                 idSucursal: idSucursalColas,
                 estado: EstadoTurno.SIN_ATENDER,
                 fecha: hoy
             });
+            const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}`));
+            this.turnosSinAtender = sinAtender.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}`));
             this.mostrarDialogoRetomar = true;
         } catch (err) {
             this.messageService.add({
