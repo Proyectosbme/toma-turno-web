@@ -87,7 +87,10 @@ export class LayoutService {
 
         // Sincronizar si el usuario sale con Escape
         document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
+            if (document.fullscreenElement) {
+                document.body.classList.add('layout-fullscreen');
+                this.isFullscreen.set(true);
+            } else {
                 document.body.classList.remove('layout-fullscreen');
                 this.isFullscreen.set(false);
             }

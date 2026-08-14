@@ -3,12 +3,10 @@
 }
 
 .table-wrapper {
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   overflow: hidden;
   border: 1px solid var(--surface-border);
-  border-top: 2px solid var(--primary-color);
   background: none;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .item-name {
@@ -39,9 +37,13 @@
 
   &.status-inactive {
     background: rgba(100, 116, 139, 0.15);
-    color: #94a3b8;
+    color: #475569;
     border: 1px solid rgba(100, 116, 139, 0.25);
   }
+}
+
+:host-context(.app-dark) .status-badge.status-inactive {
+  color: #cbd5e1;
 }
 
 .status-dot {
@@ -73,41 +75,42 @@
   }
 
   .p-datatable-thead > tr > th {
-      background: linear-gradient(135deg, var(--shell-bg) 0%, var(--shell-bg-2) 100%) !important;
-      color: #ffffff !important;
-      font-size: 0.82rem;
+      background: var(--surface-section, var(--surface-ground)) !important;
+      color: var(--text-color-secondary) !important;
+      font-size: 0.78rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      padding: 0.9rem 1.1rem;
-      border-bottom: 2px solid color-mix(in srgb, var(--p-primary-300), transparent 60%) !important;
+      letter-spacing: 0.05em;
+      padding: 0.65rem 1rem;
+      border-bottom: 2px solid var(--primary-color) !important;
       border-top: none !important;
       border-left: none !important;
       border-right: none !important;
       white-space: nowrap;
 
       .pi, .p-sortable-column-icon {
-        color: rgba(255, 255, 255, 0.75) !important;
-        font-weight: bold;
-        opacity: 1 !important;
+        color: var(--text-color-secondary) !important;
+        opacity: 0.7 !important;
       }
   }
 
   .p-datatable-thead > tr > th.p-sortable-column:hover {
-    background: linear-gradient(135deg, var(--shell-bg-2) 0%, var(--shell-bg) 100%) !important;
-    color: #ffffff !important;
+    background: var(--surface-hover) !important;
+    color: var(--text-color) !important;
 
     .pi, .p-sortable-column-icon {
-      color: rgba(255, 255, 255, 0.9) !important;
+      color: var(--text-color) !important;
+      opacity: 0.9 !important;
     }
   }
 
   .p-datatable-thead > tr > th.p-sortable-column.p-highlight {
-    background: linear-gradient(135deg, var(--p-primary-800) 0%, var(--p-primary-700) 100%) !important;
-    color: #ffffff !important;
+    background: var(--surface-section, var(--surface-ground)) !important;
+    color: var(--primary-color) !important;
 
     .pi, .p-sortable-column-icon {
-      color: rgba(255, 255, 255, 0.95) !important;
+      color: var(--primary-color) !important;
+      opacity: 1 !important;
     }
   }
 
@@ -116,9 +119,9 @@
     transition: background 0.15s ease;
 
     > td {
-      padding: 0.75rem 1rem;
+      padding: 0.6rem 1rem;
       color: var(--text-color);
-      border-bottom: 1px solid color-mix(in srgb, var(--p-primary-400), transparent 93%) !important;
+      border-bottom: 1px solid var(--surface-border) !important;
       border-top: none !important;
       border-left: none !important;
       border-right: none !important;
@@ -131,36 +134,36 @@
 
     /* Alternating rows — muy sutil */
     &:nth-child(even) > td {
-      background: color-mix(in srgb, var(--p-primary-400), transparent 97%);
+      background: var(--surface-ground);
     }
 
     &:hover > td {
-      background: color-mix(in srgb, var(--p-primary-400), transparent 92%) !important;
+      background: var(--surface-hover) !important;
       transition: background 0.15s ease;
     }
 
     &.row-selected > td {
-      background: color-mix(in srgb, var(--p-primary-400), transparent 85%) !important;
+      background: color-mix(in srgb, var(--primary-color), transparent 88%) !important;
       color: var(--text-color);
       font-weight: 600;
       transition: background 0.15s ease;
     }
 
     &.row-selected > td:first-child {
-      box-shadow: inset 3px 0 0 var(--p-primary-400);
+      box-shadow: inset 3px 0 0 var(--primary-color);
     }
   }
 
   .p-paginator {
-    background:transparent !important;
-    border-top: 1px solid color-mix(in srgb, var(--p-primary-400), transparent 90%) !important;
+    background: transparent !important;
+    border-top: 1px solid var(--surface-border) !important;
     border-bottom: none !important;
     border-left: none !important;
     border-right: none !important;
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.75rem;
     margin: 0;
     font-size: 0.8rem;
-    border-radius: 0 0 0.75rem 0.75rem;
+    border-radius: 0;
   }
 
   .p-datatable-wrapper {

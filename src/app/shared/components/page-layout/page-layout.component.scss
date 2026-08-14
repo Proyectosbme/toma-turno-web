@@ -11,8 +11,7 @@
     transform: translateY(-50%);
     z-index: 1000;
     background: var(--surface-card, #fff);
-    border-radius: 0.5rem 0 0 0.5rem;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+    border-radius: 0.375rem 0 0 0.375rem;
     padding: 0.6rem 0.5rem;
     border: 1px solid var(--surface-border, #e5e7eb);
     border-right: none;
@@ -78,16 +77,13 @@
     justify-content: space-between;
     gap: 1rem;
     background: var(--surface-card);
-    border: 1px solid color-mix(in srgb, var(--p-primary-400), transparent 88%);
-    border-left: 3px solid var(--primary-color);
-    border-radius: 0.875rem;
-    padding: 0.875rem 1.5rem;
-    margin-bottom: 1.25rem;
+    border: 1px solid var(--surface-border);
+    border-bottom: 2px solid var(--primary-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
     position: sticky;
     z-index: 20;
-    box-shadow:
-        0 2px 16px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 color-mix(in srgb, var(--p-primary-400), transparent 94%);
 }
 
 .page-header-title {
@@ -147,11 +143,11 @@
 }
 
 .page-main-content.quicknav-active {
-    border-radius: 1rem 0 0 0;
+    border-radius: 0;
 }
 
 .page-main-content.quicknav-inactive {
-    border-radius: 1rem 1rem 0 0;
+    border-radius: 0;
     flex: 1 1 100%;
     width: 100%;
     max-width: 100%;
@@ -162,8 +158,7 @@
     flex: 0 0 160px;
     padding: 1rem 0.75rem;
     background: var(--surface-card);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border-radius: 0 1rem 0 0;
+    border-left: 1px solid var(--surface-border);
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;

@@ -19,7 +19,6 @@ export class SearchPanelComponent {
   @Input() fields: SearchFieldConfig[] = [];
   @Input() showClear = true;
   @Input() isLoading = false;
-  @Input() columns: number = 2;
 
   @Output() searchAction = new EventEmitter<void>();
   @Output() clearAction = new EventEmitter<void>();

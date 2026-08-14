@@ -85,7 +85,7 @@
 
         <!-- Sección: Búsqueda -->
         <app-section id="sec-busqueda" title="Búsqueda por sucursal">
-            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda" [columns]="2"
+            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda"
                 (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
             </app-search-panel>
             @if (advertenciaBusqueda) {

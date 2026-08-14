@@ -14,7 +14,7 @@
     <div page-content>
         <!-- Sección: Búsqueda -->
         <app-section id="sec-busqueda" title="Búsqueda">
-            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda" [columns]="3"
+            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda"
                 (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
             </app-search-panel>
             <p class="advertencia-busqueda" *ngIf="advertenciaBusqueda">

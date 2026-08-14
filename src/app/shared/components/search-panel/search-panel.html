@@ -26,7 +26,7 @@
       aria-label="Limpiar"
     ></button>
   </div>
-  <form [formGroup]="form" class="search-grid" [ngStyle]="{'grid-template-columns': 'repeat(' + columns + ', 1fr)'}" (ngSubmit)="searchAction.emit()">
+  <form [formGroup]="form" class="search-grid" (ngSubmit)="searchAction.emit()">
     <ng-container *ngFor="let field of fields">
       <div class="field">
         <label [for]="field.name">{{ field.label }}</label>

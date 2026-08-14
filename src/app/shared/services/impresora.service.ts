@@ -18,6 +18,7 @@ export class ImpresoraService {
     }
 
     imprimir(html: string): void {
+        const eraFullscreen = !!document.fullscreenElement;
         const iframe = document.createElement('iframe');
         iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;';
         iframe.srcdoc = html;
@@ -25,7 +26,12 @@ export class ImpresoraService {
         iframe.onload = () => {
             iframe.contentWindow?.focus();
             iframe.contentWindow?.print();
-            setTimeout(() => document.body.removeChild(iframe), 1000);
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+                if (eraFullscreen && !document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            }, 1000);
         };
     }
 }

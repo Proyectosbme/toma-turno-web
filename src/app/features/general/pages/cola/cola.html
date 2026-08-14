@@ -13,7 +13,7 @@
 
         <!-- Sección: Búsqueda -->
         <app-section id="sec-busqueda" title="Búsqueda">
-            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda" [columns]="2"
+            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda"
                 (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
             </app-search-panel>
             <small *ngIf="advertenciaBusqueda" class="search-warning">
