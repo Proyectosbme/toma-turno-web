@@ -184,8 +184,8 @@ export class OperadorPage implements OnInit, OnDestroy {
         const idUsr = this.idUsuarioActual;
         this.turnosFinalizados = turnosFinalizados.filter(t => idUsr != null && t.idUsuario === idUsr);
 
-        const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}`));
-        const filtrados = turnosEnEspera.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}`));
+        const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}-${c.idSucursalCola}`));
+        const filtrados = turnosEnEspera.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}-${t.idSucursal}`));
 
         const porFecha = (a: TurnoResponseDTO, b: TurnoResponseDTO) =>
             new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
@@ -354,8 +354,8 @@ export class OperadorPage implements OnInit, OnDestroy {
                 estado: EstadoTurno.SIN_ATENDER,
                 fecha: hoy
             });
-            const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}`));
-            this.turnosSinAtender = sinAtender.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}`));
+            const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}-${c.idSucursalCola}`));
+            this.turnosSinAtender = sinAtender.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}-${t.idSucursal}`));
             this.mostrarDialogoRetomar = true;
         } catch (err) {
             this.messageService.add({
@@ -479,10 +479,12 @@ export class OperadorPage implements OnInit, OnDestroy {
         return avgMin < 1 ? '< 1 min' : `${avgMin} min`;
     }
 
-    nombreColaPorId(idCola: number, idDetalle?: number): string {
-        const match = idDetalle != null
-            ? this.colasAsignadas.find(c => c.idCola === idCola && c.idDetalle === idDetalle)
-            : this.colasAsignadas.find(c => c.idCola === idCola);
+    nombreColaPorId(idCola: number, idDetalle?: number, idSucursal?: number): string {
+        const match = this.colasAsignadas.find(c =>
+            c.idCola === idCola &&
+            (idDetalle  == null || c.idDetalle === idDetalle) &&
+            (idSucursal == null || c.idSucursalCola === idSucursal)
+        );
         if (!match) return `Cola ${idCola}`;
         return match.nombreDetalle ? `${match.nombreCola} → ${match.nombreDetalle}` : match.nombreCola;
     }
