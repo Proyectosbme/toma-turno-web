@@ -17,6 +17,17 @@
             </span>
         </ng-container>
 
+        <label for="volumenPublicidadInput" class="volumen-publicidad" title="Volumen de la publicidad (no afecta la voz de los llamados)">
+            <i class="pi pi-video" aria-hidden="true"></i>
+            <input
+                id="volumenPublicidadInput"
+                type="range"
+                aria-label="Volumen de la publicidad"
+                min="0" max="1" step="0.05"
+                [value]="volumenPublicidad"
+                (input)="cambiarVolumenPublicidad($any($event.target).valueAsNumber)">
+        </label>
+
         <span class="monitor-badge">
             <i class="pi pi-circle-fill" style="color: #22c55e; font-size: 0.6rem;"></i>
             En vivo
@@ -50,7 +61,6 @@
                 <div class="lista-subheader">
                     <span class="col-turno">Turno</span>
                     <span class="col-puesto">Ventanilla</span>
-                    <span class="col-hora">Hora</span>
                 </div>
 
                 <div class="lista-body">
@@ -58,12 +68,9 @@
                         *ngFor="let fila of filas"
                         class="fila-turno"
                         [class.fila-llamado]="fila.estado === 2"
-                        [class.fila-finalizado]="fila.estado === 4"
                     >
                         <span class="col-turno fila-codigo">{{ fila.codigoTurno }}</span>
                         <span class="col-puesto">{{ fila.nombreLlamada ?? '—' }}</span>
-                        <span class="col-hora">{{ fila.hora }}</span>
-
                     </div>
 
                     <div *ngIf="filas.length === 0" class="sin-filas">

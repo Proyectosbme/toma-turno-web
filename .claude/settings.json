@@ -44,7 +44,12 @@
       "Bash(node login-shot.mjs)",
       "Bash(node -e ' *)",
       "Bash(kill %1)",
-      "Bash(pkill -f \"ng serve --host 0.0.0.0 --port 4300\")"
+      "Bash(pkill -f \"ng serve --host 0.0.0.0 --port 4300\")",
+      "Bash(open -a Docker)",
+      "Bash(docker info *)",
+      "Bash(docker version *)",
+      "Bash(docker buildx *)",
+      "Bash(./mvnw -q -o compile)"
     ],
     "additionalDirectories": [
       "/Users/auxiliardeinformatica/Desktop"

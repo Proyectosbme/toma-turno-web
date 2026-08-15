@@ -13,7 +13,6 @@ import { BrandingService } from '@core/layout/service/branding.service';
 interface FilaTurno {
     codigoTurno: string;
     estado: number;
-    hora: string;
     nombreLlamada?: string;
 }
 
@@ -48,6 +47,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
 
     private intervalo?: ReturnType<typeof setInterval>;
     private keepAliveIntervalo?: ReturnType<typeof setInterval>;
+    private keepAliveSesionIntervalo?: ReturnType<typeof setInterval>;
     private wsSubscription?: Subscription;
     private fadeInterval?: ReturnType<typeof setInterval>;
 
@@ -62,6 +62,10 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     private slideshowTimer?: ReturnType<typeof setTimeout>;
     private readonly DURACION_IMAGEN_MS = 6000;
 
+    // ── Volumen de la publicidad (independiente del volumen de los llamados) ──
+    private readonly VOLUMEN_PUBLICIDAD_KEY = 'tomaturno_volumenPublicidad';
+    volumenPublicidad = this.cargarVolumenPublicidad();
+
     constructor(
         private readonly turnoApi: TurnoApiClient,
         private readonly turnoWebSocket: TurnoWebSocketApi,
@@ -72,6 +76,13 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         this.intervalo = setInterval(() => this.refrescar(), 30000);
         this.turnoWebSocket.connect();
         this.wsSubscription = this.turnoWebSocket.mensajes.subscribe(e => this.aplicarEvento(e));
+
+        // Esta pantalla nadie la toca (TV/monitor sin interacción humana). Sin esto,
+        // keycloak-angular la desloguea por "inactividad" (ver withAutoRefreshToken en app.config.ts),
+        // aunque esté funcionando normalmente. Simulamos actividad periódica para evitarlo.
+        this.keepAliveSesionIntervalo = setInterval(() => {
+            window.dispatchEvent(new Event('mousemove'));
+        }, 5 * 60 * 1000);
     }
 
     private aplicarEvento(evento: WsTurnoEvent): void {
@@ -92,21 +103,17 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
 
     private aplicarTurnoLlamado(turno: TurnoResponseDTO): void {
         const clave = `${turno.codigoTurno}|${turno.fechaLlamada ?? turno.fechaCreacion}`;
-        const nuevaFila = {
+        const nuevaFila: FilaTurno = {
             codigoTurno: turno.codigoTurno,
             estado: turno.estado,
-            hora: this.hora(turno.fechaLlamada ?? turno.fechaCreacion),
             nombreLlamada: turno.nombreLlamada,
         };
         const sinEste = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
-        this.filas = [nuevaFila, ...sinEste.filter(f => f.estado === 2), ...sinEste.filter(f => f.estado === 4)];
+        this.filas = [nuevaFila, ...sinEste];
 
         if (!this.clavesAnunciadas.has(clave)) {
             this.clavesAnunciadas.add(clave);
-            const [prefijo, numero] = turno.codigoTurno.split('-');
-            const codigoHablado = numero
-                ? `${prefijo} ${numero.split('').join(' ')}`
-                : turno.codigoTurno.split('').join(' ');
+            const codigoHablado = this.formatearCodigoHablado(turno.codigoTurno);
             const destino = turno.nombreLlamada ? `, pasa a ${turno.nombreLlamada}` : '';
             this.encolarAnuncio(`Turno ${codigoHablado}${destino}`, turno);
         }
@@ -117,15 +124,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     private aplicarTurnoFinalizado(turno: TurnoResponseDTO): void {
-        const filaFinalizado = {
-            codigoTurno: turno.codigoTurno,
-            estado: turno.estado,
-            hora: this.hora(turno.fechaFinalizacion ?? turno.fechaCreacion),
-            nombreLlamada: turno.nombreLlamada,
-        };
-        const sinEste = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
-        const finalizados = [filaFinalizado, ...sinEste.filter(f => f.estado === 4)].slice(0, 20);
-        this.filas = [...sinEste.filter(f => f.estado === 2), ...finalizados];
+        this.filas = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
     }
 
     private aplicarTurnoSinAtender(turno: TurnoResponseDTO): void {
@@ -146,7 +145,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             this.audioActivado = true;
             this.iniciarKeepAlive();
             // Activar audio del video si hay uno reproduciéndose
-            this.setVolumenVideo(this.modoLlamando ? 0 : 1, 500);
+            this.setVolumenVideo(this.modoLlamando ? 0 : this.volumenPublicidad, 500);
             this.procesarCola();
         };
         window.speechSynthesis.cancel();
@@ -180,10 +179,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             if (this.clavesAnunciadas.has(clave)) continue;
             this.clavesAnunciadas.add(clave);
 
-            const [prefijo, numero] = turno.codigoTurno.split('-');
-            const codigoHablado = numero
-                ? `${prefijo} ${numero.split('').join(' ')}`
-                : turno.codigoTurno.split('').join(' ');
+            const codigoHablado = this.formatearCodigoHablado(turno.codigoTurno);
             const destino = turno.nombreLlamada ? ` pasa a ${turno.nombreLlamada}` : '';
             console.log('[TTS]', `Turno ${codigoHablado}${destino}`, '| nombreLlamada:', turno.nombreLlamada);
             this.encolarAnuncio(`Turno ${codigoHablado}${destino}`, turno);
@@ -193,38 +189,24 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             this.turnoDestacado = ordenados[ordenados.length - 1] ?? null;
         }
 
-        const filaLlamados: FilaTurno[] = [...llamados]
+        this.filas = [...llamados]
             .sort((a, b) => (b.fechaLlamada ?? b.fechaCreacion).localeCompare(a.fechaLlamada ?? a.fechaCreacion))
             .map(t => ({
                 codigoTurno: t.codigoTurno,
                 estado: t.estado,
-                hora: this.hora(t.fechaLlamada ?? t.fechaCreacion),
                 nombreLlamada: t.nombreLlamada
             }));
-
-        // Actualizar filas con llamados ya disponibles; conservar finalizados actuales
-        this.filas = [...filaLlamados, ...this.filas.filter(f => f.estado === 4)];
-
-        // Fetch finalizados en segundo plano — no bloquea el display ni el anuncio
-        this.turnoApi.buscar({ idSucursal: this.idSucursalActual, estado: 4, fecha: hoy })
-            .then(finalizados => {
-                console.log('[HTTP] Turnos finalizados (estado 4):', finalizados);
-                const filaFinalizados: FilaTurno[] = finalizados
-                    .sort((a, b) => (b.fechaFinalizacion ?? b.fechaCreacion).localeCompare(a.fechaFinalizacion ?? a.fechaCreacion))
-                    .slice(0, 20)
-                    .map(t => ({
-                        codigoTurno: t.codigoTurno,
-                        estado: t.estado,
-                        hora: this.hora(t.fechaFinalizacion ?? t.fechaCreacion),
-                        nombreLlamada: t.nombreLlamada
-                    }));
-                this.filas = [...this.filas.filter(f => f.estado !== 4), ...filaFinalizados];
-            })
-            .catch(() => {});
     }
 
     hora(iso: string): string {
         return new Date(iso).toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Quita ceros a la izquierda y dice el número completo (ej. "028" → "28", no "cero dos ocho")
+    private formatearCodigoHablado(codigoTurno: string): string {
+        const [prefijo, numero] = codigoTurno.split('-');
+        if (!numero) return codigoTurno.split('').join(' ');
+        return `${prefijo} ${parseInt(numero, 10)}`;
     }
 
     /* ══════════════════════════════════════════
@@ -268,7 +250,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         // Silencio al final para que el anticorte no corte la última sílaba real
         const utterance = new SpeechSynthesisUtterance(item.text + ' .');
         utterance.lang = 'es-MX';
-        utterance.rate = 0.9;
+        utterance.rate = 0.75;
         utterance.volume = 1;
 
         const hablar = () => {
@@ -319,12 +301,25 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
 
     private volverAIdle(): void {
         this.modoLlamando = false;
-        if (this.audioActivado) this.setVolumenVideo(1, 1000);
+        if (this.audioActivado) this.setVolumenVideo(this.volumenPublicidad, 1000);
     }
 
     /* ══════════════════════════════════════════
        Control de volumen del video
     ══════════════════════════════════════════ */
+    private cargarVolumenPublicidad(): number {
+        if (typeof window === 'undefined') return 1;
+        const guardado = parseFloat(localStorage.getItem(this.VOLUMEN_PUBLICIDAD_KEY) ?? '1');
+        return Number.isFinite(guardado) ? Math.min(1, Math.max(0, guardado)) : 1;
+    }
+
+    // Cambia el volumen objetivo de la publicidad sin afectar la voz de los llamados
+    cambiarVolumenPublicidad(valor: number): void {
+        this.volumenPublicidad = valor;
+        if (typeof window !== 'undefined') localStorage.setItem(this.VOLUMEN_PUBLICIDAD_KEY, String(valor));
+        if (this.audioActivado && !this.modoLlamando) this.setVolumenVideo(valor, 200);
+    }
+
     private setVolumenVideo(objetivo: number, duracionMs: number): void {
         const video = document.querySelector<HTMLVideoElement>('.panel-publicidad video');
         if (!video) return;
@@ -396,13 +391,14 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         this.iniciarSlide();
         // Restaurar volumen en el nuevo video si está en modo idle
         if (this.audioActivado && !this.modoLlamando) {
-            setTimeout(() => this.setVolumenVideo(1, 300), 100);
+            setTimeout(() => this.setVolumenVideo(this.volumenPublicidad, 300), 100);
         }
     }
 
     ngOnDestroy(): void {
         clearInterval(this.intervalo);
         clearInterval(this.keepAliveIntervalo);
+        clearInterval(this.keepAliveSesionIntervalo);
         clearInterval(this.fadeInterval);
         clearTimeout(this.postAnuncioTimer);
         clearTimeout(this.slideshowTimer);

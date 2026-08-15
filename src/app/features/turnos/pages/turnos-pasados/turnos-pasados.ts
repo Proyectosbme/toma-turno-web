@@ -84,7 +84,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
     }
 
     async cargar(): Promise<void> {
-        if (this.colasAsignadas.length === 0) return;
+        if (this.colasAsignadas.length === 0 || !this.idPuesto) return;
 
         this.cargando = true;
         try {
@@ -94,7 +94,13 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
 
             const resultados = await Promise.all(
                 colasUnicas.map(c =>
-                    this.turnoApi.buscar({ idSucursal: idSucursalCola, idCola: c.idCola, fecha: hoy })
+                    this.turnoApi.buscar({
+                        idSucursal: idSucursalCola,
+                        idCola: c.idCola,
+                        fecha: hoy,
+                        idPuesto: this.idPuesto!,
+                        idSucursalPuesto: this.idSucursalActual,
+                    })
                 )
             );
 
