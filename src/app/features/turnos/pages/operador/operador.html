@@ -74,7 +74,7 @@
                 <div class="turno-actual-contenido">
                     <ng-container *ngIf="turnoActual; else sinTurno">
                         <div class="codigo-actual">{{ turnoActual.codigoTurno }}</div>
-                        <div class="cola-actual">{{ nombreColaPorId(turnoActual.idCola) }}</div>
+                        <div class="cola-actual">{{ nombreColaPorId(turnoActual.idCola, turnoActual.idDetalle) }}</div>
                         <div class="timer-atencion">
                             <i class="pi pi-stopwatch"></i>
                             {{ tiempoAtencion(turnoActual.fechaLlamada ?? turnoActual.fechaCreacion) }}
@@ -107,7 +107,7 @@
                                 severity="secondary"
                                 [outlined]="true"
                                 (onClick)="volverALlamar()"
-                                [disabled]="cargando"
+                                [disabled]="cargando || bloqueoVolverALlamar"
                             />
                             <p-button
                                 label="Reasignar"
@@ -192,7 +192,7 @@
                     >
                         <span class="espera-numero">{{ i + 1 }}</span>
                         <span class="espera-codigo">{{ turno.codigoTurno }}</span>
-                        <span class="espera-cola">{{ nombreColaPorId(turno.idCola) }}</span>
+                        <span class="espera-cola">{{ nombreColaPorId(turno.idCola, turno.idDetalle) }}</span>
                         <p-tag
                             *ngIf="turno.tipoCasoEspecial != null && turno.tipoCasoEspecial > 0"
                             value="CASO ESPECIAL"
@@ -262,7 +262,7 @@
             class="turno-retomar-item"
         >
             <span class="retomar-codigo">{{ turno.codigoTurno }}</span>
-            <span class="retomar-cola">{{ nombreColaPorId(turno.idCola) }}</span>
+            <span class="retomar-cola">{{ nombreColaPorId(turno.idCola, turno.idDetalle) }}</span>
             <span class="retomar-hora">{{ horaDesde(turno.fechaCreacion) }}</span>
             <p-button
                 label="Llamar"

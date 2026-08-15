@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { TurnoApiClient } from '@turnos/api/turno-api.client';
@@ -26,12 +26,15 @@ interface FilaTurno {
 export class TomaTurnoPage implements OnInit, OnDestroy {
 
     private readonly authService = inject(AuthService);
+    private readonly ngZone      = inject(NgZone);
     readonly layoutService = inject(LayoutService);
     readonly branding      = inject(BrandingService);
 
     get idSucursalActual(): number {
         return this.authService.getUsuario()?.idSucursal ?? 0;
     }
+
+    @ViewChild('videoPublicidad') videoPublicidadRef?: ElementRef<HTMLVideoElement>;
 
     turnoDestacado: TurnoResponseDTO | null = null;
     filas: FilaTurno[] = [];
@@ -54,6 +57,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     private clavesAnunciadas = new Set<string>();
     private anuncioQueue: { text: string; turno: TurnoResponseDTO }[] = [];
     private isSpeaking = false;
+    private esperandoVoces = false;
     private postAnuncioTimer?: ReturnType<typeof setTimeout>;
 
     // ── Publicidad ──
@@ -222,13 +226,17 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     private procesarCola(): void {
-        if (this.isSpeaking && this.audioSoportado && !window.speechSynthesis.speaking) {
+        if (this.isSpeaking && !this.esperandoVoces && this.audioSoportado && !window.speechSynthesis.speaking) {
             this.isSpeaking = false;
         }
         if (this.isSpeaking || this.anuncioQueue.length === 0) return;
 
         const item = this.anuncioQueue.shift()!;
         this.turnoDestacado = item.turno;
+        // Se reserva aquí mismo, no dentro de hablar(): si las voces del navegador
+        // tardan en cargar (voiceschanged async), evita que lleguen más llamados y
+        // adelanten la cola —desincronizando imagen y voz— mientras se espera.
+        this.isSpeaking = true;
 
         // Activar modo llamando: publicidad se achica, volumen baja
         if (!this.modoLlamando) {
@@ -237,7 +245,6 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         }
 
         if (!this.audioSoportado || !this.audioActivado) {
-            this.isSpeaking = true;
             this.postAnuncioTimer = setTimeout(() => {
                 this.isSpeaking = false;
                 this.postAnuncioTimer = undefined;
@@ -265,8 +272,6 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                 voices[0];
             if (voz) utterance.voice = voz;
 
-            this.isSpeaking = true;
-
             // Chrome en HTTPS corta el TTS después de ~15s; pausar/resumir cada 10s lo previene
             // Intervalo largo para no cortar sílabas en anuncios cortos
             const anticorte = setInterval(() => {
@@ -275,7 +280,10 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                 window.speechSynthesis.resume();
             }, 10000);
 
-            const siguiente = () => {
+            // onend/onerror de SpeechSynthesisUtterance corren fuera de la zona de Angular
+            // (zone.js no los parchea como sí hace con WebSocket/setTimeout), así que sin
+            // ngZone.run() el cambio de turnoDestacado no dispara un repintado inmediato.
+            const siguiente = () => this.ngZone.run(() => {
                 clearInterval(anticorte);
                 this.isSpeaking = false;
                 if (this.anuncioQueue.length === 0) {
@@ -285,7 +293,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
                     }, 0);
                 }
                 this.procesarCola();
-            };
+            });
 
             utterance.onend = siguiente;
             utterance.onerror = siguiente;
@@ -295,7 +303,11 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         if (window.speechSynthesis.getVoices().length > 0) {
             hablar();
         } else {
-            window.speechSynthesis.addEventListener('voiceschanged', hablar, { once: true });
+            this.esperandoVoces = true;
+            window.speechSynthesis.addEventListener('voiceschanged', () => this.ngZone.run(() => {
+                this.esperandoVoces = false;
+                hablar();
+            }), { once: true });
         }
     }
 
@@ -382,6 +394,16 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         clearTimeout(this.slideshowTimer);
         if (this.archivoActual?.tipo === 'imagen') {
             this.slideshowTimer = setTimeout(() => this.siguienteSlide(), this.DURACION_IMAGEN_MS);
+        } else if (this.archivoActual?.tipo === 'video') {
+            // Si el índice vuelve a un archivo con la misma URL ya mostrada (única publicidad
+            // en video, o se repite el ciclo), Angular no reasigna [src] al no detectar cambio,
+            // y el navegador se queda en el último frame en vez de reiniciar solo.
+            setTimeout(() => {
+                const video = this.videoPublicidadRef?.nativeElement;
+                if (!video) return;
+                video.currentTime = 0;
+                video.play().catch(() => {});
+            });
         }
     }
 

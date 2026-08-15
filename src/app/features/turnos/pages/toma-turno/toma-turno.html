@@ -108,7 +108,7 @@
                             <img *ngIf="archivoActual.tipo === 'imagen'"
                                 [src]="archivoActual.url"
                                 class="publicidad-media" alt="Publicidad">
-                            <video *ngIf="archivoActual.tipo === 'video'"
+                            <video #videoPublicidad *ngIf="archivoActual.tipo === 'video'"
                                 [src]="archivoActual.url"
                                 class="publicidad-media"
                                 autoplay

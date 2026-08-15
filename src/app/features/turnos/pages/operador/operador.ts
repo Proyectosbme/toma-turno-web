@@ -98,6 +98,7 @@ export class OperadorPage implements OnInit, OnDestroy {
     casosEspecialesActivados = false;
     cargando = false;
     cargandoInicial = false;
+    bloqueoVolverALlamar = false;
     ahora = Date.now();
 
     private wsSubscription?: Subscription;
@@ -232,7 +233,9 @@ export class OperadorPage implements OnInit, OnDestroy {
     }
 
     async volverALlamar(): Promise<void> {
-        if (!this.turnoActual) return;
+        if (!this.turnoActual || this.bloqueoVolverALlamar) return;
+        this.bloqueoVolverALlamar = true;
+        setTimeout(() => { this.bloqueoVolverALlamar = false; }, 2000);
         const codigo = this.turnoActual.codigoTurno;
         try {
             this.cargando = true;
@@ -476,8 +479,12 @@ export class OperadorPage implements OnInit, OnDestroy {
         return avgMin < 1 ? '< 1 min' : `${avgMin} min`;
     }
 
-    nombreColaPorId(idCola: number): string {
-        return this.colasAsignadas.find(c => c.idCola === idCola)?.nombreCola ?? `Cola ${idCola}`;
+    nombreColaPorId(idCola: number, idDetalle?: number): string {
+        const match = idDetalle != null
+            ? this.colasAsignadas.find(c => c.idCola === idCola && c.idDetalle === idDetalle)
+            : this.colasAsignadas.find(c => c.idCola === idCola);
+        if (!match) return `Cola ${idCola}`;
+        return match.nombreDetalle ? `${match.nombreCola} → ${match.nombreDetalle}` : match.nombreCola;
     }
 
     horaDesde(fechaIso: string): string {
