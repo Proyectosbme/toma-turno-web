@@ -106,7 +106,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     private aplicarTurnoLlamado(turno: TurnoResponseDTO): void {
-        const clave = `${turno.codigoTurno}|${turno.fechaLlamada ?? turno.fechaCreacion}`;
+        const clave = this.claveTurno(turno);
         const nuevaFila: FilaTurno = {
             codigoTurno: turno.codigoTurno,
             estado: turno.estado,
@@ -179,7 +179,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         );
 
         for (const turno of ordenados) {
-            const clave = `${turno.codigoTurno}|${turno.fechaLlamada ?? turno.fechaCreacion}`;
+            const clave = this.claveTurno(turno);
             if (this.clavesAnunciadas.has(clave)) continue;
             this.clavesAnunciadas.add(clave);
 
@@ -204,6 +204,17 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
 
     hora(iso: string): string {
         return new Date(iso).toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Clave para deduplicar anuncios. Se normaliza a segundos porque el mismo instante
+    // llega con distinto formato/precisión según la fuente (push por WebSocket vs.
+    // polling HTTP de refrescar()); comparar el string crudo hacía que un turno ya
+    // anunciado se detectara como "nuevo" ~30s después y se repitiera solo, sin que
+    // el operador volviera a llamarlo.
+    private claveTurno(turno: TurnoResponseDTO): string {
+        const fecha = turno.fechaLlamada ?? turno.fechaCreacion;
+        const segundos = Math.floor(new Date(fecha).getTime() / 1000);
+        return `${turno.codigoTurno}|${segundos}`;
     }
 
     // Quita ceros a la izquierda y dice el número completo (ej. "028" → "28", no "cero dos ocho")
