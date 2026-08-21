@@ -48,13 +48,20 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     // false → turno grande, publicidad pequeña (llamando)
     modoLlamando = false;
 
-    private intervalo?: ReturnType<typeof setInterval>;
     private keepAliveIntervalo?: ReturnType<typeof setInterval>;
     private keepAliveSesionIntervalo?: ReturnType<typeof setInterval>;
     private wsSubscription?: Subscription;
+    private conectadoSubscription?: Subscription;
     private fadeInterval?: ReturnType<typeof setInterval>;
 
-    private clavesAnunciadas = new Set<string>();
+    // Último fechaLlamada (epoch ms) anunciado por turno.id. Se usa el id en vez de codigoTurno
+    // porque el código se reutiliza entre turnos distintos; el id de fila es estable siempre.
+    // Se compara con tolerancia porque el mismo instante puede llegar con formato/precisión
+    // distinta según la fuente (push por WebSocket vs. resync HTTP al reconectar) — comparar el
+    // string crudo (o incluso el segundo exacto) hacía que un turno ya anunciado se detectara
+    // como "nuevo" y se repitiera solo, sin que el operador volviera a llamarlo.
+    private ultimoLlamadoPorId = new Map<number, number>();
+    private readonly TOLERANCIA_MS = 1500;
     private anuncioQueue: { text: string; turno: TurnoResponseDTO }[] = [];
     private isSpeaking = false;
     private esperandoVoces = false;
@@ -76,10 +83,14 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
+        // Los turnos viajan por WebSocket de forma continua mientras la conexión esté viva.
+        // refrescar() por HTTP ya no es un polling: se llama una vez ahora (para no depender del
+        // handshake del socket si tarda o falla) y de nuevo cada vez que el socket se (re)conecta
+        // (cubre reconexiones tras un corte de red). Nunca por temporizador ciego.
         this.refrescar();
-        this.intervalo = setInterval(() => this.refrescar(), 30000);
         this.turnoWebSocket.connect();
         this.wsSubscription = this.turnoWebSocket.mensajes.subscribe(e => this.aplicarEvento(e));
+        this.conectadoSubscription = this.turnoWebSocket.conectado.subscribe(() => this.refrescar());
 
         // Esta pantalla nadie la toca (TV/monitor sin interacción humana). Sin esto,
         // keycloak-angular la desloguea por "inactividad" (ver withAutoRefreshToken en app.config.ts),
@@ -106,7 +117,6 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     private aplicarTurnoLlamado(turno: TurnoResponseDTO): void {
-        const clave = this.claveTurno(turno);
         const nuevaFila: FilaTurno = {
             codigoTurno: turno.codigoTurno,
             estado: turno.estado,
@@ -115,8 +125,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         const sinEste = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
         this.filas = [nuevaFila, ...sinEste];
 
-        if (!this.clavesAnunciadas.has(clave)) {
-            this.clavesAnunciadas.add(clave);
+        if (this.esLlamadaNueva(turno)) {
             const codigoHablado = this.formatearCodigoHablado(turno.codigoTurno);
             const destino = turno.nombreLlamada ? `, pasa a ${turno.nombreLlamada}` : '';
             this.encolarAnuncio(`Turno ${codigoHablado}${destino}`, turno);
@@ -179,9 +188,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         );
 
         for (const turno of ordenados) {
-            const clave = this.claveTurno(turno);
-            if (this.clavesAnunciadas.has(clave)) continue;
-            this.clavesAnunciadas.add(clave);
+            if (!this.esLlamadaNueva(turno)) continue;
 
             const codigoHablado = this.formatearCodigoHablado(turno.codigoTurno);
             const destino = turno.nombreLlamada ? ` pasa a ${turno.nombreLlamada}` : '';
@@ -206,15 +213,17 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         return new Date(iso).toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Clave para deduplicar anuncios. Se normaliza a segundos porque el mismo instante
-    // llega con distinto formato/precisión según la fuente (push por WebSocket vs.
-    // polling HTTP de refrescar()); comparar el string crudo hacía que un turno ya
-    // anunciado se detectara como "nuevo" ~30s después y se repitiera solo, sin que
-    // el operador volviera a llamarlo.
-    private claveTurno(turno: TurnoResponseDTO): string {
+    // true si esta llamada es más nueva que la última anunciada para este turno.id (marca la
+    // llamada como vista si lo es). El id identifica al turno de forma estable —a diferencia de
+    // codigoTurno, que se reutiliza entre turnos distintos— y la tolerancia absorbe diferencias
+    // de formato/precisión de fecha entre WebSocket y el resync HTTP de refrescar().
+    private esLlamadaNueva(turno: TurnoResponseDTO): boolean {
         const fecha = turno.fechaLlamada ?? turno.fechaCreacion;
-        const segundos = Math.floor(new Date(fecha).getTime() / 1000);
-        return `${turno.codigoTurno}|${segundos}`;
+        const ms = new Date(fecha).getTime();
+        const anterior = this.ultimoLlamadoPorId.get(turno.id);
+        if (anterior != null && Math.abs(ms - anterior) < this.TOLERANCIA_MS) return false;
+        this.ultimoLlamadoPorId.set(turno.id, ms);
+        return true;
     }
 
     // Quita ceros a la izquierda y dice el número completo (ej. "028" → "28", no "cero dos ocho")
@@ -429,7 +438,6 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        clearInterval(this.intervalo);
         clearInterval(this.keepAliveIntervalo);
         clearInterval(this.keepAliveSesionIntervalo);
         clearInterval(this.fadeInterval);
@@ -437,6 +445,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         clearTimeout(this.slideshowTimer);
         this.archivosPublicidad.forEach(a => URL.revokeObjectURL(a.url));
         this.wsSubscription?.unsubscribe();
+        this.conectadoSubscription?.unsubscribe();
         this.turnoWebSocket.close();
         if (this.audioSoportado) window.speechSynthesis.cancel();
     }

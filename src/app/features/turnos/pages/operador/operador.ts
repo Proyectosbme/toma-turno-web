@@ -298,6 +298,10 @@ export class OperadorPage implements OnInit, OnDestroy {
     }
 
     private async ejecutarLlamar(turno: TurnoResponseDTO): Promise<void> {
+        // Guarda síncrona: si dos clics/taps llegan casi juntos (pantalla táctil, doble-click),
+        // el segundo debe descartarse aquí mismo. El binding [disabled]="cargando" del botón no
+        // alcanza a repintarse a tiempo entre ambos eventos.
+        if (this.cargando) return;
         try {
             this.cargando = true;
             this.turnoActual = await this.turnoApi.llamar(

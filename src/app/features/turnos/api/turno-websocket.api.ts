@@ -7,12 +7,20 @@ import { WsTurnoEvent } from '@turnos/dto/turno.dto';
 export class TurnoWebSocketApi {
   private ws?: WebSocket;
   private mensajes$ = new Subject<WsTurnoEvent>();
+  private conectado$ = new Subject<void>();
   private wsUrl = '';
   private reconnectTimer?: ReturnType<typeof setTimeout>;
   private cerradoManualmente = false;
 
   get mensajes(): Observable<WsTurnoEvent> {
     return this.mensajes$.asObservable();
+  }
+
+  /** Emite cada vez que la conexión se (re)establece — carga inicial o reconexión tras un corte.
+   *  Los consumidores la usan para resincronizar por HTTP una sola vez por conexión, en vez de
+   *  hacer polling continuo: los turnos deben viajar por WebSocket mientras la conexión esté viva. */
+  get conectado(): Observable<void> {
+    return this.conectado$.asObservable();
   }
 
   connect(url?: string): void {
@@ -26,7 +34,7 @@ export class TurnoWebSocketApi {
 
   private abrir(): void {
     this.ws = new WebSocket(this.wsUrl);
-    this.ws.onopen = () => console.log('WebSocket conectado');
+    this.ws.onopen = () => { console.log('WebSocket conectado'); this.conectado$.next(); };
     this.ws.onmessage = (event) => {
       try { this.mensajes$.next(JSON.parse(event.data)); } catch { /* ignorar mensajes malformados */ }
     };
