@@ -260,11 +260,13 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         return true;
     }
 
-    // Quita ceros a la izquierda y dice el número completo (ej. "028" → "28", no "cero dos ocho")
+    // Quita ceros a la izquierda y dice el número completo (ej. "028" → "28", no "cero dos ocho").
+    // El prefijo se deletrea letra por letra (ej. "AT" → "A T") porque, pegado, el motor de voz
+    // en es-MX lo lee como una sílaba y se mezcla con el número siguiente (suena a "atuno").
     private formatearCodigoHablado(codigoTurno: string): string {
         const [prefijo, numero] = codigoTurno.split('-');
         if (!numero) return codigoTurno.split('').join(' ');
-        return `${prefijo} ${parseInt(numero, 10)}`;
+        return `${prefijo.split('').join(' ')} ${parseInt(numero, 10)}`;
     }
 
     /* ══════════════════════════════════════════
