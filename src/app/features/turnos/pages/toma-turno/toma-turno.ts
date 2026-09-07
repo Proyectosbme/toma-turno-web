@@ -313,7 +313,7 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
         // Silencio al final para que el anticorte no corte la última sílaba real
         const utterance = new SpeechSynthesisUtterance(item.text + ' .');
         utterance.lang = 'es-MX';
-        utterance.rate = 0.75;
+        utterance.rate = 0.65;
         utterance.volume = 1;
 
         const hablar = () => {
