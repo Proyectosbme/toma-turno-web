@@ -7,17 +7,17 @@
     <ng-container page-header-actions>
 
         <ng-container *ngIf="audioSoportado">
-            <button *ngIf="!audioActivado" class="btn-activar-audio" (click)="activarAudio()">
+            <button *ngIf="!audioActivado" [hidden]="layoutService.isFullscreen()" class="btn-activar-audio" (click)="activarAudio()">
                 <i class="pi pi-volume-off"></i>
                 Activar sonido
             </button>
-            <span *ngIf="audioActivado" class="audio-activo-badge">
+            <span *ngIf="audioActivado" [hidden]="layoutService.isFullscreen()" class="audio-activo-badge">
                 <i class="pi pi-volume-up"></i>
                 Sonido activo
             </span>
         </ng-container>
 
-        <label for="volumenPublicidadInput" class="volumen-publicidad" title="Volumen de la publicidad (no afecta la voz de los llamados)">
+        <label for="volumenPublicidadInput" [hidden]="layoutService.isFullscreen()" class="volumen-publicidad" title="Volumen de la publicidad (no afecta la voz de los llamados)">
             <i class="pi pi-video" aria-hidden="true"></i>
             <input
                 id="volumenPublicidadInput"
@@ -33,14 +33,27 @@
             En vivo
         </span>
 
-        <input #inputCarpeta type="file" webkitdirectory multiple style="display:none"
-            (change)="seleccionarCarpeta($event)">
-        <button class="btn-publicidad" (click)="inputCarpeta.click()" title="Seleccionar carpeta de publicidad">
-            <i class="pi pi-images"></i>
-            {{ archivosPublicidad.length ? archivosPublicidad.length + ' archivo(s)' : 'Publicidad' }}
-        </button>
+        <ng-container *ngIf="soportaCarpetaPersistente; else seleccionCarpetaSimple">
+            <button *ngIf="handlePendientePermiso" [hidden]="layoutService.isFullscreen()" class="btn-publicidad btn-permitir-carpeta"
+                (click)="permitirCarpetaGuardada()" title="Volver a autorizar la carpeta de publicidad guardada">
+                <i class="pi pi-lock-open"></i>
+                Permitir publicidad guardada
+            </button>
+            <button [hidden]="layoutService.isFullscreen()" class="btn-publicidad" (click)="elegirCarpetaPublicidad()" title="Seleccionar carpeta de publicidad">
+                <i class="pi pi-images"></i>
+                {{ archivosPublicidad.length ? archivosPublicidad.length + ' archivo(s)' : 'Publicidad' }}
+            </button>
+        </ng-container>
+        <ng-template #seleccionCarpetaSimple>
+            <input #inputCarpeta type="file" webkitdirectory multiple style="display:none"
+                (change)="seleccionarCarpeta($event)">
+            <button [hidden]="layoutService.isFullscreen()" class="btn-publicidad" (click)="inputCarpeta.click()" title="Seleccionar carpeta de publicidad">
+                <i class="pi pi-images"></i>
+                {{ archivosPublicidad.length ? archivosPublicidad.length + ' archivo(s)' : 'Publicidad' }}
+            </button>
+        </ng-template>
 
-        <button class="btn-fullscreen-header" (click)="layoutService.toggleFullscreen()"
+        <button [hidden]="layoutService.isFullscreen()" class="btn-fullscreen-header" (click)="layoutService.toggleFullscreen()"
             title="Pantalla completa">
             <i class="pi pi-expand"></i>
         </button>
@@ -49,7 +62,7 @@
     <!-- ═══ CONTENT ═══ -->
     <div page-content class="monitor-content">
 
-        <div class="monitor-layout">
+        <div class="monitor-layout" [class.sin-publicidad]="archivosPublicidad.length === 0">
 
             <!-- ══ LADO IZQUIERDO: lista ══ -->
             <div class="panel-lista">
@@ -81,7 +94,12 @@
             </div>
 
             <!-- ══ LADO DERECHO: turno destacado + publicidad ══ -->
-            <div class="panel-destacado" [class.modo-llamando]="modoLlamando">
+            <!-- Sin publicidad seleccionada y sin llamada activa: se oculta para que la lista
+                 de ventanillas ocupe toda la pantalla (no tiene sentido reservarle espacio a un
+                 panel vacío). En cuanto se selecciona publicidad, o al llamar un turno, vuelve. -->
+            <div class="panel-destacado"
+                [class.modo-llamando]="modoLlamando"
+                [class.oculto-sin-publicidad]="archivosPublicidad.length === 0 && !modoLlamando">
 
                 <!-- Tarjeta de turno: visible solo cuando se llama -->
                 <div class="destacado-wrapper">
@@ -142,7 +160,28 @@
 </div><!-- /monitor-root -->
 
 <!-- Botón flotante fullscreen -->
-<button class="btn-fullscreen-float" (click)="layoutService.toggleFullscreen()"
+<button [hidden]="!layoutService.isFullscreen()" class="btn-fullscreen-float" (click)="layoutService.toggleFullscreen()"
     title="Salir de pantalla completa">
     <i class="pi pi-compress"></i>
 </button>
+
+<!-- Pregunta: ¿guardar la carpeta de publicidad en esta pantalla, o usarla solo por ahora? -->
+<div class="overlay-pregunta-carpeta" *ngIf="mostrarPreguntaGuardarCarpeta">
+    <div class="dialogo-pregunta-carpeta">
+        <i class="pi pi-folder-open dialogo-icono"></i>
+        <p class="dialogo-titulo">¿Guardar esta carpeta en esta pantalla?</p>
+        <p class="dialogo-texto">
+            "Guardar" hace que esta pantalla la vuelva a cargar sola la próxima vez.
+            "Solo esta vez" la usa únicamente ahora, sin afectar lo que ya esté guardado aquí
+            (útil si esta pantalla comparte usuario con otra que debe mostrar publicidad distinta).
+        </p>
+        <div class="dialogo-acciones">
+            <button class="btn-dialogo btn-dialogo-secundario" (click)="confirmarPreguntaCarpeta(false)">
+                Solo esta vez
+            </button>
+            <button class="btn-dialogo btn-dialogo-primario" (click)="confirmarPreguntaCarpeta(true)">
+                Guardar en esta pantalla
+            </button>
+        </div>
+    </div>
+</div>

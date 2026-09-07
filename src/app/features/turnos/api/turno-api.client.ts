@@ -45,6 +45,15 @@ export class TurnoApiClient {
         );
     }
 
+    enEspera(idSucursal: number, codigoTurno: string, fechaCreacion: string): Promise<TurnoResponseDTO> {
+        const params = new HttpParams().set('fechaCreacion', fechaCreacion);
+        return firstValueFrom(
+            this.http.put<TurnoResponseDTO>(
+                `${this.BASE_URL}/${idSucursal}/${codigoTurno}/en-espera`, null, { params }
+            )
+        );
+    }
+
     reasignar(idSucursal: number, codigoTurno: string, fechaCreacion: string,
               dto: { idSucursalDestino: number; idColaDestino: number; idDetalleDestino?: number }): Promise<TurnoResponseDTO> {
         const params = new HttpParams().set('fechaCreacion', fechaCreacion);

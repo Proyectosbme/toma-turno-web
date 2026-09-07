@@ -53,7 +53,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
     }
 
     colasAsignadas: DetalleColaxPuestoResponseDTO[] = [];
-    turnos: TurnoResponseDTO[] = [];
+    turnos: (TurnoResponseDTO & { numeroDia: number })[] = [];
     cargando = false;
     llamandoId: number | null = null;
 
@@ -104,10 +104,19 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
                 )
             );
 
-            const estadosPasados = [EstadoTurno.TRASLADO, EstadoTurno.FINALIZADO, EstadoTurno.SIN_ATENDER];
-            this.turnos = resultados
-                .flat()
-                .filter(t => estadosPasados.includes(t.estado))
+            const estadosPasados = [EstadoTurno.TRASLADO, EstadoTurno.FINALIZADO, EstadoTurno.SIN_ATENDER, EstadoTurno.EN_ESPERA];
+            const filtrados = resultados.flat().filter(t => estadosPasados.includes(t.estado));
+
+            // Numeración del día (1, 2, 3...) por orden de llegada (fechaCreacion) — el id de la
+            // base de datos es acumulado entre días y confunde (ej. empieza en 17 porque ayer
+            // ya hubo 16 turnos), así que se ignora para lo que se muestra en pantalla.
+            const ordenLlegada = [...filtrados].sort((a, b) =>
+                new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
+            );
+            const numeroPorId = new Map(ordenLlegada.map((t, i) => [t.id, i + 1]));
+
+            this.turnos = filtrados
+                .map(t => ({ ...t, numeroDia: numeroPorId.get(t.id)! }))
                 .sort((a, b) => {
                     const da = a.fechaLlamada ?? a.fechaCreacion;
                     const db = b.fechaLlamada ?? b.fechaCreacion;
@@ -125,7 +134,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         this.llamandoId = turno.id;
         const dto = { idPuesto: this.idPuesto, idSucursalPuesto: this.idSucursalActual, idUsuario: this.idUsuarioActual };
         try {
-            if (turno.estado === EstadoTurno.SIN_ATENDER) {
+            if (turno.estado === EstadoTurno.SIN_ATENDER || turno.estado === EstadoTurno.EN_ESPERA) {
                 await this.turnoApi.llamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
             } else {
                 await this.turnoApi.rellamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
@@ -146,6 +155,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
             case EstadoTurno.TRASLADO:    return 'Trasladado';
             case EstadoTurno.FINALIZADO:  return 'Finalizado';
             case EstadoTurno.SIN_ATENDER: return 'Sin atender';
+            case EstadoTurno.EN_ESPERA:   return 'En espera';
             default: return '';
         }
     }
@@ -155,6 +165,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
             case EstadoTurno.TRASLADO:    return 'warn';
             case EstadoTurno.FINALIZADO:  return 'success';
             case EstadoTurno.SIN_ATENDER: return 'danger';
+            case EstadoTurno.EN_ESPERA:   return 'secondary';
             default: return 'secondary';
         }
     }

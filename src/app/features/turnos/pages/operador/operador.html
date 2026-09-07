@@ -125,11 +125,19 @@
                                 [disabled]="cargando"
                             />
                             <p-button
-                                label="No llegó / Saltar"
+                                label="Sin atender"
                                 icon="pi pi-times"
                                 severity="secondary"
                                 [outlined]="true"
                                 (onClick)="saltarTurno()"
+                                [disabled]="cargando"
+                            />
+                            <p-button
+                                label="En espera"
+                                icon="pi pi-clock"
+                                severity="secondary"
+                                [outlined]="true"
+                                (onClick)="marcarEnEspera()"
                                 [disabled]="cargando"
                             />
                         </div>
@@ -153,7 +161,7 @@
                                 [loading]="cargandoRetomar"
                                 [disabled]="cargando"
                                 (onClick)="abrirRetomar()"
-                                pTooltip="Ver turnos que no fueron atendidos"
+                                pTooltip="Ver turnos marcados en espera"
                                 styleClass="btn-retomar"
                             />
                         </div>
@@ -246,19 +254,19 @@
 <!-- ═══ DIÁLOGO RETOMAR TURNO ═══ -->
 <p-dialog
     [(visible)]="mostrarDialogoRetomar"
-    header="Retomar turno sin atender"
+    header="Retomar turno en espera"
     [modal]="true"
     [closable]="true"
     [draggable]="false"
     [style]="{ width: '480px' }"
 >
     <div class="retomar-lista">
-        <div *ngIf="turnosSinAtender.length === 0" class="sin-retomar">
+        <div *ngIf="turnosRetomar.length === 0" class="sin-retomar">
             <i class="pi pi-check-circle"></i>
-            <span>No hay turnos sin atender hoy</span>
+            <span>No hay turnos en espera hoy</span>
         </div>
         <div
-            *ngFor="let turno of turnosSinAtender"
+            *ngFor="let turno of turnosRetomar"
             class="turno-retomar-item"
         >
             <span class="retomar-codigo">{{ turno.codigoTurno }}</span>

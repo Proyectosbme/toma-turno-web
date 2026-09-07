@@ -4,6 +4,7 @@ export enum EstadoTurno {
     TRASLADO = 3,
     FINALIZADO  = 4,
     SIN_ATENDER = 5,
+    EN_ESPERA = 6,
 }
 
 export interface CrearTurnoRequestDTO {
@@ -35,7 +36,7 @@ export interface TurnoResponseDTO {
 }
 
 export interface WsTurnoEvent {
-    event: 'TURNO_LLAMADO' | 'TURNO_FINALIZADO' | 'TURNO_SIN_ATENDER' | 'TURNO_CREADO';
+    event: 'TURNO_LLAMADO' | 'TURNO_FINALIZADO' | 'TURNO_SIN_ATENDER' | 'TURNO_EN_ESPERA' | 'TURNO_CREADO';
     idSucursal: number;
     turno?: TurnoResponseDTO;
 }

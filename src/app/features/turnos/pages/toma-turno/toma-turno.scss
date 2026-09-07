@@ -177,7 +177,7 @@
 }
 
 .btn-fullscreen-float {
-    display: none;
+    display: inline-flex;
     position: fixed;
     bottom: 1.25rem;
     right: 1.25rem;
@@ -198,8 +198,13 @@
     i { font-size: 1.1rem; }
 }
 
-body.layout-fullscreen .btn-fullscreen-float {
-    display: inline-flex;
+// Los controles del header (Activar sonido, volumen, Publicidad, etc.) y este botón
+// flotante se ocultan/muestran con [hidden] atado a layoutService.isFullscreen() —
+// varias de sus clases ya fijan su propio "display", y sin !important esas reglas le
+// ganarían al [hidden] del navegador (que es de la hoja de estilos por defecto, la de
+// menor prioridad), dejándolo siempre visible pase lo que pase con el atributo.
+:host [hidden] {
+    display: none !important;
 }
 
 .monitor-content {
@@ -218,6 +223,15 @@ body.layout-fullscreen .btn-fullscreen-float {
     overflow: hidden;
     border-radius: 0;
     border: none;
+
+    /* Sin publicidad configurada: la lista de ventanillas toma toda la pantalla en vez de
+       compartirla con un panel derecho vacío. Vuelve a la mitad y mitad en cuanto se elige
+       una carpeta de publicidad. */
+    &.sin-publicidad {
+        grid-template-columns: 1fr;
+
+        .panel-lista { border-right: none; }
+    }
 }
 
 /* ═══════════════════════════
@@ -303,6 +317,14 @@ body.layout-fullscreen .btn-fullscreen-float {
     color: #000;
 }
 
+/* Modo oscuro: mismo grosor, solo cambia el color a blanco (en claro se queda igual que hoy) */
+:host-context(.app-dark) {
+    .fila-codigo,
+    .fila-turno .col-puesto {
+        color: #fff;
+    }
+}
+
 .estado-badge {
     display: inline-block;
     padding: 0.2rem 0.6rem;
@@ -362,6 +384,14 @@ body.layout-fullscreen .btn-fullscreen-float {
     i { font-size: 0.75rem; }
 }
 
+.btn-permitir-carpeta {
+    background: rgba(250, 204, 21, 0.18);
+    border-color: rgba(250, 204, 21, 0.6);
+    animation: pulsarAccion 1.6s ease-in-out infinite;
+
+    &:hover { background: rgba(250, 204, 21, 0.3); }
+}
+
 /* ── Panel contenedor derecho ── */
 .panel-destacado {
     display: flex;
@@ -369,6 +399,11 @@ body.layout-fullscreen .btn-fullscreen-float {
     position: relative;
     overflow: hidden;
     background: var(--surface-ground);
+
+    /* Idle y sin publicidad: no reservarle espacio, la lista de la izquierda usa todo el ancho.
+       El turno llamado sigue anunciándose igual —.modo-llamando lo saca de este flujo con
+       position:fixed cubriendo toda la pantalla— así que ocultarlo aquí no afecta esa animación. */
+    &.oculto-sin-publicidad { display: none; }
 
     /* ── Wrapper de la tarjeta de turno ── */
     .destacado-wrapper {
@@ -601,4 +636,81 @@ body.layout-fullscreen .btn-fullscreen-float {
 @keyframes pulsarAccion {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.75; transform: scale(1.04); }
+}
+
+/* ═══════════════════════════
+   Pregunta: guardar carpeta de publicidad
+═══════════════════════════ */
+.overlay-pregunta-carpeta {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1rem;
+}
+
+.dialogo-pregunta-carpeta {
+    max-width: 420px;
+    width: 100%;
+    background: #1c1c22;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.dialogo-icono {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.dialogo-titulo {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+}
+
+.dialogo-texto {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+    margin: 0 0 1.25rem;
+}
+
+.dialogo-acciones {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.btn-dialogo {
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-dialogo-secundario {
+    background: transparent;
+    color: #fff;
+
+    &:hover { background: rgba(255, 255, 255, 0.1); }
+}
+
+.btn-dialogo-primario {
+    background: var(--primary-color);
+    color: var(--primary-contrast-color, #fff);
+    border-color: var(--primary-color);
+
+    &:hover { filter: brightness(1.1); }
 }

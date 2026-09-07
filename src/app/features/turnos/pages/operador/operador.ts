@@ -90,9 +90,9 @@ export class OperadorPage implements OnInit, OnDestroy {
     detalleReasignarSeleccionado: DetalleResponseDTO | null = null;
     cargandoReasignar = false;
 
-    // Retomar turno dialog
+    // Retomar turno dialog — solo turnos EN_ESPERA (los sin atender se retoman desde Turnos pasados)
     mostrarDialogoRetomar = false;
-    turnosSinAtender: TurnoResponseDTO[] = [];
+    turnosRetomar: TurnoResponseDTO[] = [];
     cargandoRetomar = false;
 
     casosEspecialesActivados = false;
@@ -297,6 +297,40 @@ export class OperadorPage implements OnInit, OnDestroy {
         this.refrescarTurnos().catch(() => {});
     }
 
+    marcarEnEspera(): void {
+        if (!this.turnoActual) return;
+        this.confirmationService.confirm({
+            message: `¿Marcar el turno ${this.turnoActual.codigoTurno} como en espera?`,
+            header: 'En espera',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sí, marcar',
+            rejectLabel: 'Cancelar',
+            accept: () => this.ejecutarEnEspera()
+        });
+    }
+
+    private async ejecutarEnEspera(): Promise<void> {
+        if (!this.turnoActual) return;
+        const turno = this.turnoActual;
+        try {
+            this.cargando = true;
+            await this.turnoApi.enEspera(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion);
+            this.turnoActual = null;
+            localStorage.removeItem(this.turnoActualKey);
+            this.messageService.add({
+                severity: 'warn', summary: 'En espera',
+                detail: `Turno ${turno.codigoTurno} marcado como en espera`, life: 3000
+            });
+        } catch (err) {
+            this.messageService.add({
+                severity: 'error', summary: 'Error', detail: extraerMensajeError(err), life: 5000
+            });
+        } finally {
+            this.cargando = false;
+        }
+        this.refrescarTurnos().catch(() => {});
+    }
+
     private async ejecutarLlamar(turno: TurnoResponseDTO): Promise<void> {
         // Guarda síncrona: si dos clics/taps llegan casi juntos (pantalla táctil, doble-click),
         // el segundo debe descartarse aquí mismo. El binding [disabled]="cargando" del botón no
@@ -353,13 +387,13 @@ export class OperadorPage implements OnInit, OnDestroy {
             this.cargandoRetomar = true;
             const hoy = new Date().toLocaleDateString('en-CA');
             const idSucursalColas = this.colasAsignadas[0]?.idSucursalCola ?? this.idSucursalActual;
-            const sinAtender = await this.turnoApi.buscar({
+            const enEspera = await this.turnoApi.buscar({
                 idSucursal: idSucursalColas,
-                estado: EstadoTurno.SIN_ATENDER,
+                estado: EstadoTurno.EN_ESPERA,
                 fecha: hoy
             });
             const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}-${c.idSucursalCola}`));
-            this.turnosSinAtender = sinAtender.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}-${t.idSucursal}`));
+            this.turnosRetomar = enEspera.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}-${t.idSucursal}`));
             this.mostrarDialogoRetomar = true;
         } catch (err) {
             this.messageService.add({

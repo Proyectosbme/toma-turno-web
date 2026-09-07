@@ -45,7 +45,7 @@
         <!-- Tabla de turnos -->
         <div *ngIf="turnos.length > 0" class="turnos-tabla">
             <div class="tabla-header">
-                <span>ID</span>
+                <span>No.</span>
                 <span>Turno</span>
                 <span>Cola</span>
                 <span>Hora llamada</span>
@@ -54,7 +54,7 @@
             </div>
 
             <div *ngFor="let t of turnos" class="tabla-fila" [class.fila-traslado]="t.estado === 3">
-                <span class="turno-id">#{{ t.id }}</span>
+                <span class="turno-id">#{{ t.numeroDia }}</span>
 
                 <span class="codigo-turno">{{ t.codigoTurno }}</span>
 
@@ -76,9 +76,9 @@
                         icon="pi pi-volume-up"
                         label="Llamar"
                         class="p-button-sm p-button-outlined"
-                        [pTooltip]="t.estado !== 5 ? 'Solo se pueden llamar turnos sin atender' : 'Volver a llamar este turno'"
+                        [pTooltip]="t.estado !== 5 && t.estado !== 6 ? 'Solo se pueden llamar turnos sin atender o en espera' : 'Volver a llamar este turno'"
                         [loading]="llamandoId === t.id"
-                        [disabled]="llamandoId !== null || t.estado !== 5"
+                        [disabled]="llamandoId !== null || (t.estado !== 5 && t.estado !== 6)"
                         (click)="rellamar(t)">
                     </button>
                 </span>
