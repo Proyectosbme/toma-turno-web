@@ -81,6 +81,7 @@ export class OperadorPage implements OnInit, OnDestroy {
     turnoActual: TurnoResponseDTO | null = null;
     turnosEnEspera: TurnoResponseDTO[] = [];
     turnosFinalizados: TurnoResponseDTO[] = [];
+    turnosPausados: TurnoResponseDTO[] = [];
 
     // Reasignar dialog
     mostrarDialogoReasignar = false;
@@ -169,7 +170,7 @@ export class OperadorPage implements OnInit, OnDestroy {
         const idSucursalColas = this.colasAsignadas[0]?.idSucursalCola ?? this.idSucursalActual;
         const idPuesto        = this.idPuesto ?? undefined;
 
-        const [turnosLlamados, turnosFinalizados, turnosEnEspera] = await Promise.all([
+        const [turnosLlamados, turnosFinalizados, turnosEnEspera, turnosMarcadosEnEspera] = await Promise.all([
             this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: EstadoTurno.LLAMADO, fecha: hoy }),
             this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: EstadoTurno.FINALIZADO, fecha: hoy }),
             this.turnoApi.buscar({
@@ -178,7 +179,8 @@ export class OperadorPage implements OnInit, OnDestroy {
                 fecha: hoy,
                 idPuesto,
                 idSucursalPuesto: idPuesto != null ? this.idSucursalActual : undefined
-            })
+            }),
+            this.turnoApi.buscar({ idSucursal: idSucursalColas, estado: EstadoTurno.EN_ESPERA, fecha: hoy })
         ]);
 
         const idUsr = this.idUsuarioActual;
@@ -186,6 +188,10 @@ export class OperadorPage implements OnInit, OnDestroy {
 
         const clavesAsignadas = new Set(this.colasAsignadas.map(c => `${c.idCola}-${c.idDetalle}-${c.idSucursalCola}`));
         const filtrados = turnosEnEspera.filter(t => clavesAsignadas.has(`${t.idCola}-${t.idDetalle}-${t.idSucursal}`));
+
+        this.turnosPausados = turnosMarcadosEnEspera.filter(t =>
+            clavesAsignadas.has(`${t.idCola}-${t.idDetalle}-${t.idSucursal}`)
+        );
 
         const porFecha = (a: TurnoResponseDTO, b: TurnoResponseDTO) =>
             new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();

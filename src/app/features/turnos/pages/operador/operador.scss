@@ -245,12 +245,35 @@
     }
 }
 
-/* ── Panel Espera ── */
+/* ── Panel Espera (cola normal arriba + mis turnos en espera abajo) ── */
 .panel-espera {
     min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 
     ::ng-deep .card-espera {
-        height: 100%;
+        flex: 1 1 60%;
+        min-height: 0;
+        overflow: hidden;
+
+        .p-card-body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .p-card-content {
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+        }
+    }
+
+    ::ng-deep .card-mis-espera {
+        flex: 1 1 40%;
+        min-height: 0;
+        overflow: hidden;
 
         .p-card-body {
             height: 100%;
@@ -361,6 +384,45 @@
 
         &.texto-aviso  { color: var(--orange-500); font-weight: 600; }
         &.texto-urgente { color: var(--red-500);    font-weight: 700; }
+    }
+}
+
+.turno-mis-espera-item {
+    display: grid;
+    grid-template-columns: 5rem 1fr auto auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--surface-border);
+    border-left: 3px solid var(--orange-400);
+    transition: background 0.15s;
+
+    &:hover { background: var(--surface-hover); }
+
+    .espera-codigo {
+        font-weight: 700;
+        font-size: 1rem;
+        font-family: monospace;
+        color: var(--orange-600);
+    }
+
+    .espera-cola {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .espera-tiempo {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .espera-hora {
+        font-size: 0.78rem;
+        color: var(--text-color-secondary);
     }
 }
 

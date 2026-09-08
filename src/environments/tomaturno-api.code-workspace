@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../.."
+		},
+		{
+			"path": "../../../tomaturnos-escritorio"
 		}
 	],
 	"settings": {

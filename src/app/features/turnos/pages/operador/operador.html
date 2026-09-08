@@ -37,7 +37,7 @@
             <div class="stat-item">
                 <i class="pi pi-clock stat-icon"></i>
                 <span class="stat-valor">{{ turnosEnEspera.length }}</span>
-                <span class="stat-label">En espera</span>
+                <span class="stat-label">En cola</span>
             </div>
             <div class="stat-item stat-verde">
                 <i class="pi pi-check-circle stat-icon"></i>
@@ -154,7 +154,7 @@
                                 styleClass="btn-llamar-principal"
                             />
                             <p-button
-                                label="Retomar turno"
+                                label="Llamar turnos en espera"
                                 icon="pi pi-history"
                                 [outlined]="true"
                                 size="large"
@@ -176,7 +176,7 @@
             <p-card styleClass="card-espera">
                 <ng-template pTemplate="header">
                     <div class="card-header-label">
-                        EN ESPERA
+                        EN COLA
                         <p-badge
                             [value]="turnosEnEspera.length.toString()"
                             severity="danger"
@@ -188,7 +188,7 @@
                 <div class="lista-espera">
                     <div *ngIf="turnosEnEspera.length === 0" class="sin-espera">
                         <i class="pi pi-check-circle"></i>
-                        <span>Sin turnos en espera</span>
+                        <span>Sin turnos en cola</span>
                     </div>
                     <div
                         *ngFor="let turno of turnosEnEspera; let i = index"
@@ -237,6 +237,47 @@
                                 {{ tiempoEsperaTexto(turno.fechaCreacion) }}
                             </span>
                         </div>
+                    </div>
+                </div>
+            </p-card>
+
+            <!-- Turnos en espera (pausados) de las colas asignadas a este puesto -->
+            <p-card styleClass="card-mis-espera">
+                <ng-template pTemplate="header">
+                    <div class="card-header-label">
+                        EN ESPERA
+                        <p-badge
+                            [value]="turnosPausados.length.toString()"
+                            severity="warn"
+                            *ngIf="turnosPausados.length > 0"
+                        />
+                    </div>
+                </ng-template>
+
+                <div class="lista-espera">
+                    <div *ngIf="turnosPausados.length === 0" class="sin-espera">
+                        <i class="pi pi-check-circle"></i>
+                        <span>Sin turnos en espera</span>
+                    </div>
+                    <div
+                        *ngFor="let turno of turnosPausados"
+                        class="turno-mis-espera-item"
+                        [pTooltip]="'Esperando desde las ' + horaDesde(turno.fechaCreacion)"
+                    >
+                        <span class="espera-codigo">{{ turno.codigoTurno }}</span>
+                        <span class="espera-cola">{{ nombreColaPorId(turno.idCola, turno.idDetalle, turno.idSucursal) }}</span>
+                        <div class="espera-tiempo">
+                            <span class="espera-hora">{{ horaDesde(turno.fechaCreacion) }}</span>
+                        </div>
+                        <p-button
+                            label="Llamar"
+                            icon="pi pi-phone"
+                            severity="warn"
+                            size="small"
+                            [outlined]="true"
+                            [disabled]="cargando"
+                            (onClick)="llamarDirecto(turno)"
+                        />
                     </div>
                 </div>
             </p-card>

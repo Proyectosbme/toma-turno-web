@@ -266,7 +266,8 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     private formatearCodigoHablado(codigoTurno: string): string {
         const [prefijo, numero] = codigoTurno.split('-');
         if (!numero) return codigoTurno.split('').join(' ');
-        return `${prefijo.split('').join(' ')} ${parseInt(numero, 10)}`;
+        // La coma fuerza una pequeña pausa entre el prefijo y el número.
+        return `${prefijo.split('').join(' ')}, ${parseInt(numero, 10)}`;
     }
 
     /* ══════════════════════════════════════════
