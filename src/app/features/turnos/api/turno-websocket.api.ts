@@ -23,11 +23,17 @@ export class TurnoWebSocketApi {
     return this.conectado$.asObservable();
   }
 
-  connect(url?: string): void {
+  /** idUsuario: si se pasa, el backend registra esta sesión como la del operador para
+   *  el chequeo de "sesión activa" del llamado automático. Sin él, la conexión solo recibe
+   *  broadcasts (uso en pantallas de monitoreo). */
+  connect(url?: string, idUsuario?: number): void {
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) return;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     const defaultUrl = environment.wsUrl || `${proto}//${location.host}/turnos`;
     this.wsUrl = url ?? defaultUrl;
+    if (idUsuario != null) {
+      this.wsUrl += (this.wsUrl.includes('?') ? '&' : '?') + `idUsuario=${idUsuario}`;
+    }
     this.cerradoManualmente = false;
     this.abrir();
   }

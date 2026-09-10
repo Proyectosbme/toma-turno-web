@@ -151,7 +151,7 @@ export class OperadorPage implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.cargarInicial();
-        this.turnoWebSocket.connect();
+        this.turnoWebSocket.connect(undefined, this.idUsuarioActual);
         this.wsSubscription = this.turnoWebSocket.mensajes.subscribe((evento) => {
             if (!this.cargandoInicial && evento.idSucursal === this.idSucursalActual) this.refrescarTurnos();
         });
@@ -192,6 +192,24 @@ export class OperadorPage implements OnInit, OnDestroy {
             this.turnoAutomaticoActivado = cfgTurnoAutomatico?.estado === 1 && cfgTurnoAutomatico?.parametro === 1;
             this.estadoOperador = estadoOperador;
             await this.refrescarTurnos();
+
+            // Si entro/recargo ya ACTIVA (sin pasar por /abrir ni /descanso/quitar) y hay
+            // turnos en espera, el llamado automático nunca se disparó para esos turnos —
+            // se reintenta acá. No-op si no hay turnos pendientes o si ya tengo uno asignado.
+            if (this.turnoAutomaticoActivado
+                && this.estadoOperador?.idEstadoOperador === EstadoOperador.ACTIVA
+                && !this.turnoActual
+                && this.turnosEnEspera.length > 0) {
+                try {
+                    await this.estadoOperadorApi.verificarAutomatico(this.idUsuarioActual!, this.idSucursalActual, this.idPuesto!);
+                    // El evento TURNO_LLAMADO del WebSocket llega mientras cargandoInicial
+                    // todavía es true y el suscriptor lo ignora — se refresca acá para no
+                    // depender de ese evento y mostrar el turno recién asignado de una vez.
+                    await this.refrescarTurnos();
+                } catch {
+                    // best-effort: si falla, el operador sigue viendo la cola en espera y puede llamar manualmente
+                }
+            }
         } catch (err) {
             this.messageService.add({
                 severity: 'error', summary: 'Error al cargar',

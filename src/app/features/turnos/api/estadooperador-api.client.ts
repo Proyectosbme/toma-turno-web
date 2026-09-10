@@ -53,4 +53,13 @@ export class EstadoOperadorApiClient {
                 { params: this.params(idUsuario, idSucursal, idPuesto) })
         );
     }
+
+    /** Reintenta el llamado automático sin cambiar el estado — usado al entrar a la
+     *  pantalla del operador cuando ya está ACTIVA y hay turnos en espera. */
+    verificarAutomatico(idUsuario: number, idSucursal: number, idPuesto: number): Promise<void> {
+        return firstValueFrom(
+            this.http.put<void>(`${this.BASE_URL}/verificar-automatico`, null,
+                { params: this.params(idUsuario, idSucursal, idPuesto) })
+        );
+    }
 }
