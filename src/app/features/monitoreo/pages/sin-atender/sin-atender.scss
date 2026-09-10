@@ -5,7 +5,7 @@
     }
 }
 
-.turnos-pasados-container {
+.sin-atender-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -20,21 +20,10 @@
         font-size: 0.875rem;
         color: var(--text-color-secondary);
     }
-}
 
-/* ── Aviso operador inactivo ── */
-.aviso-operador-cerrado {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--orange-600);
-    background: var(--orange-50, #fff7ed);
-    border: 1px solid var(--orange-200, #fed7aa);
-    border-radius: 6px;
-    padding: 0.6rem 0.9rem;
-
-    i { font-size: 0.95rem; }
+    ::ng-deep .filtro-cola {
+        min-width: 180px;
+    }
 }
 
 /* ── Empty state ── */
@@ -49,6 +38,7 @@
     i {
         font-size: 2.5rem;
         opacity: 0.4;
+        color: var(--green-400);
     }
 
     p {
@@ -66,7 +56,7 @@
 
 .tabla-header {
     display: grid;
-    grid-template-columns: 50px 110px 1fr 1fr 90px 90px 90px 120px 110px;
+    grid-template-columns: 60px 120px 1fr 110px 130px;
     padding: 0.6rem 1rem;
     background: var(--surface-100);
     font-size: 0.8rem;
@@ -79,19 +69,26 @@
 
 .tabla-fila {
     display: grid;
-    grid-template-columns: 50px 110px 1fr 1fr 90px 90px 90px 120px 110px;
+    grid-template-columns: 60px 120px 1fr 110px 130px;
     padding: 0.75rem 1rem;
     align-items: center;
     gap: 0.5rem;
     border-top: 1px solid var(--surface-border);
+    border-left: 3px solid transparent;
     transition: background 0.15s;
 
     &:hover {
         background: var(--surface-50);
     }
 
-    &.fila-traslado {
-        background: color-mix(in srgb, var(--yellow-50) 40%, transparent);
+    &.aviso {
+        border-left-color: var(--orange-400);
+        background: var(--orange-50, #fff7ed);
+    }
+
+    &.urgente {
+        border-left-color: var(--red-500);
+        background: var(--red-50, #fef2f2);
     }
 }
 
@@ -102,14 +99,13 @@
     color: var(--primary-color);
 }
 
-.turno-id {
+.turno-numero {
     font-size: 0.85rem;
     font-family: monospace;
     color: var(--text-color-secondary);
 }
 
-.nombre-cola,
-.nombre-usuario {
+.nombre-cola {
     font-size: 0.875rem;
     color: var(--text-color);
     overflow: hidden;
@@ -121,4 +117,32 @@
     font-size: 0.8rem;
     font-family: monospace;
     color: var(--text-color-secondary);
+}
+
+.tiempo-espera {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+
+    &.texto-aviso {
+        color: var(--orange-500);
+    }
+
+    &.texto-urgente {
+        color: var(--red-500);
+        font-weight: 700;
+    }
+}
+
+/* ── Modo oscuro ── */
+:host-context(.app-dark) {
+    .tabla-fila {
+        &.aviso {
+            background: rgba(251, 146, 60, 0.1);
+        }
+
+        &.urgente {
+            background: rgba(239, 68, 68, 0.1);
+        }
+    }
 }

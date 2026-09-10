@@ -97,10 +97,50 @@
       }
     ]
   },{
+    "codigo": 15,
+    "icon": "pi pi-fw pi-desktop",
+    "label": "Monitoreo",
+    "orden": 3,
+    "perfiles": ["ADMIN", "SUBADMIN"],
+    "items": [
+      {
+        "codigo": 150,
+        "icon": "pi pi-fw pi-hourglass",
+        "label": "Sin atender",
+        "orden": 1,
+        "perfiles": ["ADMIN", "SUBADMIN"],
+        "routerLink": ["monitoreo/sin-atender"]
+      },
+      {
+        "codigo": 151,
+        "icon": "pi pi-fw pi-check-circle",
+        "label": "Atendidos",
+        "orden": 2,
+        "perfiles": ["ADMIN", "SUBADMIN"],
+        "routerLink": ["monitoreo/atendidos"]
+      },
+      {
+        "codigo": 152,
+        "icon": "pi pi-fw pi-chart-bar",
+        "label": "Estadísticas",
+        "orden": 3,
+        "perfiles": ["ADMIN", "SUBADMIN"],
+        "routerLink": ["monitoreo/estadisticas"]
+      },
+      {
+        "codigo": 153,
+        "icon": "pi pi-fw pi-moon",
+        "label": "Tiempos muertos",
+        "orden": 4,
+        "perfiles": ["ADMIN", "SUBADMIN"],
+        "routerLink": ["monitoreo/tiempos-muertos"]
+      }
+    ]
+  },{
     "codigo": 20,
     "icon": "pi pi-fw pi-chart-bar",
     "label": "Reportes",
-    "orden": 3,
+    "orden": 4,
     "perfiles": ["ADMIN", "SUBADMIN"],
     "items": [
       {

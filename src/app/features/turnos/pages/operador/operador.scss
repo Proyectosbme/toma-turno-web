@@ -34,6 +34,12 @@
     }
 }
 
+.header-operador-acciones {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 0.5rem;
+}
+
 /* ── Body (grid: stats full-width + 2 columnas) ── */
 .operador-body {
     display: grid;
@@ -43,6 +49,45 @@
     height: 100%;
     min-height: 0;
     position: relative;
+}
+
+/* ── Compuerta: operador cerrado / en descanso ── */
+.panel-operador-gate {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-align: center;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    padding: 2rem;
+
+    i {
+        font-size: 3rem;
+        color: var(--text-color-secondary);
+        opacity: 0.5;
+        margin-bottom: 0.5rem;
+    }
+
+    h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: var(--text-color);
+    }
+
+    p {
+        margin: 0 0 0.5rem;
+        color: var(--text-color-secondary);
+    }
+
+    &.panel-operador-gate-descanso i {
+        color: var(--primary-color);
+        opacity: 0.8;
+    }
 }
 
 /* ── Stats bar ── */
@@ -242,6 +287,15 @@
     ::ng-deep .btn-retomar .p-button {
         height: 100%;
         white-space: nowrap;
+    }
+
+    ::ng-deep .btn-retomar-solo {
+        flex: 1;
+
+        .p-button {
+            width: 100%;
+            justify-content: center;
+        }
     }
 }
 
@@ -525,6 +579,49 @@
     margin-top: 0.5rem;
 
     i { font-size: 0.9rem; }
+}
+
+/* ── Tipo de descanso dialog ── */
+.descanso-opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    ::ng-deep .descanso-opcion-btn {
+        .p-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
+
+/* ── Comentario "Otro" dialog ── */
+.comentario-otro-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    label {
+        font-size: 0.85rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+.comentario-otro-textarea {
+    width: 100%;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    background: var(--surface-card);
+    color: var(--text-color);
+
+    &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
 }
 
 /* ── Retomar turno dialog ── */

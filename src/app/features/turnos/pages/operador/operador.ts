@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
@@ -13,8 +14,10 @@ import { DialogModule } from 'primeng/dialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { TurnoApiClient } from '@turnos/api/turno-api.client';
 import { TurnoWebSocketApi } from '@turnos/api/turno-websocket.api';
+import { EstadoOperadorApiClient } from '@turnos/api/estadooperador-api.client';
 import { DetalleColaxPuestoApiClient } from '@general/api/detallecolaxpuesto-api.client';
 import { TurnoResponseDTO, EstadoTurno } from '@turnos/dto/turno.dto';
+import { EstadoOperadorResponseDTO, EstadoOperador, TipoDescanso, OPCIONES_TIPO_DESCANSO } from '@turnos/dto/estadooperador.dto';
 import { DetalleColaxPuestoResponseDTO } from '@general/dto/detallecolaxpuesto.dto';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { AuthService } from '@auth/services/auth.service';
@@ -30,6 +33,7 @@ import { ConfiguracionServicio } from '@general/services/configuracion.servicio'
     standalone: true,
     imports: [
         CommonModule,
+        FormsModule,
         ButtonModule,
         CardModule,
         TagModule,
@@ -97,10 +101,39 @@ export class OperadorPage implements OnInit, OnDestroy {
     cargandoRetomar = false;
 
     casosEspecialesActivados = false;
+    turnoAutomaticoActivado = false;
     cargando = false;
     cargandoInicial = false;
     bloqueoVolverALlamar = false;
     ahora = Date.now();
+
+    // Estado del operador (activar/cerrar/descanso)
+    estadoOperador: EstadoOperadorResponseDTO | null = null;
+    cargandoEstadoOperador = false;
+    mostrarDialogoDescanso = false;
+    opcionesTipoDescanso = OPCIONES_TIPO_DESCANSO;
+
+    // Comentario obligatorio cuando el tipo de descanso es "Otro"
+    mostrarDialogoComentarioOtro = false;
+    comentarioOtro = '';
+    private tipoDescansoPendiente: TipoDescanso | null = null;
+
+    get operadorActivo(): boolean {
+        return this.estadoOperador?.idEstadoOperador === EstadoOperador.ACTIVA;
+    }
+
+    get operadorEnDescanso(): boolean {
+        return this.estadoOperador?.idEstadoOperador === EstadoOperador.DESCANSO;
+    }
+
+    get operadorCerrado(): boolean {
+        return !this.operadorActivo && !this.operadorEnDescanso;
+    }
+
+    get nombreTipoDescanso(): string {
+        const opcion = this.opcionesTipoDescanso.find(o => o.value === this.estadoOperador?.idTipoDescanso);
+        return opcion?.label ?? 'Descanso';
+    }
 
     private wsSubscription?: Subscription;
     private timerInterval?: ReturnType<typeof setInterval>;
@@ -113,6 +146,7 @@ export class OperadorPage implements OnInit, OnDestroy {
         private readonly turnoWebSocket: TurnoWebSocketApi,
         private readonly colaApi: ColaApiClient,
         private readonly configuracionServicio: ConfiguracionServicio,
+        private readonly estadoOperadorApi: EstadoOperadorApiClient,
     ) {}
 
     ngOnInit(): void {
@@ -146,13 +180,17 @@ export class OperadorPage implements OnInit, OnDestroy {
             const base = usuario?.nombrePuesto ?? 'Puesto';
             const corr = usuario?.correlativo != null ? ` ${usuario.correlativo}` : '';
             this.nombrePuesto = base + corr;
-            const [colasAsignadas, configs] = await Promise.all([
+            const [colasAsignadas, configs, estadoOperador] = await Promise.all([
                 this.detalleColaxPuestoApi.listarPorPuesto(this.idPuesto!, this.idSucursalActual),
-                this.configuracionServicio.buscarPorSucursal(this.idSucursalActual)
+                this.configuracionServicio.buscarPorSucursal(this.idSucursalActual),
+                this.estadoOperadorApi.buscarVigente(this.idUsuarioActual!, this.idSucursalActual)
             ]);
             this.colasAsignadas = colasAsignadas;
             const cfgEspecial = configs.find(c => c.nombre === 'CASOS_ESPECIALES');
             this.casosEspecialesActivados = cfgEspecial?.estado === 1 && cfgEspecial?.parametro === 1;
+            const cfgTurnoAutomatico = configs.find(c => c.nombre === 'TURNO_AUTOMATICO');
+            this.turnoAutomaticoActivado = cfgTurnoAutomatico?.estado === 1 && cfgTurnoAutomatico?.parametro === 1;
+            this.estadoOperador = estadoOperador;
             await this.refrescarTurnos();
         } catch (err) {
             this.messageService.add({
@@ -412,11 +450,19 @@ export class OperadorPage implements OnInit, OnDestroy {
 
     async retomarTurno(turno: TurnoResponseDTO): Promise<void> {
         this.mostrarDialogoRetomar = false;
+        await this.finalizarActivoSiExiste();
         await this.ejecutarLlamar(turno);
     }
 
-    llamarDirecto(turno: TurnoResponseDTO): void {
-        this.ejecutarLlamar(turno);
+    async llamarDirecto(turno: TurnoResponseDTO): Promise<void> {
+        await this.finalizarActivoSiExiste();
+        await this.ejecutarLlamar(turno);
+    }
+
+    /** Llamar un turno en espera puede hacerse con un turno activo: ese turno pasa a finalizado. */
+    private async finalizarActivoSiExiste(): Promise<void> {
+        if (!this.turnoActual) return;
+        await this.ejecutarFinalizar('Turno finalizado, se atiende el turno en espera');
     }
 
     async abrirReasignar(): Promise<void> {
@@ -476,6 +522,132 @@ export class OperadorPage implements OnInit, OnDestroy {
             });
         } finally {
             this.cargandoReasignar = false;
+        }
+    }
+
+    /* ── Estado del operador (activar/cerrar/descanso) ────── */
+
+    async abrirOperador(): Promise<void> {
+        if (!this.tienePuestoAsignado || this.cargandoEstadoOperador) return;
+        try {
+            this.cargandoEstadoOperador = true;
+            this.estadoOperador = await this.estadoOperadorApi.abrir(this.idUsuarioActual!, this.idSucursalActual, this.idPuesto!);
+            this.messageService.add({ severity: 'success', summary: 'Activado', life: 3000 });
+            await this.refrescarTurnos();
+        } catch (err) {
+            this.messageService.add({
+                severity: 'error', summary: 'Error al activar', detail: extraerMensajeError(err), life: 5000
+            });
+        } finally {
+            this.cargandoEstadoOperador = false;
+        }
+    }
+
+    cerrarOperador(): void {
+        if (!this.tienePuestoAsignado) return;
+        this.confirmationService.confirm({
+            message: this.turnoActual
+                ? `Se finalizará el turno ${this.turnoActual.codigoTurno} en atención. ¿Finalizar?`
+                : '¿Finalizar? No podrás recibir turnos hasta que te actives de nuevo.',
+            header: 'Finalizar',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sí, finalizar',
+            rejectLabel: 'Cancelar',
+            accept: () => this.ejecutarCerrarOperador()
+        });
+    }
+
+    private async ejecutarCerrarOperador(): Promise<void> {
+        if (this.cargandoEstadoOperador) return;
+        try {
+            this.cargandoEstadoOperador = true;
+            this.estadoOperador = await this.estadoOperadorApi.cerrar(this.idUsuarioActual!, this.idSucursalActual, this.idPuesto!);
+            this.turnoActual = null;
+            localStorage.removeItem(this.turnoActualKey);
+            this.messageService.add({ severity: 'success', summary: 'Finalizado', life: 3000 });
+            await this.refrescarTurnos();
+        } catch (err) {
+            this.messageService.add({
+                severity: 'error', summary: 'Error al finalizar', detail: extraerMensajeError(err), life: 5000
+            });
+        } finally {
+            this.cargandoEstadoOperador = false;
+        }
+    }
+
+    abrirDialogoDescanso(): void {
+        if (!this.tienePuestoAsignado) return;
+        this.mostrarDialogoDescanso = true;
+    }
+
+    seleccionarTipoDescanso(tipo: TipoDescanso): void {
+        this.mostrarDialogoDescanso = false;
+        if (tipo === TipoDescanso.OTRO) {
+            // "Otro" pide explicar el motivo antes de continuar.
+            this.tipoDescansoPendiente = tipo;
+            this.comentarioOtro = '';
+            this.mostrarDialogoComentarioOtro = true;
+            return;
+        }
+        this.confirmarEIniciarDescanso(tipo);
+    }
+
+    confirmarComentarioOtro(): void {
+        if (!this.comentarioOtro.trim() || !this.tipoDescansoPendiente) return;
+        this.mostrarDialogoComentarioOtro = false;
+        this.confirmarEIniciarDescanso(this.tipoDescansoPendiente, this.comentarioOtro.trim());
+    }
+
+    private confirmarEIniciarDescanso(tipo: TipoDescanso, comentario?: string): void {
+        if (this.turnoActual) {
+            this.confirmationService.confirm({
+                message: `Se finalizará el turno ${this.turnoActual.codigoTurno} en atención. ¿Iniciar descanso?`,
+                header: 'Descanso',
+                icon: 'pi pi-exclamation-triangle',
+                acceptLabel: 'Sí, iniciar descanso',
+                rejectLabel: 'Cancelar',
+                accept: () => this.ejecutarIniciarDescanso(tipo, comentario)
+            });
+        } else {
+            this.ejecutarIniciarDescanso(tipo, comentario);
+        }
+    }
+
+    private async ejecutarIniciarDescanso(tipo: TipoDescanso, comentario?: string): Promise<void> {
+        if (this.cargandoEstadoOperador) return;
+        try {
+            this.cargandoEstadoOperador = true;
+            this.estadoOperador = await this.estadoOperadorApi.iniciarDescanso(
+                this.idUsuarioActual!, this.idSucursalActual, this.idPuesto!, tipo, comentario
+            );
+            this.turnoActual = null;
+            localStorage.removeItem(this.turnoActualKey);
+            this.messageService.add({ severity: 'success', summary: 'Descanso iniciado', life: 3000 });
+            await this.refrescarTurnos();
+        } catch (err) {
+            this.messageService.add({
+                severity: 'error', summary: 'Error al iniciar descanso', detail: extraerMensajeError(err), life: 5000
+            });
+        } finally {
+            this.cargandoEstadoOperador = false;
+        }
+    }
+
+    async quitarDescanso(): Promise<void> {
+        if (!this.tienePuestoAsignado || this.cargandoEstadoOperador) return;
+        try {
+            this.cargandoEstadoOperador = true;
+            this.estadoOperador = await this.estadoOperadorApi.quitarDescanso(
+                this.idUsuarioActual!, this.idSucursalActual, this.idPuesto!
+            );
+            this.messageService.add({ severity: 'success', summary: 'Descanso terminado', life: 3000 });
+            await this.refrescarTurnos();
+        } catch (err) {
+            this.messageService.add({
+                severity: 'error', summary: 'Error al terminar descanso', detail: extraerMensajeError(err), life: 5000
+            });
+        } finally {
+            this.cargandoEstadoOperador = false;
         }
     }
 

@@ -1,0 +1,191 @@
+.header-info {
+    .subtitulo-header {
+        font-size: 0.85rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+.estadisticas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ── Filtros ── */
+.filtros-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+}
+
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--text-color-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.03rem;
+    }
+
+    ::ng-deep .filtro-select {
+        min-width: 200px;
+    }
+}
+
+.separador {
+    border-top: 1px dashed var(--surface-border);
+    margin: 0.25rem 0;
+}
+
+.empty-state-chico {
+    padding: 1.75rem 1rem;
+
+    i { font-size: 1.8rem; }
+}
+
+/* ── Stats bar (mismo patrón que Operador) ── */
+.stats-bar {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    flex: 1;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    padding: 0.9rem 0.75rem;
+
+    .stat-icon {
+        font-size: 1.1rem;
+        opacity: 0.5;
+        margin-bottom: 0.15rem;
+    }
+
+    .stat-valor {
+        font-size: 1.8rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--text-color);
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+        color: var(--text-color-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.04rem;
+        text-align: center;
+        margin-top: 0.2rem;
+    }
+
+    &.stat-verde .stat-valor { color: var(--green-500); }
+    &.stat-azul  .stat-valor { color: var(--blue-500); }
+}
+
+/* ── Empty state ── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 3rem 1rem;
+    color: var(--text-color-secondary);
+
+    i {
+        font-size: 2.5rem;
+        opacity: 0.4;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+}
+
+/* ── Gráfica ── */
+.chart-card {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.chart-titulo {
+    margin: 0 0 0.15rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.chart-subtitulo {
+    margin: 0 0 1rem;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.chart-wrapper {
+    position: relative;
+}
+
+/* ── Tabla de usuarios ── */
+.usuarios-tabla {
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-header {
+    display: grid;
+    grid-template-columns: 1fr 180px 200px;
+    padding: 0.6rem 1rem;
+    background: var(--surface-100);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    gap: 0.5rem;
+}
+
+.tabla-fila {
+    display: grid;
+    grid-template-columns: 1fr 180px 200px;
+    padding: 0.65rem 1rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-top: 1px solid var(--surface-border);
+    transition: background 0.15s;
+
+    &:hover {
+        background: var(--surface-50);
+    }
+}
+
+.nombre-usuario {
+    font-size: 0.875rem;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dato-numero {
+    font-size: 0.9rem;
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+}

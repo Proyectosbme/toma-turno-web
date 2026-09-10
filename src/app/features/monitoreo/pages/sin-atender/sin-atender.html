@@ -1,0 +1,71 @@
+<p-toast></p-toast>
+
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Sin atender" page-header-title></app-page-title>
+
+    <ng-container page-header-actions>
+        <div class="header-info">
+            <span class="subtitulo-header">Turnos creados hoy que aún no han sido llamados</span>
+        </div>
+    </ng-container>
+
+    <!-- ═══ CONTENIDO ═══ -->
+    <div page-content class="sin-atender-container">
+
+        <!-- Barra de acciones -->
+        <div class="acciones-bar">
+            <button pButton icon="pi pi-refresh" label="Actualizar"
+                class="p-button-outlined p-button-sm"
+                [loading]="cargando"
+                (click)="cargar()">
+            </button>
+            <p-select
+                [options]="opcionesColas"
+                [(ngModel)]="colaSeleccionada"
+                optionLabel="label"
+                optionValue="value"
+                styleClass="filtro-cola"
+                placeholder="Todas las colas">
+            </p-select>
+            <span class="total-label">{{ turnos.length }} turno{{ turnos.length !== 1 ? 's' : '' }} sin atender</span>
+        </div>
+
+        <!-- Lista vacía -->
+        <div *ngIf="turnos.length === 0 && !cargando" class="empty-state">
+            <i class="pi pi-check-circle"></i>
+            <p>No hay turnos sin atender ahora mismo.</p>
+        </div>
+
+        <!-- Tabla de turnos -->
+        <div *ngIf="turnos.length > 0" class="turnos-tabla">
+            <div class="tabla-header">
+                <span>No.</span>
+                <span>Turno</span>
+                <span>Cola</span>
+                <span>Llegó</span>
+                <span>Esperando</span>
+            </div>
+
+            <div *ngFor="let t of turnos; let i = index" class="tabla-fila"
+                [class.aviso]="tiempoEsperaMin(t.fechaCreacion) >= 10 && tiempoEsperaMin(t.fechaCreacion) < 20"
+                [class.urgente]="tiempoEsperaMin(t.fechaCreacion) >= 20">
+                <span class="turno-numero">#{{ i + 1 }}</span>
+
+                <span class="codigo-turno">{{ t.codigoTurno }}</span>
+
+                <span class="nombre-cola">{{ nombreCola(t) }}</span>
+
+                <span class="hora-dato">{{ t.fechaCreacion | date:'HH:mm:ss' }}</span>
+
+                <span class="tiempo-espera"
+                    [class.texto-aviso]="tiempoEsperaMin(t.fechaCreacion) >= 10 && tiempoEsperaMin(t.fechaCreacion) < 20"
+                    [class.texto-urgente]="tiempoEsperaMin(t.fechaCreacion) >= 20">
+                    {{ tiempoEsperaTexto(t.fechaCreacion) }}
+                </span>
+            </div>
+        </div>
+
+    </div>
+</app-page-layout>

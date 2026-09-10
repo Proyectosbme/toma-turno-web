@@ -1,0 +1,103 @@
+<p-toast></p-toast>
+
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Atendidos" page-header-title></app-page-title>
+
+    <ng-container page-header-actions>
+        <div class="header-info">
+            <span class="subtitulo-header">Turnos finalizados hoy</span>
+        </div>
+    </ng-container>
+
+    <!-- ═══ CONTENIDO ═══ -->
+    <div page-content class="atendidos-container">
+
+        <!-- Filtros -->
+        <div class="filtros-bar">
+            <div class="filtro-campo">
+                <label for="filtroCola">Cola</label>
+                <p-select
+                    inputId="filtroCola"
+                    [options]="opcionesColas"
+                    [(ngModel)]="colaSeleccionada"
+                    (onChange)="onColaCambiada()"
+                    optionLabel="label"
+                    optionValue="value"
+                    styleClass="filtro-select"
+                    placeholder="Todas las colas">
+                </p-select>
+            </div>
+            <div class="filtro-campo">
+                <label for="filtroDetalle">Detalle</label>
+                <p-select
+                    inputId="filtroDetalle"
+                    [options]="opcionesDetalles"
+                    [(ngModel)]="detalleSeleccionado"
+                    optionLabel="label"
+                    optionValue="value"
+                    styleClass="filtro-select"
+                    placeholder="Todos los detalles">
+                </p-select>
+            </div>
+            <div class="filtro-campo">
+                <label for="filtroUsuario">Usuario</label>
+                <p-select
+                    inputId="filtroUsuario"
+                    [options]="opcionesUsuarios"
+                    [(ngModel)]="usuarioSeleccionado"
+                    optionLabel="label"
+                    optionValue="value"
+                    [filter]="true"
+                    filterPlaceholder="Buscar usuario"
+                    styleClass="filtro-select"
+                    placeholder="Todos los usuarios">
+                </p-select>
+            </div>
+        </div>
+
+        <!-- Barra de acciones -->
+        <div class="acciones-bar">
+            <button pButton icon="pi pi-refresh" label="Actualizar"
+                class="p-button-outlined p-button-sm"
+                [loading]="cargando"
+                (click)="cargar()">
+            </button>
+            <span class="total-label">{{ turnos.length }} turno{{ turnos.length !== 1 ? 's' : '' }} atendido{{ turnos.length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        <!-- Lista vacía -->
+        <div *ngIf="turnos.length === 0 && !cargando" class="empty-state">
+            <i class="pi pi-inbox"></i>
+            <p>Aún no se han finalizado turnos hoy.</p>
+        </div>
+
+        <!-- Tabla de turnos -->
+        <div *ngIf="turnos.length > 0" class="turnos-tabla">
+            <div class="tabla-header">
+                <span>No.</span>
+                <span>Turno</span>
+                <span>Usuario</span>
+                <span>Cola</span>
+                <span>Espera (min)</span>
+                <span>Atención (min)</span>
+            </div>
+
+            <div *ngFor="let t of turnos; let i = index" class="tabla-fila">
+                <span class="turno-numero">#{{ i + 1 }}</span>
+
+                <span class="codigo-turno">{{ t.codigoTurno }}</span>
+
+                <span class="nombre-usuario">{{ t.nombreCompleto || t.codigoUsuario || '—' }}</span>
+
+                <span class="nombre-cola">{{ nombreCola(t) }}</span>
+
+                <span class="dato-minutos">{{ minutosEntre(t.fechaCreacion, t.fechaLlamada) }}</span>
+
+                <span class="dato-minutos">{{ minutosEntre(t.fechaLlamada, t.fechaFinalizacion) }}</span>
+            </div>
+        </div>
+
+    </div>
+</app-page-layout>

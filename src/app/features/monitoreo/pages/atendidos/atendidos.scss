@@ -5,7 +5,7 @@
     }
 }
 
-.turnos-pasados-container {
+.atendidos-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -22,19 +22,33 @@
     }
 }
 
-/* ── Aviso operador inactivo ── */
-.aviso-operador-cerrado {
+/* ── Filtros ── */
+.filtros-bar {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--orange-600);
-    background: var(--orange-50, #fff7ed);
-    border: 1px solid var(--orange-200, #fed7aa);
-    border-radius: 6px;
-    padding: 0.6rem 0.9rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+}
 
-    i { font-size: 0.95rem; }
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--text-color-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.03rem;
+    }
+
+    ::ng-deep .filtro-select {
+        min-width: 200px;
+    }
 }
 
 /* ── Empty state ── */
@@ -66,7 +80,7 @@
 
 .tabla-header {
     display: grid;
-    grid-template-columns: 50px 110px 1fr 1fr 90px 90px 90px 120px 110px;
+    grid-template-columns: 50px 110px 1fr 1fr 120px 130px;
     padding: 0.6rem 1rem;
     background: var(--surface-100);
     font-size: 0.8rem;
@@ -79,7 +93,7 @@
 
 .tabla-fila {
     display: grid;
-    grid-template-columns: 50px 110px 1fr 1fr 90px 90px 90px 120px 110px;
+    grid-template-columns: 50px 110px 1fr 1fr 120px 130px;
     padding: 0.75rem 1rem;
     align-items: center;
     gap: 0.5rem;
@@ -88,10 +102,6 @@
 
     &:hover {
         background: var(--surface-50);
-    }
-
-    &.fila-traslado {
-        background: color-mix(in srgb, var(--yellow-50) 40%, transparent);
     }
 }
 
@@ -102,7 +112,7 @@
     color: var(--primary-color);
 }
 
-.turno-id {
+.turno-numero {
     font-size: 0.85rem;
     font-family: monospace;
     color: var(--text-color-secondary);
@@ -117,8 +127,9 @@
     white-space: nowrap;
 }
 
-.hora-dato {
-    font-size: 0.8rem;
+.dato-minutos {
+    font-size: 0.9rem;
     font-family: monospace;
     color: var(--text-color-secondary);
+    font-weight: 600;
 }

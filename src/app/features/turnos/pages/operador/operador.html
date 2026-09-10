@@ -18,6 +18,26 @@
             />
             <span *ngIf="colasAsignadas.length === 0" class="sin-colas">Sin colas asignadas</span>
         </div>
+        <div class="header-operador-acciones" *ngIf="operadorActivo">
+            <p-button
+                label="Descanso"
+                icon="pi pi-moon"
+                severity="secondary"
+                [outlined]="true"
+                size="small"
+                [loading]="cargandoEstadoOperador"
+                (onClick)="abrirDialogoDescanso()"
+            />
+            <p-button
+                label="Finalizar"
+                icon="pi pi-power-off"
+                severity="danger"
+                [outlined]="true"
+                size="small"
+                [loading]="cargandoEstadoOperador"
+                (onClick)="cerrarOperador()"
+            />
+        </div>
         <p-button
             icon="pi pi-refresh"
             [rounded]="true"
@@ -31,6 +51,39 @@
 
     <!-- ═══ CONTENT ═══ -->
     <div page-content class="operador-body">
+
+        <!-- Compuerta: operador cerrado / nunca activado -->
+        <div class="panel-operador-gate" *ngIf="operadorCerrado">
+            <i class="pi pi-lock"></i>
+            <h3>Inactivo</h3>
+            <p>Actívate para empezar a recibir turnos.</p>
+            <p-button
+                label="ACTIVAR"
+                icon="pi pi-power-off"
+                severity="primary"
+                size="large"
+                [loading]="cargandoEstadoOperador"
+                [disabled]="!tienePuestoAsignado"
+                (onClick)="abrirOperador()"
+            />
+        </div>
+
+        <!-- Compuerta: en descanso -->
+        <div class="panel-operador-gate panel-operador-gate-descanso" *ngIf="operadorEnDescanso">
+            <i class="pi pi-moon"></i>
+            <h3>En descanso — {{ nombreTipoDescanso }}</h3>
+            <p>No recibirás turnos hasta que termines el descanso.</p>
+            <p-button
+                label="TERMINAR DESCANSO"
+                icon="pi pi-play"
+                severity="primary"
+                size="large"
+                [loading]="cargandoEstadoOperador"
+                (onClick)="quitarDescanso()"
+            />
+        </div>
+
+        <ng-container *ngIf="operadorActivo">
 
         <!-- Barra de estadísticas del día -->
         <div class="stats-bar">
@@ -145,6 +198,7 @@
                         <!-- Botones principales siempre visibles -->
                         <div class="botones-principales">
                             <p-button
+                                *ngIf="!turnoAutomaticoActivado"
                                 label="LLAMAR SIGUIENTE TURNO"
                                 icon="pi pi-bell"
                                 severity="primary"
@@ -162,7 +216,7 @@
                                 [disabled]="cargando"
                                 (onClick)="abrirRetomar()"
                                 pTooltip="Ver turnos marcados en espera"
-                                styleClass="btn-retomar"
+                                [styleClass]="turnoAutomaticoActivado ? 'btn-retomar btn-retomar-solo' : 'btn-retomar'"
                             />
                         </div>
 
@@ -283,6 +337,8 @@
             </p-card>
         </div>
 
+        </ng-container>
+
         <!-- Spinner overlay -->
         <div class="cargando-overlay" *ngIf="cargando">
             <p-progressSpinner strokeWidth="4" />
@@ -291,6 +347,65 @@
     </div>
 
 </app-page-layout>
+
+<!-- ═══ DIÁLOGO TIPO DE DESCANSO ═══ -->
+<p-dialog
+    [(visible)]="mostrarDialogoDescanso"
+    header="¿Motivo del descanso?"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [style]="{ width: '360px' }"
+>
+    <div class="descanso-opciones">
+        <p-button
+            *ngFor="let opcion of opcionesTipoDescanso"
+            [label]="opcion.label"
+            [outlined]="true"
+            severity="secondary"
+            styleClass="descanso-opcion-btn"
+            (onClick)="seleccionarTipoDescanso(opcion.value)"
+        />
+    </div>
+</p-dialog>
+
+<!-- ═══ DIÁLOGO COMENTARIO (tipo de descanso "Otro") ═══ -->
+<p-dialog
+    [(visible)]="mostrarDialogoComentarioOtro"
+    header="¿Cuál es el motivo?"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [style]="{ width: '400px' }"
+>
+    <div class="comentario-otro-contenido">
+        <label for="comentarioOtro">Explica brevemente el motivo del descanso</label>
+        <textarea
+            id="comentarioOtro"
+            [(ngModel)]="comentarioOtro"
+            rows="3"
+            maxlength="255"
+            placeholder="Ej: trámite personal, cita médica..."
+            class="comentario-otro-textarea"
+        ></textarea>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            label="Cancelar"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="mostrarDialogoComentarioOtro = false"
+        />
+        <p-button
+            label="Iniciar descanso"
+            icon="pi pi-check"
+            severity="primary"
+            [disabled]="!comentarioOtro.trim()"
+            (onClick)="confirmarComentarioOtro()"
+        />
+    </ng-template>
+</p-dialog>
 
 <!-- ═══ DIÁLOGO RETOMAR TURNO ═══ -->
 <p-dialog

@@ -1,0 +1,95 @@
+<p-toast></p-toast>
+
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Tiempos muertos" page-header-title></app-page-title>
+
+    <ng-container page-header-actions>
+        <div class="header-info">
+            <span class="subtitulo-header">Tiempo activo y en descanso hoy, por operador</span>
+        </div>
+        <button pButton icon="pi pi-refresh" label="Actualizar"
+            class="p-button-outlined p-button-sm"
+            [loading]="cargando"
+            (click)="cargar()">
+        </button>
+    </ng-container>
+
+    <!-- ═══ CONTENIDO ═══ -->
+    <div page-content class="tiempos-muertos-container">
+
+        <!-- Lista vacía -->
+        <div *ngIf="filasActivo.length === 0 && filasDescanso.length === 0 && !cargando" class="empty-state">
+            <i class="pi pi-clock"></i>
+            <p>Nadie se ha activado hoy todavía.</p>
+        </div>
+
+        <!-- ═══ Sección 1: tiempo activo ═══ -->
+        <ng-container *ngIf="filasActivo.length > 0">
+            <div class="chart-card">
+                <h3 class="chart-titulo">¿Quién estuvo más tiempo activo hoy?</h3>
+                <p class="chart-subtitulo">El más largo es el que más minutos estuvo activo.</p>
+                <div class="chart-wrapper" [style.height.px]="Math.max(220, filasActivo.length * 46)">
+                    <p-chart type="bar" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"></p-chart>
+                </div>
+            </div>
+
+            <div class="datos-tabla">
+                <div class="tabla-header">
+                    <span>Usuario</span>
+                    <span>Minutos activo</span>
+                </div>
+
+                <div *ngFor="let f of filasActivo" class="tabla-fila">
+                    <span class="nombre-usuario">{{ f.nombre }}</span>
+                    <span class="dato-numero">{{ f.minutosActivo }}</span>
+                </div>
+            </div>
+        </ng-container>
+
+        <div class="separador" *ngIf="filasActivo.length > 0 || filasDescanso.length > 0"></div>
+
+        <!-- ═══ Sección 2: descanso por usuario ═══ -->
+        <ng-container *ngIf="filasDescanso.length > 0">
+            <div class="chart-card">
+                <h3 class="chart-titulo">¿Quién estuvo más tiempo en descanso hoy?</h3>
+                <p class="chart-subtitulo">El más largo es el que más minutos totales pasó en descanso (todos los motivos).</p>
+                <div class="chart-wrapper" [style.height.px]="Math.max(220, filasDescanso.length * 46)">
+                    <p-chart type="bar" [data]="chartDataDescanso" [options]="chartOptionsDescanso" [plugins]="chartPlugins"></p-chart>
+                </div>
+            </div>
+        </ng-container>
+
+        <div class="seccion-titulo" *ngIf="filasDescanso.length > 0">
+            <h3>Detalle de descansos por usuario</h3>
+            <p>Minutos que cada operador pasó en descanso hoy, por motivo.</p>
+        </div>
+
+        <div class="datos-tabla" *ngIf="filasDescanso.length > 0">
+            <div class="tabla-header tabla-header-descanso">
+                <span>Usuario</span>
+                <span>Baño (min)</span>
+                <span>Comida (min)</span>
+                <span>Trámites contables (min)</span>
+                <span>Otro (min)</span>
+                <span>Total (min)</span>
+            </div>
+
+            <div *ngFor="let f of filasDescanso" class="tabla-fila tabla-fila-descanso">
+                <span class="nombre-usuario">{{ f.nombre }}</span>
+                <span class="dato-numero">{{ f.banioMin }}</span>
+                <span class="dato-numero">{{ f.comidaMin }}</span>
+                <span class="dato-numero">{{ f.tramitesContablesMin }}</span>
+                <span class="dato-numero">{{ f.otroMin }}</span>
+                <span class="dato-numero dato-total">{{ f.totalMin }}</span>
+            </div>
+        </div>
+
+        <div *ngIf="filasActivo.length > 0 && filasDescanso.length === 0" class="empty-state empty-state-chico">
+            <i class="pi pi-check-circle"></i>
+            <p>Nadie ha tomado descanso hoy.</p>
+        </div>
+
+    </div>
+</app-page-layout>

@@ -9,12 +9,14 @@ import { MessageService } from 'primeng/api';
 import { AuthService } from '@auth/services/auth.service';
 import { TurnoApiClient } from '@turnos/api/turno-api.client';
 import { TurnoWebSocketApi } from '@turnos/api/turno-websocket.api';
-import { DetalleColaxPuestoApiClient } from '@general/api/detallecolaxpuesto-api.client';
-import { TurnoResponseDTO, EstadoTurno } from '@turnos/dto/turno.dto';
-import { DetalleColaxPuestoResponseDTO } from '@general/dto/detallecolaxpuesto.dto';
+import { EstadoOperadorApiClient } from '@turnos/api/estadooperador-api.client';
+import { TurnoHoyResponseDTO } from '@turnos/dto/turnohoy.dto';
+import { EstadoOperador } from '@turnos/dto/estadooperador.dto';
 import { extraerMensajeError } from '@shared/utils/error.util';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
+
+const ESTADOS_PASADOS = ['TRASLADO', 'FINALIZADO', 'SIN_ATENDER', 'EN_ESPERA'];
 
 @Component({
     selector: 'app-turnos-pasados',
@@ -37,7 +39,7 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
     private readonly authService = inject(AuthService);
     private readonly turnoApi = inject(TurnoApiClient);
     private readonly turnoWebSocket = inject(TurnoWebSocketApi);
-    private readonly detalleColaxPuestoApi = inject(DetalleColaxPuestoApiClient);
+    private readonly estadoOperadorApi = inject(EstadoOperadorApiClient);
     private readonly messageService = inject(MessageService);
 
     private wsSubscription?: Subscription;
@@ -52,13 +54,13 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         return this.authService.getUsuario()?.id ?? undefined;
     }
 
-    colasAsignadas: DetalleColaxPuestoResponseDTO[] = [];
-    turnos: (TurnoResponseDTO & { numeroDia: number })[] = [];
+    turnos: (TurnoHoyResponseDTO & { numeroDia: number })[] = [];
     cargando = false;
     llamandoId: number | null = null;
+    operadorActivo = false;
 
     async ngOnInit(): Promise<void> {
-        await this.cargarColas();
+        await this.cargarEstadoOperador();
         await this.cargar();
 
         this.turnoWebSocket.connect();
@@ -72,40 +74,23 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         this.turnoWebSocket.close();
     }
 
-    private async cargarColas(): Promise<void> {
-        if (!this.idPuesto) return;
+    private async cargarEstadoOperador(): Promise<void> {
+        if (!this.idUsuarioActual) return;
         try {
-            this.colasAsignadas = await this.detalleColaxPuestoApi.listarPorPuesto(
-                this.idPuesto, this.idSucursalActual
-            );
+            const estadoOperador = await this.estadoOperadorApi.buscarVigente(this.idUsuarioActual, this.idSucursalActual);
+            this.operadorActivo = estadoOperador?.idEstadoOperador === EstadoOperador.ACTIVA;
         } catch {
-            // sin colas asignadas — se muestra lista vacía
+            this.operadorActivo = false;
         }
     }
 
     async cargar(): Promise<void> {
-        if (this.colasAsignadas.length === 0 || !this.idPuesto) return;
+        if (!this.idUsuarioActual) return;
 
         this.cargando = true;
         try {
-            const hoy = new Date().toLocaleDateString('en-CA');
-            const idSucursalCola = this.colasAsignadas[0].idSucursalCola;
-            const colasUnicas = [...new Map(this.colasAsignadas.map(c => [c.idCola, c])).values()];
-
-            const resultados = await Promise.all(
-                colasUnicas.map(c =>
-                    this.turnoApi.buscar({
-                        idSucursal: idSucursalCola,
-                        idCola: c.idCola,
-                        fecha: hoy,
-                        idPuesto: this.idPuesto!,
-                        idSucursalPuesto: this.idSucursalActual,
-                    })
-                )
-            );
-
-            const estadosPasados = [EstadoTurno.TRASLADO, EstadoTurno.FINALIZADO, EstadoTurno.SIN_ATENDER, EstadoTurno.EN_ESPERA];
-            const filtrados = resultados.flat().filter(t => estadosPasados.includes(t.estado));
+            const resultados = await this.turnoApi.buscarHoy(this.idSucursalActual, this.idUsuarioActual);
+            const filtrados = resultados.filter(t => ESTADOS_PASADOS.includes(t.estadoTurno));
 
             // Numeración del día (1, 2, 3...) por orden de llegada (fechaCreacion) — el id de la
             // base de datos es acumulado entre días y confunde (ej. empieza en 17 porque ayer
@@ -129,15 +114,15 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         }
     }
 
-    async rellamar(turno: TurnoResponseDTO): Promise<void> {
+    async rellamar(turno: TurnoHoyResponseDTO): Promise<void> {
         if (!this.idPuesto) return;
         this.llamandoId = turno.id;
         const dto = { idPuesto: this.idPuesto, idSucursalPuesto: this.idSucursalActual, idUsuario: this.idUsuarioActual };
         try {
-            if (turno.estado === EstadoTurno.SIN_ATENDER || turno.estado === EstadoTurno.EN_ESPERA) {
-                await this.turnoApi.llamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
+            if (turno.estadoTurno === 'SIN_ATENDER' || turno.estadoTurno === 'EN_ESPERA') {
+                await this.turnoApi.llamar(turno.idSucursalTicket, turno.codigoTurno, turno.fechaCreacion, dto);
             } else {
-                await this.turnoApi.rellamar(turno.idSucursal, turno.codigoTurno, turno.fechaCreacion, dto);
+                await this.turnoApi.rellamar(turno.idSucursalTicket, turno.codigoTurno, turno.fechaCreacion, dto);
             }
             this.messageService.add({
                 severity: 'success', summary: 'Turno llamado',
@@ -150,28 +135,31 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         }
     }
 
-    etiquetaEstado(estado: number): string {
+    puedeRellamar(estado: string): boolean {
+        return this.operadorActivo && (estado === 'SIN_ATENDER' || estado === 'EN_ESPERA');
+    }
+
+    etiquetaEstado(estado: string): string {
         switch (estado) {
-            case EstadoTurno.TRASLADO:    return 'Trasladado';
-            case EstadoTurno.FINALIZADO:  return 'Finalizado';
-            case EstadoTurno.SIN_ATENDER: return 'Sin atender';
-            case EstadoTurno.EN_ESPERA:   return 'En espera';
-            default: return '';
+            case 'TRASLADO':    return 'Trasladado';
+            case 'FINALIZADO':  return 'Finalizado';
+            case 'SIN_ATENDER': return 'Sin atender';
+            case 'EN_ESPERA':   return 'En espera';
+            default: return estado;
         }
     }
 
-    severidadEstado(estado: number): 'warn' | 'success' | 'secondary' | 'danger' {
+    severidadEstado(estado: string): 'warn' | 'success' | 'secondary' | 'danger' {
         switch (estado) {
-            case EstadoTurno.TRASLADO:    return 'warn';
-            case EstadoTurno.FINALIZADO:  return 'success';
-            case EstadoTurno.SIN_ATENDER: return 'danger';
-            case EstadoTurno.EN_ESPERA:   return 'secondary';
+            case 'TRASLADO':    return 'warn';
+            case 'FINALIZADO':  return 'success';
+            case 'SIN_ATENDER': return 'danger';
+            case 'EN_ESPERA':   return 'secondary';
             default: return 'secondary';
         }
     }
 
-    nombreCola(idCola: number): string {
-        const c = this.colasAsignadas.find(x => x.idCola === idCola);
-        return c?.nombreCola ?? `Cola ${idCola}`;
+    nombreCola(turno: TurnoHoyResponseDTO): string {
+        return turno.detalle ? `${turno.cola} → ${turno.detalle}` : turno.cola;
     }
 }

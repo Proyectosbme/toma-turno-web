@@ -17,7 +17,9 @@ import { ColaServicio } from '@general/services/cola.servicio';
 import { SucursalServicio } from '@general/services/sucursal.servicio';
 import {
     CAMPOS_FORMULARIO, CAMPOS_BUSQUEDA, COLUMNAS_TABLA, COLUMNAS_TABLA_DETALLE, CAMPOS_FORMULARIO_DETALLE,
-    crearFormularioCola, crearFormularioBusqueda, crearFormularioDetalle
+    crearFormularioCola, crearFormularioBusqueda, crearFormularioDetalle,
+    VALIDADORES_CODIGO_COLA_NUEVO, VALIDADORES_CODIGO_COLA_EDITAR,
+    VALIDADORES_CODIGO_DETALLE
 } from './cola.config';
 import { DetalleRequestDTO } from '@general/dto/detalle.dto';
 import { NotificacionServicio } from '@shared/services/notificacion.servicio';
@@ -137,6 +139,17 @@ export class ColaPage implements OnInit {
         } else {
             this.formularioCola.get('idSucursal')?.enable();
         }
+
+        // Al crear, el código de la cola es una sola letra (el detalle antepone esta letra)
+        const campoCodigo = this.camposFormulario.find(f => f.name === 'codigo');
+        if (campoCodigo) {
+            campoCodigo.mask = 'a';
+            campoCodigo.placeholder = 'Ej: C';
+        }
+        const controlCodigo = this.formularioCola.get('codigo');
+        controlCodigo?.setValidators(VALIDADORES_CODIGO_COLA_NUEVO);
+        controlCodigo?.updateValueAndValidity();
+
         this.dialogoTitulo = 'Nueva Cola';
         this.dialogoVisible = true;
     }
@@ -151,6 +164,17 @@ export class ColaPage implements OnInit {
             estado: this.colaSeleccionada['estado'] as number
         });
         this.formularioCola.get('idSucursal')?.disable();
+
+        // En edición no se fuerza una sola letra: puede haber colas con códigos ya existentes más largos
+        const campoCodigo = this.camposFormulario.find(f => f.name === 'codigo');
+        if (campoCodigo) {
+            campoCodigo.mask = undefined;
+            campoCodigo.placeholder = 'Ej: CG';
+        }
+        const controlCodigo = this.formularioCola.get('codigo');
+        controlCodigo?.setValidators(VALIDADORES_CODIGO_COLA_EDITAR);
+        controlCodigo?.updateValueAndValidity();
+
         this.dialogoVisible = true;
     }
 
@@ -167,6 +191,20 @@ export class ColaPage implements OnInit {
         this.detalleSeleccionado = null;
         this.dialogoDetalleTitulo = 'Nuevo Detalle';
         this.formularioDetalle.reset({ estado: 1 });
+
+        // La letra de la cola queda fija en el input (parte de la máscara); solo se edita la propia.
+        const letraCola = ((this.colaSeleccionada['codigo'] as string) ?? '').toUpperCase();
+        const campoCodigo = this.camposFormularioDetalle.find(f => f.name === 'codigo');
+        if (campoCodigo) {
+            campoCodigo.mask = `${letraCola}a`;
+            campoCodigo.label = `Código (empieza con "${letraCola}")`;
+            campoCodigo.placeholder = `${letraCola}_`;
+        }
+        this.formularioDetalle.patchValue({ codigo: letraCola });
+        const controlCodigo = this.formularioDetalle.get('codigo');
+        controlCodigo?.setValidators(VALIDADORES_CODIGO_DETALLE);
+        controlCodigo?.updateValueAndValidity();
+
         this.dialogoDetalleVisible = true;
     }
 
@@ -178,6 +216,19 @@ export class ColaPage implements OnInit {
             codigo: this.detalleSeleccionado['codigo'],
             estado: this.detalleSeleccionado['estado']
         });
+
+        // Misma regla al editar: la letra de la cola queda fija, solo se puede cambiar la propia.
+        const letraCola = ((this.colaSeleccionada?.['codigo'] as string) ?? '').toUpperCase();
+        const campoCodigo = this.camposFormularioDetalle.find(f => f.name === 'codigo');
+        if (campoCodigo) {
+            campoCodigo.mask = `${letraCola}a`;
+            campoCodigo.label = `Código (empieza con "${letraCola}")`;
+            campoCodigo.placeholder = `${letraCola}_`;
+        }
+        const controlCodigo = this.formularioDetalle.get('codigo');
+        controlCodigo?.setValidators(VALIDADORES_CODIGO_DETALLE);
+        controlCodigo?.updateValueAndValidity();
+
         this.dialogoDetalleVisible = true;
     }
 
@@ -240,17 +291,21 @@ export class ColaPage implements OnInit {
             return;
         }
 
+        const esEdicion = this.detalleSeleccionado != null;
         const datos = this.formularioDetalle.getRawValue();
+        // El input muestra la letra de la cola + la propia. Al crear, el backend antepone
+        // la letra de la cola él mismo, así que solo se envía la propia; al editar, el
+        // backend no recompone el código, así que se envía completo tal cual está en el input.
+        const codigo = esEdicion ? (datos.codigo ?? '') : (datos.codigo ?? '').slice(1);
         const dto: DetalleRequestDTO = {
             nombre: datos.nombre ?? '',
-            codigo: datos.codigo ?? '',
+            codigo,
             estado: Number(datos.estado),
             usuario: this.authService.getUsuario()?.codigoUsuario ?? ''
         };
 
         const idCola     = this.colaSeleccionada!['id'] as number;
         const idSucursal = this.colaSeleccionada!['idSucursal'] as number;
-        const esEdicion  = this.detalleSeleccionado != null;
 
         try {
             this.cargandoDetalle = true;

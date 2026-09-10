@@ -1,0 +1,154 @@
+<p-toast></p-toast>
+
+<app-page-layout>
+
+    <!-- ═══ HEADER ═══ -->
+    <app-page-title title="Estadísticas" page-header-title></app-page-title>
+
+    <ng-container page-header-actions>
+        <div class="header-info">
+            <span class="subtitulo-header">Resumen de turnos finalizados hoy</span>
+        </div>
+        <button pButton icon="pi pi-refresh" label="Actualizar"
+            class="p-button-outlined p-button-sm"
+            [loading]="cargando"
+            (click)="cargar()">
+        </button>
+    </ng-container>
+
+    <!-- ═══ CONTENIDO ═══ -->
+    <div page-content class="estadisticas-container">
+
+        <!-- Filtros -->
+        <div class="filtros-bar">
+            <div class="filtro-campo">
+                <label for="filtroCola">Cola</label>
+                <p-select
+                    inputId="filtroCola"
+                    [options]="opcionesColas"
+                    [(ngModel)]="colaSeleccionada"
+                    (onChange)="onFiltrosCambiaron()"
+                    optionLabel="label"
+                    optionValue="value"
+                    styleClass="filtro-select"
+                    placeholder="Todas las colas">
+                </p-select>
+            </div>
+            <div class="filtro-campo">
+                <label for="filtroDetalle">Detalle</label>
+                <p-select
+                    inputId="filtroDetalle"
+                    [options]="opcionesDetalles"
+                    [(ngModel)]="detalleSeleccionado"
+                    (onChange)="onFiltrosCambiaron()"
+                    optionLabel="label"
+                    optionValue="value"
+                    styleClass="filtro-select"
+                    placeholder="Todos los detalles">
+                </p-select>
+            </div>
+        </div>
+
+        <!-- Tarjetas resumen -->
+        <div class="stats-bar">
+            <div class="stat-item stat-verde">
+                <i class="pi pi-check-circle stat-icon"></i>
+                <span class="stat-valor">{{ totalAtendidos }}</span>
+                <span class="stat-label">Atendidos hoy</span>
+            </div>
+            <div class="stat-item stat-azul">
+                <i class="pi pi-stopwatch stat-icon"></i>
+                <span class="stat-valor">{{ promedioTotalMin !== null ? (promedioTotalMin + ' min') : '—' }}</span>
+                <span class="stat-label">Promedio minutos por turno</span>
+            </div>
+        </div>
+
+        <!-- Lista vacía -->
+        <div *ngIf="totalAtendidos === 0 && !cargando" class="empty-state">
+            <i class="pi pi-chart-bar"></i>
+            <p>No hay turnos finalizados hoy que coincidan con los filtros.</p>
+        </div>
+
+        <ng-container *ngIf="totalAtendidos > 0">
+            <!-- Gráfica: ranking de usuarios -->
+            <div class="chart-card">
+                <h3 class="chart-titulo">¿Quién atendió más turnos hoy?</h3>
+                <p class="chart-subtitulo">El más largo es el que más turnos atendió.</p>
+                <div class="chart-wrapper" [style.height.px]="Math.max(220, tablaUsuarios.length * 46)">
+                    <p-chart type="bar" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"></p-chart>
+                </div>
+            </div>
+
+            <!-- Tabla complementaria: cantidad total + promedio de atención por usuario -->
+            <div class="usuarios-tabla">
+                <div class="tabla-header">
+                    <span>Usuario</span>
+                    <span>Cantidad atendida</span>
+                    <span>Promedio atención (min)</span>
+                </div>
+
+                <div *ngFor="let u of tablaUsuarios" class="tabla-fila">
+                    <span class="nombre-usuario">{{ u.nombre }}</span>
+                    <span class="dato-numero">{{ u.total }}</span>
+                    <span class="dato-numero">{{ u.promedioAtencionMin !== null ? u.promedioAtencionMin : '—' }}</span>
+                </div>
+            </div>
+        </ng-container>
+
+        <!-- ═══ Detalle por cola de un usuario ═══ -->
+        <div class="separador"></div>
+
+        <div class="filtros-bar">
+            <div class="filtro-campo">
+                <label for="filtroUsuarioDetalle">Ver detalle de un usuario</label>
+                <p-select
+                    inputId="filtroUsuarioDetalle"
+                    [options]="opcionesUsuarios"
+                    [(ngModel)]="usuarioSeleccionado"
+                    (onChange)="onUsuarioCambiado()"
+                    optionLabel="label"
+                    optionValue="value"
+                    [filter]="true"
+                    filterPlaceholder="Buscar usuario"
+                    styleClass="filtro-select"
+                    placeholder="Elige un usuario">
+                </p-select>
+            </div>
+        </div>
+
+        <div *ngIf="usuarioSeleccionado == null" class="empty-state empty-state-chico">
+            <i class="pi pi-user"></i>
+            <p>Elige un usuario arriba para ver cuánto atendió de cada cola.</p>
+        </div>
+
+        <ng-container *ngIf="usuarioSeleccionado != null">
+            <div class="chart-card" *ngIf="chartDataUsuario">
+                <h3 class="chart-titulo">¿De qué cola atendió más {{ nombreUsuarioSeleccionado }}?</h3>
+                <p class="chart-subtitulo">El más largo es la cola donde más turnos atendió hoy.</p>
+                <div class="chart-wrapper" [style.height.px]="Math.max(180, tablaColasUsuario.length * 46)">
+                    <p-chart type="bar" [data]="chartDataUsuario" [options]="chartOptionsUsuario" [plugins]="chartPlugins"></p-chart>
+                </div>
+            </div>
+
+            <div class="usuarios-tabla" *ngIf="tablaColasUsuario.length > 0">
+                <div class="tabla-header">
+                    <span>Cola</span>
+                    <span>Cantidad atendida</span>
+                    <span>Promedio atención (min)</span>
+                </div>
+
+                <div *ngFor="let c of tablaColasUsuario" class="tabla-fila">
+                    <span class="nombre-usuario">{{ c.nombre }}</span>
+                    <span class="dato-numero">{{ c.total }}</span>
+                    <span class="dato-numero">{{ c.promedioMin !== null ? c.promedioMin : '—' }}</span>
+                </div>
+            </div>
+
+            <div *ngIf="tablaColasUsuario.length === 0" class="empty-state empty-state-chico">
+                <i class="pi pi-inbox"></i>
+                <p>Este usuario no tiene turnos finalizados hoy.</p>
+            </div>
+        </ng-container>
+
+    </div>
+</app-page-layout>

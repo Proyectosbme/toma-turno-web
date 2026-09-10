@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { CrearTurnoRequestDTO, TurnoResponseDTO } from '@turnos/dto/turno.dto';
+import { TurnoHoyResponseDTO } from '@turnos/dto/turnohoy.dto';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -87,6 +88,15 @@ export class TurnoApiClient {
         if (filtro.idSucursalPuesto != null) params = params.set('idSucursalPuesto', filtro.idSucursalPuesto);
         return firstValueFrom(
             this.http.get<TurnoResponseDTO[]>(`${this.BASE_URL}/buscar`, { params })
+        );
+    }
+
+    /** Turnos de hoy (vista vwturnoshoy). Sin idUsuario devuelve todos los de la sucursal. */
+    buscarHoy(idSucursal: number, idUsuario?: number): Promise<TurnoHoyResponseDTO[]> {
+        let params = new HttpParams().set('idSucursal', idSucursal);
+        if (idUsuario != null) params = params.set('idUsuario', idUsuario);
+        return firstValueFrom(
+            this.http.get<TurnoHoyResponseDTO[]>(`${this.BASE_URL}/hoy`, { params })
         );
     }
 }

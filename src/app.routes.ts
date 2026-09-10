@@ -21,6 +21,10 @@ export const appRoutes: Routes = [
             {
                 path: 'reportes',
                 loadChildren: () => import('./app/features/reportes/reportes.routes').then(m => m.REPORTES_ROUTES)
+            },
+            {
+                path: 'monitoreo',
+                loadChildren: () => import('./app/features/monitoreo/monitoreo.routes').then(m => m.MONITOREO_ROUTES)
             }
         ]
     },

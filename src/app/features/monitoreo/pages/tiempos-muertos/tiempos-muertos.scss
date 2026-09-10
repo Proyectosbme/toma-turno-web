@@ -1,0 +1,146 @@
+.header-info {
+    .subtitulo-header {
+        font-size: 0.85rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+.tiempos-muertos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ── Empty state ── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 3rem 1rem;
+    color: var(--text-color-secondary);
+
+    i {
+        font-size: 2.5rem;
+        opacity: 0.4;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+}
+
+.empty-state-chico {
+    padding: 1.75rem 1rem;
+
+    i { font-size: 1.8rem; }
+}
+
+/* ── Gráfica ── */
+.chart-card {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.chart-titulo {
+    margin: 0 0 0.15rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.chart-subtitulo {
+    margin: 0 0 1rem;
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+
+.chart-wrapper {
+    position: relative;
+}
+
+/* ── Título de sección (sin gráfica) ── */
+.seccion-titulo {
+    h3 {
+        margin: 0 0 0.15rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-color-secondary);
+    }
+}
+
+.separador {
+    border-top: 1px dashed var(--surface-border);
+    margin: 0.25rem 0;
+}
+
+/* ── Tablas ── */
+.datos-tabla {
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-header {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    padding: 0.6rem 1rem;
+    background: var(--surface-100);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    gap: 0.5rem;
+
+    &.tabla-header-descanso {
+        grid-template-columns: 1fr 100px 100px 160px 100px 100px;
+    }
+}
+
+.tabla-fila {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    padding: 0.65rem 1rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-top: 1px solid var(--surface-border);
+    transition: background 0.15s;
+
+    &:hover {
+        background: var(--surface-50);
+    }
+
+    &.tabla-fila-descanso {
+        grid-template-columns: 1fr 100px 100px 160px 100px 100px;
+    }
+}
+
+.nombre-usuario {
+    font-size: 0.875rem;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dato-numero {
+    font-size: 0.9rem;
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+
+    &.dato-total {
+        color: var(--text-color);
+        font-weight: 700;
+    }
+}
