@@ -36,7 +36,7 @@ export interface TurnoResponseDTO {
 }
 
 export interface WsTurnoEvent {
-    event: 'TURNO_LLAMADO' | 'TURNO_FINALIZADO' | 'TURNO_SIN_ATENDER' | 'TURNO_EN_ESPERA' | 'TURNO_CREADO';
+    event: 'TURNO_LLAMADO' | 'TURNO_FINALIZADO' | 'TURNO_SIN_ATENDER' | 'TURNO_EN_ESPERA' | 'TURNO_CREADO' | 'TURNO_TRASLADO';
     idSucursal: number;
     turno?: TurnoResponseDTO;
 }

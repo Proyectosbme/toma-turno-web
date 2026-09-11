@@ -139,6 +139,9 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
             case 'TURNO_EN_ESPERA':
                 if (evento.turno) this.aplicarTurnoEnEspera(evento.turno);
                 break;
+            case 'TURNO_TRASLADO':
+                if (evento.turno) this.aplicarTurnoTrasladado(evento.turno);
+                break;
         }
     }
 
@@ -174,6 +177,13 @@ export class TomaTurnoPage implements OnInit, OnDestroy {
     }
 
     private aplicarTurnoEnEspera(turno: TurnoResponseDTO): void {
+        this.filas = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
+        if (this.turnoDestacado?.codigoTurno === turno.codigoTurno) {
+            this.turnoDestacado = null;
+        }
+    }
+
+    private aplicarTurnoTrasladado(turno: TurnoResponseDTO): void {
         this.filas = this.filas.filter(f => f.codigoTurno !== turno.codigoTurno);
         if (this.turnoDestacado?.codigoTurno === turno.codigoTurno) {
             this.turnoDestacado = null;
