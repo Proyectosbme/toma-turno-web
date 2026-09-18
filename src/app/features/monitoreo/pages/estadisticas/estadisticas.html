@@ -21,6 +21,19 @@
 
         <!-- Filtros -->
         <div class="filtros-bar">
+            <div class="filtro-campo" *ngIf="esAdmin">
+                <label for="filtroSucursal">Sucursal</label>
+                <p-select
+                    inputId="filtroSucursal"
+                    [options]="opcionesSucursales"
+                    [(ngModel)]="idSucursalSeleccionada"
+                    (onChange)="onSucursalCambiada()"
+                    optionLabel="label"
+                    optionValue="value"
+                    styleClass="filtro-select"
+                    placeholder="Sucursal">
+                </p-select>
+            </div>
             <div class="filtro-campo">
                 <label for="filtroCola">Cola</label>
                 <p-select

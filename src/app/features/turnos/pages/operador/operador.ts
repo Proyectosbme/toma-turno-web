@@ -66,10 +66,6 @@ export class OperadorPage implements OnInit, OnDestroy {
         return this.idPuesto != null && this.idPuesto > 0;
     }
 
-    get atiendeEspeciales(): boolean {
-        return (this.authService.getUsuario()?.atenderCasosEspeciales ?? 0) === 1;
-    }
-
     /** Clave única por usuario para persistir su turno activo entre recargas */
     private get turnoActualKey(): string {
         return `op_turno_${this.authService.getUsuario()?.id ?? 0}`;
@@ -100,7 +96,6 @@ export class OperadorPage implements OnInit, OnDestroy {
     turnosRetomar: TurnoResponseDTO[] = [];
     cargandoRetomar = false;
 
-    casosEspecialesActivados = false;
     turnoAutomaticoActivado = false;
     cargando = false;
     cargandoInicial = false;
@@ -151,7 +146,7 @@ export class OperadorPage implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.cargarInicial();
-        this.turnoWebSocket.connect(undefined, this.idUsuarioActual);
+        this.turnoWebSocket.connect(undefined, this.idUsuarioActual, this.idSucursalActual);
         this.wsSubscription = this.turnoWebSocket.mensajes.subscribe((evento) => {
             if (!this.cargandoInicial && evento.idSucursal === this.idSucursalActual) this.refrescarTurnos();
         });
@@ -186,8 +181,6 @@ export class OperadorPage implements OnInit, OnDestroy {
                 this.estadoOperadorApi.buscarVigente(this.idUsuarioActual!, this.idSucursalActual)
             ]);
             this.colasAsignadas = colasAsignadas;
-            const cfgEspecial = configs.find(c => c.nombre === 'CASOS_ESPECIALES');
-            this.casosEspecialesActivados = cfgEspecial?.estado === 1 && cfgEspecial?.parametro === 1;
             const cfgTurnoAutomatico = configs.find(c => c.nombre === 'TURNO_AUTOMATICO');
             this.turnoAutomaticoActivado = cfgTurnoAutomatico?.estado === 1 && cfgTurnoAutomatico?.parametro === 1;
             this.estadoOperador = estadoOperador;
@@ -249,16 +242,11 @@ export class OperadorPage implements OnInit, OnDestroy {
             clavesAsignadas.has(`${t.idCola}-${t.idDetalle}-${t.idSucursal}`)
         );
 
-        const porFecha = (a: TurnoResponseDTO, b: TurnoResponseDTO) =>
-            new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
-
-        if (this.atiendeEspeciales && this.casosEspecialesActivados) {
-            const especiales = filtrados.filter(t => t.tipoCasoEspecial != null && t.tipoCasoEspecial > 0).sort(porFecha);
-            const normales   = filtrados.filter(t => !t.tipoCasoEspecial || t.tipoCasoEspecial === 0).sort(porFecha);
-            this.turnosEnEspera = [...especiales, ...normales];
-        } else {
-            this.turnosEnEspera = filtrados.sort(porFecha);
-        }
+        // El orden (prioridad de cola/detalle asignada al puesto, orden de llegada, y casos
+        // especiales primero para el operador que los atiende) lo resuelve el backend — ver
+        // TurnoJpaRepository.buscarPorFiltros y LlamarSiguienteTurnoUseCase. El front solo
+        // muestra la lista tal como llega, sin reordenarla ni reimplementar esa regla acá.
+        this.turnosEnEspera = filtrados;
 
         // Cada operador rastrea SU turno activo por código (guardado en localStorage por user ID).
         // Así dos operadores con el mismo idPuesto son completamente independientes.
@@ -277,6 +265,12 @@ export class OperadorPage implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Cuál turno sigue lo decide el backend (prioridad de cola/detalle del puesto, orden de
+     * llegada, y casos especiales primero si el operador los atiende) — ver
+     * LlamarSiguienteTurnoUseCase. El front no elige el turno, solo dispara la acción y
+     * muestra el que el backend devuelva.
+     */
     async llamarSiguiente(): Promise<void> {
         if (!this.tienePuestoAsignado) {
             this.messageService.add({
@@ -285,13 +279,28 @@ export class OperadorPage implements OnInit, OnDestroy {
             });
             return;
         }
-        if (this.turnosEnEspera.length === 0) {
+        // Guarda síncrona: ver comentario equivalente en ejecutarLlamar.
+        if (this.cargando) return;
+        try {
+            this.cargando = true;
+            this.turnoActual = await this.turnoApi.llamarSiguiente(
+                this.idSucursalActual, this.idPuesto!, this.idSucursalActual, this.idUsuarioActual
+            );
+            if (this.turnoActual) {
+                localStorage.setItem(this.turnoActualKey, this.turnoActual.codigoTurno);
+            }
             this.messageService.add({
-                severity: 'warn', summary: 'Sin turnos', detail: 'No hay turnos en espera', life: 3000
+                severity: 'success', summary: 'Turno llamado',
+                detail: `Turno ${this.turnoActual.codigoTurno}`, life: 3000
             });
-            return;
+        } catch (err) {
+            this.messageService.add({
+                severity: 'warn', summary: 'Sin turnos', detail: extraerMensajeError(err), life: 3000
+            });
+        } finally {
+            this.cargando = false;
         }
-        await this.ejecutarLlamar(this.turnosEnEspera[0]);
+        this.refrescarTurnos().catch(() => {});
     }
 
     async volverALlamar(): Promise<void> {

@@ -15,6 +15,8 @@ import { extraerMensajeError } from '@shared/utils/error.util';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
 import { LayoutService } from '@core/layout/service/layout.service';
+import { SucursalServicio } from '@general/services/sucursal.servicio';
+import { OpcionSelect } from '@shared/dto/opcion-select.dto';
 
 interface FilaUsuario {
     idUsuario: number | string;
@@ -57,10 +59,20 @@ export class MonitoreoEstadisticasPage implements OnInit, OnDestroy {
     private readonly turnoWebSocket = inject(TurnoWebSocketApi);
     private readonly messageService = inject(MessageService);
     private readonly layoutService = inject(LayoutService);
+    private readonly sucursalServicio = inject(SucursalServicio);
+
+    /** Solo ADMIN ve todas las sucursales; los demás perfiles quedan fijos a la propia. */
+    readonly esAdmin = this.authService.esAdmin();
 
     private get idSucursalActual(): number {
+        if (this.esAdmin) {
+            return this.idSucursalSeleccionada ?? this.authService.getUsuario()?.idSucursal ?? 0;
+        }
         return this.authService.getUsuario()?.idSucursal ?? 0;
     }
+
+    idSucursalSeleccionada: number | null = null;
+    opcionesSucursales: OpcionSelect[] = [];
 
     cargando = false;
     todosFinalizados: TurnoHoyResponseDTO[] = [];
@@ -124,6 +136,10 @@ export class MonitoreoEstadisticasPage implements OnInit, OnDestroy {
     }
 
     async ngOnInit(): Promise<void> {
+        if (this.esAdmin) {
+            this.idSucursalSeleccionada = this.authService.getUsuario()?.idSucursal ?? null;
+            await this.cargarSucursales();
+        }
         await this.cargar();
 
         this.turnoWebSocket.connect();
@@ -135,6 +151,19 @@ export class MonitoreoEstadisticasPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.wsSubscription?.unsubscribe();
         this.turnoWebSocket.close();
+    }
+
+    private async cargarSucursales(): Promise<void> {
+        try {
+            this.opcionesSucursales = await this.sucursalServicio.obtenerOpciones();
+        } catch {
+            // silencioso: si falla, el admin sigue viendo su propia sucursal, solo no
+            // tiene opciones para cambiarla hasta que recargue la página
+        }
+    }
+
+    onSucursalCambiada(): void {
+        this.cargar();
     }
 
     async cargar(): Promise<void> {

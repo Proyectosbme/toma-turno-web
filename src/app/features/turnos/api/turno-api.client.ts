@@ -28,6 +28,20 @@ export class TurnoApiClient {
         );
     }
 
+    /**
+     * El backend decide cuál turno sigue: prioridad de cola/detalle asignada al puesto,
+     * orden de llegada, y casos especiales primero si el usuario los atiende. El front no
+     * debe elegir el turno por su cuenta.
+     */
+    llamarSiguiente(idSucursal: number, idPuesto: number, idSucursalPuesto: number,
+                     idUsuario?: number): Promise<TurnoResponseDTO> {
+        return firstValueFrom(
+            this.http.put<TurnoResponseDTO>(
+                `${this.BASE_URL}/llamar-siguiente`, { idSucursal, idPuesto, idSucursalPuesto, idUsuario }
+            )
+        );
+    }
+
     finalizar(idSucursal: number, codigoTurno: string, fechaCreacion: string): Promise<TurnoResponseDTO> {
         const params = new HttpParams().set('fechaCreacion', fechaCreacion);
         return firstValueFrom(

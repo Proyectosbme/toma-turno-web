@@ -233,7 +233,13 @@ export class UsuarioPage implements OnInit {
     async guardar(): Promise<void> {
         if (this.formularioUsuario.invalid) {
             this.formularioUsuario.markAllAsTouched();
-            this.notificacion.advertencia('Formulario incompleto', 'Revisa los campos obligatorios');
+            const faltantes = this.obtenerCamposInvalidos();
+            this.notificacion.advertencia(
+                'Formulario incompleto',
+                faltantes.length > 0
+                    ? `Falta completar: ${faltantes.join(', ')}`
+                    : 'Revisa los campos obligatorios'
+            );
             return;
         }
 
@@ -276,6 +282,19 @@ export class UsuarioPage implements OnInit {
         } finally {
             this.cargando = false;
         }
+    }
+
+    /** Nombres (label) de los campos del formulario que están inválidos ahora mismo,
+     *  en el mismo orden en que aparecen en el formulario. */
+    private obtenerCamposInvalidos(): string[] {
+        const faltantes: string[] = [];
+        for (const campo of this.camposFormulario) {
+            const control = this.formularioUsuario.get(campo.name);
+            if (control?.invalid) {
+                faltantes.push(campo.label);
+            }
+        }
+        return faltantes;
     }
 
     /* ══════════════════════════════════════════

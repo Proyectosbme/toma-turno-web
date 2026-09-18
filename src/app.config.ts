@@ -65,7 +65,9 @@ export const appConfig: ApplicationConfig = {
             },
             initOptions: {
                 onLoad: window.location.pathname.startsWith('/auth/') ? 'check-sso' : 'login-required',
-                pkceMethod: 'S256',
+                // PKCE (S256) requiere Web Crypto API, solo disponible en contextos seguros (HTTPS o localhost).
+                // En LAN por HTTP (ej. http://192.168.x.x) se desactiva para no romper el login.
+                pkceMethod: window.isSecureContext ? 'S256' : undefined,
                 checkLoginIframe: false,
                 locale: 'es'
             },

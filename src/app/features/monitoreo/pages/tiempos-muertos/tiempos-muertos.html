@@ -9,6 +9,15 @@
         <div class="header-info">
             <span class="subtitulo-header">Tiempo activo y en descanso hoy, por operador</span>
         </div>
+        <p-select
+            *ngIf="esAdmin"
+            [options]="opcionesSucursales"
+            [(ngModel)]="idSucursalSeleccionada"
+            (onChange)="onSucursalCambiada()"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Sucursal">
+        </p-select>
         <button pButton icon="pi pi-refresh" label="Actualizar"
             class="p-button-outlined p-button-sm"
             [loading]="cargando"
@@ -72,6 +81,7 @@
                 <span>Baño (min)</span>
                 <span>Comida (min)</span>
                 <span>Trámites contables (min)</span>
+                <span title="Caja activa sin conexión por 30s o más (se fue sin cerrar sesión ni marcar descanso)">Sesión cerrada (min)</span>
                 <span>Otro (min)</span>
                 <span>Total (min)</span>
             </div>
@@ -81,6 +91,7 @@
                 <span class="dato-numero">{{ f.banioMin }}</span>
                 <span class="dato-numero">{{ f.comidaMin }}</span>
                 <span class="dato-numero">{{ f.tramitesContablesMin }}</span>
+                <span class="dato-numero">{{ f.sesionCerradaMin }}</span>
                 <span class="dato-numero">{{ f.otroMin }}</span>
                 <span class="dato-numero dato-total">{{ f.totalMin }}</span>
             </div>

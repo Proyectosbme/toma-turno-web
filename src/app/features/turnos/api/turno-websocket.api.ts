@@ -24,15 +24,21 @@ export class TurnoWebSocketApi {
   }
 
   /** idUsuario: si se pasa, el backend registra esta sesión como la del operador para
-   *  el chequeo de "sesión activa" del llamado automático. Sin él, la conexión solo recibe
-   *  broadcasts (uso en pantallas de monitoreo). */
-  connect(url?: string, idUsuario?: number): void {
+   *  el chequeo de "sesión activa" del llamado automático, y para detectar cuándo se
+   *  queda sin conexión con la caja activa (ver EstadoOperadorAutomaticoOrquestador en el
+   *  backend). Sin él, la conexión solo recibe broadcasts (uso en pantallas de monitoreo).
+   *  idSucursal: obligatorio junto con idUsuario — el backend lo necesita para saber a
+   *  qué estado de operador aplica esa detección. */
+  connect(url?: string, idUsuario?: number, idSucursal?: number): void {
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) return;
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     const defaultUrl = environment.wsUrl || `${proto}//${location.host}/turnos`;
     this.wsUrl = url ?? defaultUrl;
     if (idUsuario != null) {
       this.wsUrl += (this.wsUrl.includes('?') ? '&' : '?') + `idUsuario=${idUsuario}`;
+      if (idSucursal != null) {
+        this.wsUrl += `&idSucursal=${idSucursal}`;
+      }
     }
     this.cerradoManualmente = false;
     this.abrir();

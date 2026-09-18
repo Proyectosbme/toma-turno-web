@@ -22,6 +22,16 @@
                 (click)="cargar()">
             </button>
             <p-select
+                *ngIf="esAdmin"
+                [options]="opcionesSucursales"
+                [(ngModel)]="idSucursalSeleccionada"
+                (onChange)="onSucursalCambiada()"
+                optionLabel="label"
+                optionValue="value"
+                styleClass="filtro-cola"
+                placeholder="Sucursal">
+            </p-select>
+            <p-select
                 [options]="opcionesColas"
                 [(ngModel)]="colaSeleccionada"
                 optionLabel="label"

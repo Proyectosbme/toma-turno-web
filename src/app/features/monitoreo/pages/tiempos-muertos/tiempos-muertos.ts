@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { ChartModule } from 'primeng/chart';
 import { MessageService } from 'primeng/api';
@@ -13,6 +15,8 @@ import { extraerMensajeError } from '@shared/utils/error.util';
 import { PageLayoutComponent } from '@shared/components/page-layout/page-layout.component';
 import { PageTitleComponent } from '@shared/components/page-title/page-title';
 import { LayoutService } from '@core/layout/service/layout.service';
+import { SucursalServicio } from '@general/services/sucursal.servicio';
+import { OpcionSelect } from '@shared/dto/opcion-select.dto';
 
 interface FilaActivo {
     clave: number | string;
@@ -26,6 +30,7 @@ interface FilaDescanso {
     banioMin: number;
     comidaMin: number;
     tramitesContablesMin: number;
+    sesionCerradaMin: number;
     otroMin: number;
     totalMin: number;
 }
@@ -35,7 +40,9 @@ interface FilaDescanso {
     standalone: true,
     imports: [
         CommonModule,
+        FormsModule,
         ButtonModule,
+        SelectModule,
         ToastModule,
         ChartModule,
         PageLayoutComponent,
@@ -54,10 +61,20 @@ export class MonitoreoTiemposMuertosPage implements OnInit, OnDestroy {
     private readonly turnoWebSocket = inject(TurnoWebSocketApi);
     private readonly messageService = inject(MessageService);
     private readonly layoutService = inject(LayoutService);
+    private readonly sucursalServicio = inject(SucursalServicio);
+
+    /** Solo ADMIN ve todas las sucursales; los demás perfiles quedan fijos a la propia. */
+    readonly esAdmin = this.authService.esAdmin();
 
     private get idSucursalActual(): number {
+        if (this.esAdmin) {
+            return this.idSucursalSeleccionada ?? this.authService.getUsuario()?.idSucursal ?? 0;
+        }
         return this.authService.getUsuario()?.idSucursal ?? 0;
     }
+
+    idSucursalSeleccionada: number | null = null;
+    opcionesSucursales: OpcionSelect[] = [];
 
     cargando = false;
     ahora = Date.now();
@@ -109,6 +126,10 @@ export class MonitoreoTiemposMuertosPage implements OnInit, OnDestroy {
     }
 
     async ngOnInit(): Promise<void> {
+        if (this.esAdmin) {
+            this.idSucursalSeleccionada = this.authService.getUsuario()?.idSucursal ?? null;
+            await this.cargarSucursales();
+        }
         await this.cargar();
 
         this.turnoWebSocket.connect();
@@ -127,6 +148,19 @@ export class MonitoreoTiemposMuertosPage implements OnInit, OnDestroy {
         this.wsSubscription?.unsubscribe();
         this.turnoWebSocket.close();
         clearInterval(this.timerInterval);
+    }
+
+    private async cargarSucursales(): Promise<void> {
+        try {
+            this.opcionesSucursales = await this.sucursalServicio.obtenerOpciones();
+        } catch {
+            // silencioso: si falla, el admin sigue viendo su propia sucursal, solo no
+            // tiene opciones para cambiarla hasta que recargue la página
+        }
+    }
+
+    onSucursalCambiada(): void {
+        this.cargar();
     }
 
     async cargar(): Promise<void> {
@@ -159,7 +193,7 @@ export class MonitoreoTiemposMuertosPage implements OnInit, OnDestroy {
 
     private calcular(): void {
         const porUsuarioActivo = new Map<number | string, { nombre: string; minutos: number }>();
-        const porUsuarioDescanso = new Map<number | string, { nombre: string; banio: number; comida: number; tramitesContables: number; otro: number }>();
+        const porUsuarioDescanso = new Map<number | string, { nombre: string; banio: number; comida: number; tramitesContables: number; sesionCerrada: number; otro: number }>();
 
         for (const p of this.periodos) {
             const clave = this.claveUsuario(p);
@@ -171,10 +205,14 @@ export class MonitoreoTiemposMuertosPage implements OnInit, OnDestroy {
                 entrada.minutos += minutos;
                 porUsuarioActivo.set(clave, entrada);
             } else if (p.estadoOperador === 'DESCANSO') {
-                const entrada = porUsuarioDescanso.get(clave) ?? { nombre, banio: 0, comida: 0, tramitesContables: 0, otro: 0 };
+                const entrada = porUsuarioDescanso.get(clave)
+                    ?? { nombre, banio: 0, comida: 0, tramitesContables: 0, sesionCerrada: 0, otro: 0 };
                 if (p.tipoDescanso === 'BAÑO') entrada.banio += minutos;
                 else if (p.tipoDescanso === 'COMIDA') entrada.comida += minutos;
                 else if (p.tipoDescanso === 'TRAMITES CONTABLES') entrada.tramitesContables += minutos;
+                // Descanso automático (no lo elige el operador): se asigna cuando se queda sin
+                // sesión de WebSocket con la caja activa. Ver EstadoOperadorAutomaticoOrquestador.
+                else if (p.tipoDescanso === 'SESION CERRADA') entrada.sesionCerrada += minutos;
                 else entrada.otro += minutos;
                 porUsuarioDescanso.set(clave, entrada);
             }
@@ -209,8 +247,9 @@ export class MonitoreoTiemposMuertosPage implements OnInit, OnDestroy {
                 banioMin: v.banio,
                 comidaMin: v.comida,
                 tramitesContablesMin: v.tramitesContables,
+                sesionCerradaMin: v.sesionCerrada,
                 otroMin: v.otro,
-                totalMin: v.banio + v.comida + v.tramitesContables + v.otro
+                totalMin: v.banio + v.comida + v.tramitesContables + v.sesionCerrada + v.otro
             }))
             .sort((a, b) => b.totalMin - a.totalMin || a.nombre.localeCompare(b.nombre));
 

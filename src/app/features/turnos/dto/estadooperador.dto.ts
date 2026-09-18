@@ -8,7 +8,10 @@ export enum TipoDescanso {
     BANIO = 1,
     COMIDA = 2,
     OTRO = 3,
-    TRAMITES_CONTABLES = 4
+    TRAMITES_CONTABLES = 4,
+    /** Automático (backend): caja ACTIVA sin sesión de WebSocket por 30s o más. No se
+     *  agrega a OPCIONES_TIPO_DESCANSO a propósito: el operador no lo puede elegir. */
+    SESION_CERRADA = 5
 }
 
 export const OPCIONES_TIPO_DESCANSO: { label: string; value: TipoDescanso }[] = [

@@ -63,7 +63,10 @@ export class TurnosPasadosPage implements OnInit, OnDestroy {
         await this.cargarEstadoOperador();
         await this.cargar();
 
-        this.turnoWebSocket.connect();
+        // Con idUsuario/idSucursal: sin esto, al navegar acá desde "Operador" el backend
+        // perdía el rastro de la sesión de este operador y, pasados 30s, lo marcaba como
+        // "sesión cerrada" aunque siguiera usando la app en esta pantalla.
+        this.turnoWebSocket.connect(undefined, this.idUsuarioActual, this.idSucursalActual);
         this.wsSubscription = this.turnoWebSocket.mensajes.subscribe(() => {
             this.cargar();
         });

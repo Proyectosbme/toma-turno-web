@@ -103,7 +103,7 @@
     gap: 0.5rem;
 
     &.tabla-header-descanso {
-        grid-template-columns: 1fr 100px 100px 160px 100px 100px;
+        grid-template-columns: 1fr 100px 100px 160px 140px 100px 100px;
     }
 }
 
@@ -121,7 +121,7 @@
     }
 
     &.tabla-fila-descanso {
-        grid-template-columns: 1fr 100px 100px 160px 100px 100px;
+        grid-template-columns: 1fr 100px 100px 160px 140px 100px 100px;
     }
 }
 
