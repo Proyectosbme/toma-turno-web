@@ -58,7 +58,7 @@
             <h3>Inactivo</h3>
             <p>Actívate para empezar a recibir turnos.</p>
             <p-button
-                label="ACTIVAR"
+                label="Activar"
                 icon="pi pi-power-off"
                 severity="primary"
                 size="large"
@@ -74,7 +74,7 @@
             <h3>En descanso — {{ nombreTipoDescanso }}</h3>
             <p>No recibirás turnos hasta que termines el descanso.</p>
             <p-button
-                label="TERMINAR DESCANSO"
+                label="Terminar descanso"
                 icon="pi pi-play"
                 severity="primary"
                 size="large"
@@ -121,7 +121,7 @@
         <div class="panel-actual">
             <p-card styleClass="card-actual">
                 <ng-template pTemplate="header">
-                    <div class="card-header-label">ATENDIENDO</div>
+                    <div class="card-header-label">Atendiendo</div>
                 </ng-template>
 
                 <div class="turno-actual-contenido">
@@ -199,7 +199,7 @@
                         <div class="botones-principales">
                             <p-button
                                 *ngIf="!turnoAutomaticoActivado"
-                                label="LLAMAR SIGUIENTE TURNO"
+                                label="Llamar siguiente turno"
                                 icon="pi pi-bell"
                                 severity="primary"
                                 size="large"
@@ -230,7 +230,7 @@
             <p-card styleClass="card-espera">
                 <ng-template pTemplate="header">
                     <div class="card-header-label">
-                        EN COLA
+                        En cola
                         <p-badge
                             [value]="turnosEnEspera.length.toString()"
                             severity="danger"
@@ -299,7 +299,7 @@
             <p-card styleClass="card-mis-espera">
                 <ng-template pTemplate="header">
                     <div class="card-header-label">
-                        EN ESPERA
+                        En espera
                         <p-badge
                             [value]="turnosPausados.length.toString()"
                             severity="warn"

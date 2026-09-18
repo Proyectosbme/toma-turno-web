@@ -13,6 +13,7 @@ import { PageTitleComponent } from '@shared/components/page-title/page-title';
 import { FormPanelComponent } from '@shared/components/form-panel/form-panel';
 import { TableComponent, TableItem } from '@shared/components/table/table';
 import { SearchPanelComponent } from '@shared/components/search-panel/search-panel';
+import { TabsModule } from 'primeng/tabs';
 import { ConfiguracionRequestDTO } from '@general/dto/configuracion.dto';
 import { ConfiguracionServicio } from '@general/services/configuracion.servicio';
 import { SucursalServicio } from '@general/services/sucursal.servicio';
@@ -41,7 +42,8 @@ import { AuthService } from '@auth/services/auth.service';
         PageTitleComponent,
         FormPanelComponent,
         TableComponent,
-        SearchPanelComponent
+        SearchPanelComponent,
+        TabsModule
     ],
     templateUrl: './configuracion.html',
     styleUrl: './configuracion.scss'
@@ -54,6 +56,10 @@ export class ConfiguracionPage implements OnInit {
         return this.authService.getPerfil() === 'ADMIN';
     }
 
+    /* ── Tabs: "Empresa" solo existe para esAdminGlobal, así que quien no la ve
+       arranca directo en "Sistema". ── */
+    tabActiva: 'empresa' | 'sistema' = 'sistema';
+
     /* ── Apariencia ── */
     nombreInput = '';
     guardandoNombre  = false;
@@ -61,6 +67,9 @@ export class ConfiguracionPage implements OnInit {
     guardandoBanner  = false;
 
     ngOnInit(): void {
+        if (this.esAdminGlobal) {
+            this.tabActiva = 'empresa';
+        }
         this.cargarSucursales();
         this.nombreInput = this.branding.nombreEmpresa();
     }

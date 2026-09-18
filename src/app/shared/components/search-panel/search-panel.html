@@ -1,57 +1,58 @@
 <div class="search-panel-wrapper">
-  <div class="search-actions">
-    <button
-      pButton
-      type="submit"
-      icon="pi pi-search"
-      class="p-button-text p-button-rounded"
-      pTooltip="Buscar"
-      tooltipPosition="top"
-      [disabled]="isLoading"
-      [loading]="isLoading"
-      aria-label="Buscar"
-      (click)="searchAction.emit()"
-    ></button>
-    <button
-      *ngIf="showClear"
-      pButton
-      type="button"
-      icon="pi pi-times"
-      class="p-button-text p-button-rounded"
-      severity="secondary"
-      pTooltip="Limpiar"
-      tooltipPosition="top"
-      [disabled]="isLoading"
-      (click)="clearAction.emit()"
-      aria-label="Limpiar"
-    ></button>
-  </div>
   <form [formGroup]="form" class="search-grid" (ngSubmit)="searchAction.emit()">
     <ng-container *ngFor="let field of fields">
       <div class="field">
         <label [for]="field.name">{{ field.label }}</label>
-        <ng-container *ngIf="field.type === 'select' || field.options">
-          <select
-            [id]="field.name"
-            class="search-select"
-            [formControlName]="field.name"
-          >
-            <option value="">{{ field.placeholder || 'Selecciona una opción' }}</option>
-            <option *ngFor="let option of field.options" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </ng-container>
-        <ng-container *ngIf="(!field.type || field.type !== 'select') && !field.options">
-          <input
-            [id]="field.name"
-            [type]="field.type || 'text'"
-            pInputText
-            [formControlName]="field.name"
-            [placeholder]="field.placeholder || ''"
-          />
-        </ng-container>
+
+        <p-select
+          *ngIf="field.type === 'select' || field.options"
+          [inputId]="field.name"
+          [formControlName]="field.name"
+          [options]="field.options"
+          optionLabel="label"
+          optionValue="value"
+          [showClear]="true"
+          [placeholder]="field.placeholder || 'Selecciona una opción'">
+        </p-select>
+
+        <input
+          *ngIf="(!field.type || field.type !== 'select') && !field.options"
+          [id]="field.name"
+          [type]="field.type || 'text'"
+          pInputText
+          [formControlName]="field.name"
+          [placeholder]="field.placeholder || ''"
+        />
       </div>
     </ng-container>
+
+    <div class="search-actions">
+      <!-- type="submit" + estar dentro del <form>: un clic dispara (ngSubmit), igual que
+           presionar Enter en cualquier campo — antes el botón vivía fuera del <form> y
+           Enter no hacía nada. -->
+      <button
+        pButton
+        type="submit"
+        icon="pi pi-search"
+        pTooltip="Buscar"
+        tooltipPosition="top"
+        aria-label="Buscar"
+        [disabled]="isLoading"
+        [loading]="isLoading">
+      </button>
+      <button
+        *ngIf="showClear"
+        pButton
+        type="button"
+        icon="pi pi-times"
+        class="p-button-text"
+        severity="secondary"
+        pTooltip="Limpiar"
+        tooltipPosition="top"
+        [disabled]="isLoading"
+        (click)="clearAction.emit()"
+        aria-label="Limpiar"
+      ></button>
+    </div>
   </form>
 </div>

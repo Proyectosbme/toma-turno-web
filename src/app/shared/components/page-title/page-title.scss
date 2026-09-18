@@ -1,23 +1,12 @@
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0;
-}
-
-.hero-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .page-heading {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--p-primary-700);
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--p-primary-700);
 }
 
 :host-context(.app-dark) .page-heading {
-  color: var(--p-primary-300);
+    color: var(--p-primary-300);
 }

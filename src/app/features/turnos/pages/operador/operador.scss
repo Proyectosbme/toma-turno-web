@@ -126,10 +126,8 @@
     }
 
     .stat-label {
-        font-size: 0.68rem;
+        font-size: 0.72rem;
         color: var(--text-color-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.04rem;
         text-align: center;
     }
 
@@ -170,22 +168,23 @@
     gap: 0.5rem;
     padding: 0.75rem 1.25rem;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-color-secondary);
     border-bottom: 1px solid var(--surface-border);
-    text-transform: uppercase;
-    letter-spacing: 0.05rem;
 }
 
 .turno-actual-contenido {
     text-align: center;
     padding: 1rem;
 
+    /* Antes 5rem (80px): pensado para un tablero público, no para quien lo mira
+       todo el día desde su propio puesto. El código se sigue leyendo a la
+       distancia normal de un monitor sin dominar toda la tarjeta. */
     .codigo-actual {
-        font-size: 5rem;
+        font-size: 2.75rem;
         font-weight: 800;
         color: var(--primary-color);
-        letter-spacing: 0.2rem;
+        letter-spacing: 0.05rem;
         line-height: 1;
         margin-bottom: 0.5rem;
     }
@@ -279,7 +278,6 @@
             justify-content: center;
             font-size: 1rem;
             font-weight: 700;
-            letter-spacing: 0.04rem;
             padding: 0.85rem 1rem;
         }
     }

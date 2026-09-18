@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 
 
@@ -10,7 +11,7 @@ import { TooltipModule } from 'primeng/tooltip';
 @Component({
   selector: 'app-search-panel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, TooltipModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, SelectModule, TooltipModule],
   templateUrl: './search-panel.html',
   styleUrl: './search-panel.scss'
 })

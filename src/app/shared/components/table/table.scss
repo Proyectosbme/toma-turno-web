@@ -77,12 +77,10 @@
   .p-datatable-thead > tr > th {
       background: var(--surface-section, var(--surface-ground)) !important;
       color: var(--text-color-secondary) !important;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-size: 0.82rem;
+      font-weight: 600;
       padding: 0.65rem 1rem;
-      border-bottom: 2px solid var(--primary-color) !important;
+      border-bottom: 1px solid var(--surface-border) !important;
       border-top: none !important;
       border-left: none !important;
       border-right: none !important;

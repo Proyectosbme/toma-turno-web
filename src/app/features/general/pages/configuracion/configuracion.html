@@ -11,99 +11,119 @@
     <!-- ═══ CONTENT ═══ -->
     <div page-content>
 
-        <!-- Sección: Apariencia -->
-        @if (esAdminGlobal) {
-        <app-section title="Apariencia de la Empresa">
-            <div class="branding-form">
+        <p-tabs [(value)]="tabActiva">
+            <p-tablist>
+                @if (esAdminGlobal) {
+                    <p-tab value="empresa">Empresa</p-tab>
+                }
+                <p-tab value="sistema">Sistema</p-tab>
+            </p-tablist>
 
-                <!-- Nombre -->
-                <div class="branding-field">
-                    <label for="nombreEmpresaInput">Nombre de la empresa</label>
-                    <div class="branding-input-row">
-                        <input id="nombreEmpresaInput" pInputText [(ngModel)]="nombreInput"
-                            placeholder="Ej: Mi Empresa S.A."
-                            maxlength="60" />
-                        <button pButton icon="pi pi-check" label="Aplicar"
-                            (click)="guardarNombre()"
-                            [loading]="guardandoNombre"
-                            [disabled]="!nombreInput.trim()">
-                        </button>
-                    </div>
-                    <small class="branding-hint">
-                        Se muestra en el topbar y el footer. Actual: <strong>{{ branding.nombreEmpresa() }}</strong>
-                    </small>
-                </div>
+            <p-tabpanels>
 
-                <!-- Logo -->
-                <div class="branding-field">
-                    <label for="logoInput">Logo de la empresa</label>
-                    <div class="branding-logo-row">
-                        <div class="branding-logo-preview">
-                            <img [src]="branding.logoUrl() || '/images/logo.svg'"
-                                (error)="$any($event.target).src='/images/logo.svg'"
-                                alt="Logo actual" class="branding-logo-img" />
+                <!-- Tab: Empresa (nombre, logo, banner) -->
+                @if (esAdminGlobal) {
+                <p-tabpanel value="empresa">
+                    <app-section title="Apariencia de la Empresa">
+                        <div class="branding-form">
+
+                            <!-- Nombre: fila propia, no necesita todo el ancho de la pantalla -->
+                            <div class="branding-field branding-field--nombre">
+                                <label for="nombreEmpresaInput">Nombre de la empresa</label>
+                                <div class="branding-input-row">
+                                    <input id="nombreEmpresaInput" pInputText [(ngModel)]="nombreInput"
+                                        placeholder="Ej: Mi Empresa S.A."
+                                        maxlength="60" />
+                                    <button pButton icon="pi pi-check" label="Aplicar"
+                                        (click)="guardarNombre()"
+                                        [loading]="guardandoNombre"
+                                        [disabled]="!nombreInput.trim()">
+                                    </button>
+                                </div>
+                                <small class="branding-hint">
+                                    Se muestra en el topbar y el footer. Actual: <strong>{{ branding.nombreEmpresa() }}</strong>
+                                </small>
+                            </div>
+
+                            <!-- Logo y Banner en dos columnas: usan el ancho disponible en vez de
+                                 dejarlo vacío, y cada imagen mantiene su propia proporción real. -->
+                            <div class="branding-identidad-grid">
+
+                                <!-- Logo -->
+                                <div class="branding-field">
+                                    <label for="logoInput">Logo de la empresa</label>
+                                    <div class="branding-logo-row">
+                                        <div class="branding-logo-preview">
+                                            <img [src]="branding.logoUrl() || '/images/logo.svg'"
+                                                (error)="$any($event.target).src='/images/logo.svg'"
+                                                alt="Logo actual" class="branding-logo-img" />
+                                        </div>
+                                        <label class="branding-upload-btn" [class.disabled]="guardandoLogo"
+                                            pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
+                                            <i class="pi" [ngClass]="guardandoLogo ? 'pi-spin pi-spinner' : 'pi-upload'"></i>
+                                            {{ guardandoLogo ? 'Subiendo...' : 'Subir logo' }}
+                                            <input id="logoInput" type="file" accept="image/*"
+                                                (change)="onLogoSeleccionado($event)"
+                                                [disabled]="guardandoLogo" hidden />
+                                        </label>
+                                    </div>
+                                    <small class="branding-hint">Se guarda en la base de datos y se aplica en toda la aplicación.</small>
+                                </div>
+
+                                <!-- Banner -->
+                                <div class="branding-field">
+                                    <label for="bannerInput">Banner del inicio</label>
+                                    <div class="branding-banner-preview">
+                                        <img *ngIf="branding.bannerUrl()" [src]="branding.bannerUrl()"
+                                                (error)="$any($event.target).hidden=true"
+                                                alt="Banner actual" />
+                                        <span *ngIf="!branding.bannerUrl()" class="branding-banner-vacio">
+                                            <i class="pi pi-image"></i>
+                                            Sin banner cargado
+                                        </span>
+                                    </div>
+                                    <label class="branding-upload-btn" [class.disabled]="guardandoBanner"
+                                        pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
+                                        <i class="pi" [ngClass]="guardandoBanner ? 'pi-spin pi-spinner' : 'pi-upload'"></i>
+                                        {{ guardandoBanner ? 'Subiendo...' : 'Subir banner' }}
+                                        <input id="bannerInput" type="file" accept="image/*"
+                                            (change)="onBannerSeleccionado($event)"
+                                            [disabled]="guardandoBanner" hidden />
+                                    </label>
+                                    <small class="branding-hint">Se guarda en la base de datos y se muestra en la pantalla de inicio.</small>
+                                </div>
+
+                            </div>
                         </div>
-                        <div class="branding-logo-actions">
-                            <label class="branding-upload-btn" [class.disabled]="guardandoLogo"
-                                pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
-                                <i class="pi" [ngClass]="guardandoLogo ? 'pi-spin pi-spinner' : 'pi-upload'"></i>
-                                {{ guardandoLogo ? 'Subiendo...' : 'Subir logo' }}
-                                <input id="logoInput" type="file" accept="image/*"
-                                    (change)="onLogoSeleccionado($event)"
-                                    [disabled]="guardandoLogo" hidden />
-                            </label>
-                        </div>
-                    </div>
-                    <small class="branding-hint">Se guarda en la base de datos y se aplica en toda la aplicación.</small>
-                </div>
+                    </app-section>
+                </p-tabpanel>
+                }
 
-                <!-- Banner -->
-                <div class="branding-field">
-                    <label for="bannerInput">Banner del inicio</label>
-                    <div class="branding-banner-preview">
-                        <img *ngIf="branding.bannerUrl()" [src]="branding.bannerUrl()"
-                                (error)="$any($event.target).hidden=true"
-                                alt="Banner actual" />
-                        <span *ngIf="!branding.bannerUrl()" class="text-secondary">Sin banner cargado</span>
-                    </div>
-                    <div class="branding-logo-actions" style="margin-top: 0.5rem;">
-                        <label class="branding-upload-btn" [class.disabled]="guardandoBanner"
-                            pTooltip="Seleccionar imagen (JPEG, PNG u otro formato)">
-                            <i class="pi" [ngClass]="guardandoBanner ? 'pi-spin pi-spinner' : 'pi-upload'"></i>
-                            {{ guardandoBanner ? 'Subiendo...' : 'Subir banner' }}
-                            <input id="bannerInput" type="file" accept="image/*"
-                                (change)="onBannerSeleccionado($event)"
-                                [disabled]="guardandoBanner" hidden />
-                        </label>
-                    </div>
-                    <small class="branding-hint">Se guarda en la base de datos y se muestra en la pantalla de inicio.</small>
-                </div>
+                <!-- Tab: Sistema (búsqueda por sucursal + listado de configuraciones) -->
+                <p-tabpanel value="sistema">
+                    <app-section id="sec-busqueda" title="Búsqueda por sucursal">
+                        <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda"
+                            (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
+                        </app-search-panel>
+                        @if (advertenciaBusqueda) {
+                            <p class="advertencia-busqueda">
+                                <i class="pi pi-exclamation-triangle"></i> {{ advertenciaBusqueda }}
+                            </p>
+                        }
+                    </app-section>
 
-            </div>
-        </app-section>
-        } <!-- fin @if esAdminGlobal -->
+                    <app-section id="sec-tabla" title="Listado de Configuraciones">
+                        <app-table [items]="configuraciones" [columns]="columnas" [isLoading]="cargando"
+                            [selectedItem]="configSeleccionada"
+                            emptyTitle="Sin configuraciones registradas"
+                            emptySubtitle="Selecciona una sucursal y consulta, o presiona Agregar para crear una configuración."
+                            (rowSelect)="seleccionarConfig($event)">
+                        </app-table>
+                    </app-section>
+                </p-tabpanel>
 
-        <!-- Sección: Búsqueda -->
-        <app-section id="sec-busqueda" title="Búsqueda por sucursal">
-            <app-search-panel [form]="formularioBusqueda" [fields]="camposBusqueda"
-                (searchAction)="buscar()" (clearAction)="limpiarBusqueda()">
-            </app-search-panel>
-            @if (advertenciaBusqueda) {
-                <p class="advertencia-busqueda">
-                    <i class="pi pi-exclamation-triangle"></i> {{ advertenciaBusqueda }}
-                </p>
-            }
-        </app-section>
-
-        <!-- Sección: Tabla -->
-        <app-section id="sec-tabla" title="Listado de Configuraciones">
-            <app-table [items]="configuraciones" [columns]="columnas" [isLoading]="cargando"
-                [selectedItem]="configSeleccionada"
-                emptyTitle="Sin configuraciones registradas"
-                emptySubtitle="Selecciona una sucursal y consulta, o presiona Agregar para crear una configuración."
-                (rowSelect)="seleccionarConfig($event)">
-            </app-table>
-        </app-section>
+            </p-tabpanels>
+        </p-tabs>
     </div>
 
 </app-page-layout>

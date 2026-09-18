@@ -2,17 +2,25 @@
     position: relative;
     background: var(--surface-card);
     border: 1px solid var(--surface-border);
-    border-top: 2px solid var(--primary-color);
-    border-radius: 0.5rem;
-    padding: 1rem 1.25rem 1.25rem 1.25rem;
-    margin-bottom: 1rem;
-    transition: border-color 0.15s;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
     color: var(--text-color);
     scrollbar-width: none;
     -ms-overflow-style: none;
 
-    &:hover {
-        border-color: color-mix(in srgb, var(--primary-color), transparent 60%);
+    /* Mismo acento que el encabezado de página (ver page-layout.component.scss):
+       una franja angosta a la izquierda en vez del borde grueso de arriba que
+       tenía antes. Consistente en toda la app, un solo lugar donde se ve color. */
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.85rem;
+        bottom: 0.85rem;
+        width: 3px;
+        border-radius: 0 2px 2px 0;
+        background: var(--p-primary-color);
     }
 }
 
@@ -45,4 +53,3 @@
     align-items: center;
     gap: 0.35rem;
 }
-

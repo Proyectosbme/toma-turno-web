@@ -13,14 +13,17 @@
 .branding-form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.75rem;
     padding: 0.25rem 0;
+    /* Sin tope, esta sección quedaba angosta a la izquierda con un vacío enorme
+       a la derecha en pantallas anchas. */
+    max-width: 56rem;
 }
 
 .branding-field {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
 
     label {
         font-size: 0.82rem;
@@ -44,10 +47,25 @@
     opacity: 0.8;
 }
 
+/* Logo y banner uno junto al otro: el logo es angosto por naturaleza, el banner
+   aprovecha el resto del espacio en vez de quedar cada uno en su propia fila. */
+.branding-identidad-grid {
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) 1fr;
+    gap: 1.75rem;
+    align-items: start;
+}
+
+@media (max-width: 720px) {
+    .branding-identidad-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .branding-logo-row {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1rem;
     flex-wrap: wrap;
 }
 
@@ -61,6 +79,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .branding-logo-img {
@@ -69,20 +88,17 @@
     object-fit: contain;
 }
 
-.branding-logo-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
+/* Proporción real de banner (3:1) en vez de un alto fijo: crece con el ancho de
+   la columna sin quedar como un rectángulo vacío desproporcionado. */
 .branding-banner-preview {
     width: 100%;
-    max-width: 480px;
-    height: 120px;
+    aspect-ratio: 3 / 1;
     border-radius: 10px;
-    border: 1px solid var(--surface-border);
-    background: var(--surface-card);
+    border: 1px dashed var(--surface-border);
+    background: var(--surface-ground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
 
     img {
@@ -90,6 +106,20 @@
         height: 100%;
         object-fit: cover;
         display: block;
+    }
+}
+
+.branding-banner-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-color-secondary);
+    font-size: 0.8rem;
+
+    .pi {
+        font-size: 1.25rem;
+        opacity: 0.6;
     }
 }
 
